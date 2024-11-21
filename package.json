@@ -8,8 +8,9 @@
         "dev": "nodemon ./dist/index.js",
         "minio": "start ./minio/minio.exe server ./minio/Data --console-address \":9001\"",
         "wds": "webpack-dev-server",
-        "build": "tsc",
-        "prod": "yarn run npm-run-all --serial --continue-on-error build minio wds"
+        "build": "node prebuild.js && webpack",
+        "preview": "node dist/bundle.js",
+        "prod": "yarn build && yarn minio && yarn preview"
     },
     "dependencies": {
         "express": "^4.21.1",
