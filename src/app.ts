@@ -1,18 +1,23 @@
-import express from "express";
-import {minioClient} from "./minio-client";
-import {fileRouter} from "./routes/file-router";
-import fileUpload from "express-fileupload";
+import express from "express"
+import { minioClient } from "./minio-client"
+import { fileRouter } from "./routes/file-router"
+import fileUpload from "express-fileupload"
 
 export const app = express()
 
 app.use(express.json())
-app.use(fileUpload())
+app.use(
+    fileUpload({
+        useTempFiles: true,
+        tempFileDir: "/tmp/",
+    }),
+)
 
-app.use('/file', fileRouter)
+app.use("/file", fileRouter)
 
-export const bucketName = 'swans-pics'
+export const bucketName = "swans-pics"
 minioClient.bucketExists(bucketName).then(exists => {
     if (!exists) {
-        minioClient.makeBucket('swans-pics')
+        minioClient.makeBucket("swans-pics")
     }
 })
