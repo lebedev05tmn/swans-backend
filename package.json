@@ -1,0 +1,44 @@
+{
+    "name": "swans-minio",
+    "version": "1.0.0",
+    "main": "./dist/index.js",
+    "license": "MIT",
+    "scripts": {
+        "watch": "tsc -w",
+        "dev": "nodemon ./dist/index.js",
+        "minio": "start ./minio/minio.exe server ./minio/Data --console-address \":9001\"",
+        "wds": "webpack-dev-server",
+        "build": "node prebuild.js && webpack",
+        "preview": "node dist/bundle.js",
+        "prod": "yarn build && yarn minio && yarn preview"
+    },
+    "dependencies": {
+        "express": "^4.21.1",
+        "express-fileupload": "^1.5.1",
+        "minio": "^8.0.2",
+        "pg": "^8.13.1",
+        "uuid": "^11.0.3"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.15.0",
+        "@types/express": "^5.0.0",
+        "@types/express-fileupload": "^1.5.1",
+        "@types/node": "^22.9.0",
+        "@typescript-eslint/eslint-plugin": "^8.15.0",
+        "@typescript-eslint/parser": "^8.15.0",
+        "eslint": "^9.15.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "globals": "^15.12.0",
+        "nodemon": "^3.1.7",
+        "npm-run-all": "^4.1.5",
+        "prettier": "^3.3.3",
+        "ts-loader": "^9.5.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.6.3",
+        "typescript-eslint": "^8.15.0",
+        "webpack": "^5.96.1",
+        "webpack-cli": "^5.1.4",
+        "webpack-dev-server": "^5.1.0"
+    }
+}
