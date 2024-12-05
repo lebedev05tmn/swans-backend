@@ -1,11 +1,11 @@
 {
     "name": "swans-minio",
     "version": "1.0.0",
-    "main": "./dist/index.js",
+    "main": "./dist/app.js",
     "license": "MIT",
     "scripts": {
         "watch": "tsc -w",
-        "dev": "nodemon ./dist/index.js",
+        "dev": "nodemon ./dist/app.js",
         "minio": "start ./minio/minio.exe server ./minio/Data --console-address \":9001\"",
         "wds": "webpack-dev-server",
         "build": "node prebuild.js && webpack",
@@ -17,6 +17,7 @@
         "express-fileupload": "^1.5.1",
         "minio": "^8.0.2",
         "pg": "^8.13.1",
+        "typeorm": "^0.3.20",
         "uuid": "^11.0.3"
     },
     "devDependencies": {

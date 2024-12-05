@@ -93,7 +93,7 @@ fileRouter.delete('/delete-file/:uniq_id', async (req, res) => {
     const stream = minioClient
         .listObjectsV2(bucketName)
         .map((object) => object.name);
-    await stream.on('data', async (obj) => {
+    stream.on('data', async (obj) => {
         if (obj.includes(`${uniq_id}.`)) {
             deleted = true;
             await minioClient
