@@ -1,0 +1,14 @@
+{
+    "type": "postgres",
+    "username": "postgres",
+    "password": "rootpass",
+    "host": "localhost",
+    "port": 5432,
+    "database": "swans",
+    "synchronize": true,
+    "entities": ["src/core-profile/entities/Profile.ts"],
+    "migrations": ["src/migrations/*.ts"],
+    "cli": {
+        "migrationsDir": "src/migrations"
+    }
+}

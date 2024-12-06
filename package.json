@@ -10,7 +10,7 @@
         "wds": "webpack-dev-server",
         "build": "node prebuild.js && webpack",
         "preview": "node dist/bundle.js",
-        "prod": "yarn build && yarn minio && yarn preview"
+        "start": "yarn minio && yarn build && yarn preview && yarn typeorm migration:run"
     },
     "dependencies": {
         "express": "^4.21.1",

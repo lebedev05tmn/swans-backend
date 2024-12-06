@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn, BaseEntity } from 'typeorm';
 
-@Entity('person')
+@Entity('profile')
 export class Profile extends BaseEntity {
     @PrimaryColumn()
     user_id!: number;
@@ -12,7 +12,7 @@ export class Profile extends BaseEntity {
     birth_date!: Date;
 
     @Column({ nullable: true })
-    sex!: string;
+    sex!: boolean;
 
     @Column({ type: 'jsonb', nullable: true })
     images!: string[];

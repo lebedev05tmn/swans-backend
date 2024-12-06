@@ -2,13 +2,23 @@ import express from 'express';
 import { HTTP_STATUSES } from '../../shared/utils';
 import { Profile } from '../entities/Profile';
 import { userRepository } from '../../app';
+import { getSexBoolean, getSexString } from '../utils';
 
 export const userRouter = express.Router();
 
 userRouter.get('/', async (req, res) => {
     try {
-        const users = await userRepository.find();
-        res.json(users);
+        const users: Profile[] = (await userRepository.find()) as Profile[];
+        const updatedUsers = await Promise.all(
+            users.map(async (user) => {
+                const updatedUser: any = { ...user };
+                if (typeof user.sex === 'boolean') {
+                    updatedUser.sex = await getSexString(user.sex);
+                }
+                return updatedUser;
+            }),
+        );
+        res.json(updatedUsers);
     } catch (error) {
         res.status(500).send(`Unable to load users: ${error}`);
     }
@@ -19,11 +29,13 @@ userRouter.get('/:id', async (req, res) => {
         if (req.params.id === null || req.params.id === undefined) {
             res.status(HTTP_STATUSES.BAD_REQUEST_400).send('Incorrect ID');
         }
-        const user = await userRepository.findOneBy({
+
+        let user = (await userRepository.findOneBy({
             user_id: Number(req.params.id),
-        });
+        })) as any;
 
         if (user) {
+            user.sex = await getSexString(user.sex);
             res.json(user);
         } else {
             res.status(HTTP_STATUSES.NOT_FOUND_404).send('User not found');
@@ -35,7 +47,7 @@ userRouter.get('/:id', async (req, res) => {
 
 userRouter.post('/', async (req, res) => {
     try {
-        const {
+        let {
             user_name,
             birth_date,
             sex,
@@ -72,6 +84,8 @@ userRouter.post('/', async (req, res) => {
             });
 
             if (paramsAreCorrect) {
+                sex = await getSexBoolean(sex);
+
                 const user = Profile.create({
                     user_id: user_id,
                     user_name: user_name,
@@ -94,6 +108,8 @@ userRouter.post('/', async (req, res) => {
 
 userRouter.patch('/', async (req, res) => {
     try {
+        if (req.body.sex) req.body.sex = await getSexBoolean(req.body.sex);
+
         const user_id = Number(req.query.id);
         const update = await userRepository
             .createQueryBuilder()
