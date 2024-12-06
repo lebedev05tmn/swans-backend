@@ -7,8 +7,8 @@
     "database": "swans",
     "synchronize": true,
     "entities": ["src/core-profile/entities/Profile.ts"],
-    "migrations": ["src/migrations/*.ts"],
+    "migrations": ["migrations/*.ts"],
     "cli": {
-        "migrationsDir": "src/migrations"
+        "migrationsDir": "migrations"
     }
 }

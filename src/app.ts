@@ -5,6 +5,7 @@ import { userRouter } from './core-profile/routes/user-router';
 import { AppDataSource } from './shared/model';
 import { Profile } from './core-profile/entities/Profile';
 import { initMedia } from './core-media';
+import 'dotenv/config';
 
 export const app = express();
 const port = process.env.PORT || 3000;

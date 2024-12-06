@@ -5,11 +5,12 @@
     "license": "MIT",
     "scripts": {
         "watch": "tsc -w",
-        "dev": "nodemon ./dist/app.js",
+        "dev": "node prebuild.js && yarn minio && tsc && nodemon ./dist/src/app.js",
         "minio": "start ./minio/minio.exe server ./minio/Data --console-address \":9001\"",
         "wds": "webpack-dev-server",
         "build": "node prebuild.js && webpack",
         "preview": "node dist/bundle.js",
+        "migration": "yarn typeorm migration:run",
         "start": "yarn minio && yarn build && yarn preview && yarn typeorm migration:run"
     },
     "dependencies": {
@@ -27,6 +28,7 @@
         "@types/node": "^22.9.0",
         "@typescript-eslint/eslint-plugin": "^8.15.0",
         "@typescript-eslint/parser": "^8.15.0",
+        "dotenv": "^16.4.7",
         "eslint": "^9.15.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-prettier": "^5.2.1",
