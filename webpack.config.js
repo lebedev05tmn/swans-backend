@@ -17,12 +17,6 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.js'],
     },
-    devServer: {
-        static: {
-            directory: path.join(__dirname, 'src'),
-        },
-        port: 3000,
-    },
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),

@@ -22,6 +22,16 @@ const getKey = async (id: string) => {
     });
 };
 
+/**
+ * @openapi
+ * /api/get-file/id:
+ *   get:
+ *     description: Welcome to swagger-jsdoc!
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious string.
+ */
+
 fileRouter.get('/get-file/:uniq_id', async (req, res) => {
     if (req.params.uniq_id !== null && req.params.uniq_id !== undefined) {
         let objectKey = await getKey(req.params.uniq_id);
