@@ -11,7 +11,7 @@
         "minio:other": "minio server ./minio/Data --console-address :9001",
         "build": "node prebuild.js && webpack",
         "preview": "node dist/bundle.js",
-        "migration": "yarn typeorm migration:run",
+        "migration": "yarn typeorm migration:run --dataSource=./ormconfig.js",
         "prod:win": "yarn minio:win & yarn build && yarn preview && yarn typeorm migration:run",
         "prod:other": "yarn minio:other & yarn build && yarn preview && yarn typeorm migration:run"
     },

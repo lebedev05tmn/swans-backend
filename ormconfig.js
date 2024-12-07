@@ -1,6 +1,8 @@
+const { DataSource } = require('typeorm');
+
 const DB_PORT = process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432;
 
-module.exports = {
+module.exports = new DataSource({
     type: 'postgres',
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
@@ -13,4 +15,4 @@ module.exports = {
     cli: {
         migrationsDir: 'migrations',
     },
-};
+});
