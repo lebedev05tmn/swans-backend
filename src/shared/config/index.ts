@@ -1,0 +1,47 @@
+import path from 'path';
+import { AppDataSource } from '../model';
+import { Profile } from '../../core-profile/entities/Profile';
+import { FileContentTypes, FileExtensions } from '../utils';
+
+export const bucketName = 'swans-pics';
+export const profileRepository = AppDataSource.getRepository(Profile);
+
+export const getFileContentType = async (objectKey: string) => {
+    switch (path.extname(<string>objectKey)) {
+        case FileExtensions.JPG:
+            return FileContentTypes.JPEG;
+        case FileExtensions.JPEG:
+            return FileContentTypes.JPEG;
+        case FileExtensions.PNG:
+            return FileContentTypes.PNG;
+    }
+};
+
+const routes = ['./**/routes/*.ts'];
+
+export const options = {
+    definition: {
+        openapi: '3.1.0',
+        info: {
+            title: 'SWANS',
+            version: '0.0.1',
+            description: 'Swagger Implementations in Node js',
+        },
+        servers: [
+            {
+                url: `http://localhost:8080`,
+                description: 'V1 Local Server',
+            },
+        ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+    },
+    apis: routes,
+};

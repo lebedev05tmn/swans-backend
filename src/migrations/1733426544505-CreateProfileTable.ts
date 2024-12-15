@@ -33,12 +33,13 @@ export class CreateProfileTable1733426544505 implements MigrationInterface {
                         },
                         {
                             name: 'images',
-                            type: 'jsonb',
+                            type: 'text[4]',
                             isNullable: true,
                         },
                         {
                             name: 'short_desc',
-                            type: 'text',
+                            type: 'varchar',
+                            length: '100',
                             isNullable: true,
                         },
                         {
@@ -48,7 +49,7 @@ export class CreateProfileTable1733426544505 implements MigrationInterface {
                         },
                         {
                             name: 'categories',
-                            type: 'jsonb',
+                            type: 'text[]',
                             isNullable: true,
                         },
                     ],

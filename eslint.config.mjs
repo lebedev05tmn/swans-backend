@@ -1,24 +1,24 @@
-import globals from "globals"
-import pluginJs from "@eslint/js"
-import tseslint from "@typescript-eslint/eslint-plugin"
-import tsParser from "@typescript-eslint/parser"
-import prettierConfig from "eslint-config-prettier" // Для конфигурации Prettier
+import globals from 'globals';
+import pluginJs from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
     {
-        files: ["**/*.{js,mjs,cjs,ts}"], // Подключаем JavaScript и TypeScript файлы
+        files: ['**/*.{js,mjs,cjs,ts}'],
         languageOptions: {
             globals: { ...globals.browser, ...globals.node },
-            parser: tsParser, // Подключаем TypeScript парсер
+            parser: tsParser,
         },
         plugins: {
-            prettier: await import("eslint-plugin-prettier"), // Динамический импорт плагина Prettier
+            prettier: await import('eslint-plugin-prettier'),
         },
         rules: {
-            ...pluginJs.configs.recommended.rules, // Рекомендации для JS
-            ...tseslint.configs.recommended.rules, // Рекомендации для TypeScript
-            "prettier/prettier": ["warn"], // Правила Prettier
+            ...pluginJs.configs.recommended.rules,
+            ...tseslint.configs.recommended.rules,
+            'prettier/prettier': ['warn'],
         },
     },
-    prettierConfig, // Добавляем Prettier как конфигурацию
-]
+    prettierConfig,
+];

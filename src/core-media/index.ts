@@ -1,10 +1,13 @@
 import { minioClient } from './minio-client';
-import { bucketName } from './utils';
-
+import { bucketName } from '../shared/config';
 export const initMedia = async () => {
-    await minioClient.bucketExists(bucketName).then((exists) => {
-        if (!exists) {
-            minioClient.makeBucket('swans-pics');
-        }
-    });
+    try {
+        await minioClient.bucketExists(bucketName).then((exists) => {
+            if (!exists) {
+                minioClient.makeBucket('swans-pics');
+            }
+        });
+    } catch (error) {
+        console.error(`Failed to create minio bucket: ${error}`);
+    }
 };

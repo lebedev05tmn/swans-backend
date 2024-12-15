@@ -1,13 +1,22 @@
-export const getSexString = async (sex_bool: boolean) => {
+export const convertSex = async (sex: string | boolean) => {
     return new Promise((resolve, reject) => {
-        if (sex_bool === true) resolve('male');
-        else resolve('female');
+        if (typeof sex === 'boolean') {
+            if (sex === true) resolve('male');
+            else resolve('female');
+        } else {
+            if (sex === 'male') resolve(true);
+            else resolve(false);
+        }
     });
 };
 
-export const getSexBoolean = async (sex_string: string) => {
-    return new Promise((resolve, reject) => {
-        if (sex_string === 'male') resolve(true);
-        else resolve(false);
-    });
+export type ProfileType = {
+    user_id: number;
+    user_name: string;
+    birth_date: Date;
+    sex: boolean;
+    images: string[];
+    short_desc: string;
+    long_desc: string;
+    categories: string[];
 };

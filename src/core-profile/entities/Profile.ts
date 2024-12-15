@@ -14,15 +14,15 @@ export class Profile extends BaseEntity {
     @Column({ nullable: true })
     sex!: boolean;
 
-    @Column({ type: 'jsonb', nullable: true })
+    @Column({ type: 'text', array: true, nullable: true })
     images!: string[];
 
-    @Column({ type: 'text', nullable: true })
+    @Column({ nullable: true })
     short_desc!: string;
 
     @Column({ type: 'text', nullable: true })
     long_desc!: string;
 
-    @Column({ type: 'jsonb', nullable: true })
-    categories!: any[];
+    @Column({ type: 'text', array: true, nullable: true })
+    categories!: string[];
 }
