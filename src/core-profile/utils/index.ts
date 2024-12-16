@@ -1,13 +1,23 @@
 export const convertSex = async (sex: string | boolean) => {
     return new Promise((resolve, reject) => {
-        if (typeof sex === 'boolean') {
-            if (sex === true) resolve('male');
-            else resolve('female');
-        } else {
-            if (sex === 'male') resolve(true);
-            else resolve(false);
+        switch (sex) {
+            case 'male':
+                resolve(true);
+                break;
+            case 'female':
+                resolve(false);
+                break;
+            case true:
+                resolve('male');
+                break;
+            case false:
+                resolve('female');
+                break;
+            default:
+                reject('Invalid sex');
+                break;
         }
-    });
+    }); 
 };
 
 export type ProfileType = {

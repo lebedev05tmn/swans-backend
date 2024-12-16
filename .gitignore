@@ -2,6 +2,7 @@
 node_modules
 dist
 .env.local
+.env
 !*.exe
 minio/Data/.minio.sys/buckets
 minio/Data/.minio.sys/tmp

@@ -17,7 +17,7 @@ export const mediaRouter = express.Router();
  * @openapi
  * /api/media/get/{id}:
  *   get:
- *     summary: Удалить медиафайл по id
+ *     summary: Получить медиафайл по id
  *     tags: [Media]
  *     parameters:
  *       - in: path
