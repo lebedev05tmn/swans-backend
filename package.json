@@ -1,25 +1,51 @@
 {
-  "name": "swans-minio",
-  "version": "1.0.0",
-  "main": "dist/index.js",
-  "license": "MIT",
-  "scripts": {
-    "watch": "tsc -w",
-    "dev": "nodemon dist/index.js"
-  },
-  "dependencies": {
-    "express": "^4.21.1",
-    "express-fileupload": "^1.5.1",
-    "minio": "^8.0.2",
-    "uuid": "^11.0.3"
-  },
-  "devDependencies": {
-    "@types/express": "^5.0.0",
-    "@types/express-fileupload": "^1.5.1",
-    "@types/multer": "^1.4.12",
-    "@types/node": "^22.9.0",
-    "nodemon": "^3.1.7",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
-  }
+    "name": "swans-minio",
+    "version": "1.0.0",
+    "main": "./src/app.ts",
+    "license": "MIT",
+    "scripts": {
+        "start": "nodemon --exec ts-node src/app.ts",
+        "dev:win": "yarn minio:win & yarn start",
+        "dev:other": "yarn minio:other & yarn start",
+        "minio:win": "start ./minio/minio.exe server ./minio/Data --console-address \":9001\"",
+        "minio:other": "minio server ./minio/Data --console-address :9001",
+        "build": "node prebuild.js && webpack",
+        "preview": "node dist/bundle.js",
+        "migration": "yarn typeorm migration:run --dataSource=./ormconfig.js",
+        "prod:win": "yarn minio:win & yarn build && yarn preview && yarn typeorm migration:run",
+        "prod:other": "yarn minio:other & yarn build && yarn preview && yarn typeorm migration:run"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.7",
+        "express": "^4.21.1",
+        "express-fileupload": "^1.5.1",
+        "minio": "^8.0.2",
+        "pg": "^8.13.1",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.1",
+        "typeorm": "^0.3.20",
+        "uuid": "^11.0.3"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.15.0",
+        "@types/express": "^5.0.0",
+        "@types/express-fileupload": "^1.5.1",
+        "@types/node": "^22.9.0",
+        "@types/swagger-jsdoc": "^6.0.4",
+        "@types/swagger-ui-express": "^4.1.7",
+        "@typescript-eslint/eslint-plugin": "^8.15.0",
+        "@typescript-eslint/parser": "^8.15.0",
+        "eslint": "^9.15.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "globals": "^15.12.0",
+        "nodemon": "^3.1.7",
+        "prettier": "^3.3.3",
+        "ts-loader": "^9.5.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.6.3",
+        "typescript-eslint": "^8.15.0",
+        "webpack": "^5.96.1",
+        "webpack-cli": "^5.1.4"
+    }
 }
