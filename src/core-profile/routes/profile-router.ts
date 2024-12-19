@@ -94,7 +94,7 @@ profileRouter.get('/', async (req: Request, res: Response) => {
 
 /**
  * @openapi
- * /api/profile/{id}:
+ * /api/profile/get/{id}:
  *   get:
  *     summary: Получить профиль по id
  *     tags: [Profile]
@@ -117,13 +117,13 @@ profileRouter.get('/', async (req: Request, res: Response) => {
  *       500:
  *         description: Ошибка на стороне сервера
  */
-profileRouter.get('/:id', async (req: Request, res: Response) => {
+profileRouter.get('/get/:id', async (req: Request, res: Response) => {
     getProfileById(req, res);
 });
 
 /**
  * @openapi
- * /api/profile:
+ * /api/profile/create:
  *   post:
  *     summary: Создание нового пользователя
  *     tags: [Profile]
@@ -152,13 +152,13 @@ profileRouter.get('/:id', async (req: Request, res: Response) => {
  *       500:
  *         description: Ошибка на стороне сервера
  */
-profileRouter.post('/', async (req: Request, res: Response) => {
+profileRouter.post('/create', async (req: Request, res: Response) => {
     createProfile(req, res);
 });
 
 /**
  * @openapi
- * /api/profile:
+ * /api/profile/update:
  *   patch:
  *     summary: Обновление информации о пользователе
  *     tags: [Profile]
@@ -187,13 +187,13 @@ profileRouter.post('/', async (req: Request, res: Response) => {
  *       500:
  *         description: Ошибка на стороне сервера
  */
-profileRouter.patch('/', async (req: Request, res: Response) => {
+profileRouter.patch('/update', async (req: Request, res: Response) => {
     updateProfile(req, res);
 });
 
 /**
  * @openapi
- * /api/profile/{id}:
+ * /api/profile/delete/{id}:
  *   delete:
  *     summary: Удалить профиль по id
  *     tags: [Profile]
@@ -212,6 +212,6 @@ profileRouter.patch('/', async (req: Request, res: Response) => {
  *       500:
  *         description: Ошибка на стороне сервера
  */
-profileRouter.delete('/:id', async (req: Request, res: Response) => {
+profileRouter.delete('/delete/:id', async (req: Request, res: Response) => {
     deleteProfile(req, res);
 });
