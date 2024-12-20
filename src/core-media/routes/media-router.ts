@@ -49,7 +49,7 @@ mediaRouter.get('/get/:id', async (req: Request, res: Response) => {
 
 /**
  * @openapi
- * /api/media/upload:
+ * /api/media/create:
  *   post:
  *     summary: Загрузка изображения в хранилище
  *     tags:
@@ -75,7 +75,7 @@ mediaRouter.get('/get/:id', async (req: Request, res: Response) => {
  *       400:
  *         description: Не обнаружен загруженный файл
  */
-mediaRouter.post('/upload', async (req: Request, res: Response) => {
+mediaRouter.post('/create', async (req: Request, res: Response) => {
     uploadMedia(req, res);
 });
 
