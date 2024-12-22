@@ -18,11 +18,12 @@ export const updateProfile = async (req: Request, res: Response) => {
             .execute();
 
         if (update.affected === 1) {
-            let updatedUser = update.raw[0];
-            const date = new Date(updatedUser.birth_date);
-            updatedUser.birth_date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            let updatedProfile = update.raw[0];
+            const date = new Date(updatedProfile.birth_date);
+            updatedProfile.birth_date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            updatedProfile.sex = await convertSex(updatedProfile.sex);
 
-            return res.status(HTTP_STATUSES.OK_200).send(updatedUser);
+            return res.status(HTTP_STATUSES.OK_200).send(updatedProfile);
         } else {
             return res
                 .status(HTTP_STATUSES.NOT_FOUND_404)

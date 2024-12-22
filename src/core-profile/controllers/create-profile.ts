@@ -6,15 +6,15 @@ import { Profile } from '../entities/Profile';
 
 export const createProfile = async (req: Request, res: Response) => {
     try {
-        let {
-            user_name,
-            birth_date,
-            sex,
-            images,
-            short_desc,
-            long_desc,
-            categories,
-        } = req.body;
+        const newUser = {
+            user_name: req.body.user_name,
+            birth_date: req.body.birth_date,
+            sex: req.body.sex,
+            images: req.body.images,
+            short_desc: req.body.short_desc,
+            long_desc: req.body.long_desc,
+            categories: req.body.categories,
+        };
         const user_id = Number(req.query.user_id);
 
         const existingUser = await profileRepository.findOneBy({
@@ -27,10 +27,10 @@ export const createProfile = async (req: Request, res: Response) => {
         } else {
             const requiredParams = [
                 user_id,
-                user_name,
-                birth_date,
-                sex,
-                images,
+                newUser.user_name,
+                newUser.birth_date,
+                newUser.sex,
+                newUser.images,
             ];
             let correctParamsFlag = true;
             requiredParams.forEach((param) => {
@@ -43,21 +43,22 @@ export const createProfile = async (req: Request, res: Response) => {
             });
 
             if (correctParamsFlag) {
-                sex = await convertSex(sex);
+                newUser.sex = await convertSex(newUser.sex);
 
                 const user = Profile.create({
                     user_id: user_id,
-                    user_name: user_name,
-                    birth_date: birth_date,
-                    sex: sex,
-                    images: images,
-                    short_desc: short_desc,
-                    long_desc: long_desc,
-                    categories: categories,
+                    user_name: newUser.user_name,
+                    birth_date: newUser.birth_date,
+                    sex: newUser.sex,
+                    images: newUser.images,
+                    short_desc: newUser.short_desc,
+                    long_desc: newUser.long_desc,
+                    categories: newUser.categories,
                 });
 
                 await profileRepository.save(user);
-                return res.status(HTTP_STATUSES.CREATED_201).json(user);
+                newUser.sex = await convertSex(newUser.sex);
+                return res.status(HTTP_STATUSES.CREATED_201).json(newUser);
             }
         }
     } catch (error) {
