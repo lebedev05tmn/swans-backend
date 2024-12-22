@@ -23,7 +23,7 @@ export const profileRouter = express.Router();
  *           type: string
  *           format: date
  *         sex:
- *           type: boolean
+ *           type: string
  *         images:
  *           type: array
  *           items:
@@ -45,7 +45,7 @@ export const profileRouter = express.Router();
  *           type: string
  *           format: date
  *         sex:
- *           type: boolean
+ *           type: string
  *         images:
  *           type: array
  *           items:
@@ -58,6 +58,14 @@ export const profileRouter = express.Router();
  *           type: array
  *           items:
  *             type: string
+ *       example:
+ *         user_name: Александр Ясюкевич
+ *         birth_date: 1996-04-17
+ *         sex: male
+ *         images: [firstimage, secondimage]
+ *         short_desc: Краткое описание пользователя
+ *         long_desc: Более подробное описание пользователя, которое может быть достаточно длинным.
+ *         categories: [category1, category2, category3]
  */
 
 /**
