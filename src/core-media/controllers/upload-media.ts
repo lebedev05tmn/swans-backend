@@ -14,6 +14,7 @@ export const uploadMedia = async (req: Request, res: Response) => {
 
         try {
             const webpBuffer = await sharp(file.tempFilePath)
+                .resize({ height: 600 })
                 .webp({ quality: 80 })
                 .toBuffer();
 
