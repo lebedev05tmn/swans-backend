@@ -10,6 +10,7 @@ export const authRouter = express.Router();
  * /api/auth/first_registration:
  *   post:
  *     summary: Авторизация пользователя
+ *     tags: [Auth]
  *     description: Создание пользователя в БД, а также создание записи конкретной авторизации пользователя
  *     requestBody:
  *       required: true

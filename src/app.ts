@@ -21,7 +21,7 @@ app.use(
     }),
 );
 
-// initMedia();
+initMedia();
 
 AppDataSource.initialize().then(() => {
     app.use('/api/profile', profileRouter);
