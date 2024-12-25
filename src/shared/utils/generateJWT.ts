@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-import jwtConfig from '../../shared/config/JWTConfig';
+import jwtConfig from '../config/JWTConfig';
 
 
 function generateJWT(user_id: string): string {
@@ -19,4 +19,18 @@ function generateJWT(user_id: string): string {
     return token;
 }
 
-export default generateJWT;
+function generateRefreshToken(user_id: string): string {
+    const payload = {
+        userId: user_id,
+        type: "refresh",
+    };
+
+    const token = jwt.sign(payload, jwtConfig.secret, {
+        expiresIn: jwtConfig.refreshExpiresIn,
+        algorithm: jwtConfig.algorithm as jwt.Algorithm,
+    });
+
+    return token;
+}
+
+export { generateJWT, generateRefreshToken };

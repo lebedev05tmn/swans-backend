@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import generateUniqueId from "../utils/generateUniqueId";
-import generateJWT from "../utils/generateJWT";
+import { generateJWT, generateRefreshToken } from "../../shared/utils/generateJWT";
 import { HTTP_STATUSES } from "../../shared/utils/index";
 import { User } from "../../core-user/models/entities/User";
 import { Auth } from "../models/entities/Auth";
@@ -32,19 +32,20 @@ async function Authorization(req: Request, res: Response) {
                 new_service_name = "Unknown";
         }
         if (new_service_name === "Unknown") {
-            res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
+            return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
                 message: "Bad Service name!"
             })
         }
         try {
             const user_id: string = generateUniqueId(service_id, service_name);
             const access_token: string = generateJWT(user_id);
+            const refresh_token: string = generateRefreshToken(user_id);
 
             const userRepository = AppDataSource.getRepository(User);
-            const authRepository = AppDataSource.getRepository(Auth);
 
             const newUser = new User();
             newUser.user_id = user_id;
+            newUser.refresh_token = refresh_token;
 
             const newAuth = new Auth();
             newAuth.service_user_id = service_id;
@@ -57,20 +58,21 @@ async function Authorization(req: Request, res: Response) {
             await userRepository.save(newUser);
             console.log(`User with id: ${user_id} successfully added to the data base.`)
 
-            res.status(HTTP_STATUSES.OK_200).json({
+            return res.status(HTTP_STATUSES.OK_200).json({
                 userId: user_id,
-                accessToken: access_token
+                accessToken: access_token,
+                refreshToken: refresh_token
             })
 
         } catch (error) {
-            res.status(500).json({
+            return res.status(500).json({
                 message: "Error occured while creating user_id or JWT for session.",
                 details: error
             });
         }
 
     } else {
-        res.status(400).json({
+        return res.status(400).json({
             message: "Missing Data. Check your request data!"
         });
     }

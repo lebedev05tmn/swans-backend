@@ -4,7 +4,10 @@ export const HTTP_STATUSES = {
     NO_CONTENT_204: 204,
 
     BAD_REQUEST_400: 400,
+    UNAUTHORIZED_401: 401,
     NOT_FOUND_404: 404,
+
+    SERVER_ERROR_500: 500,
 };
 
 export const enum FileExtensions {

@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, BaseEntity, OneToMany } from "typeorm";
+import { Entity, PrimaryColumn, BaseEntity, OneToMany, Column } from "typeorm";
 
 import { Auth } from '../../../core-auth/models/entities/Auth'
 
@@ -7,6 +7,9 @@ import { Auth } from '../../../core-auth/models/entities/Auth'
 export class User extends BaseEntity {
     @PrimaryColumn()
     user_id!: string;
+
+    @Column({ nullable: true })
+    refresh_token!: string;
 
     @OneToMany(() => Auth, (auth) => auth.user, { cascade: true })
     resources!: Auth[];

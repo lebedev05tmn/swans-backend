@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 
 import auth_functions from '../controllers/authorization'
 
@@ -41,8 +41,12 @@ export const authRouter = express.Router();
  *                   type: string
  *                   desctiption: JWT для сессий
  *                   expample: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NmQxYjk3MzhkNjA3ZjZhZjhkMGQxNDY5NDc3YmU5Y2U3YjU0MjI3MTlmNzk0NTIxZTA3MWQwNDMzNWQ2Y2ZlIiwiY3JlYXRlZEF0IjoiMjAyNC0xMi0yMlQxMjowODoxNy4zMTBaIiwiaWF0IjoxNzM0ODY5Mjk3LCJleHAiOjE3MzQ5NTU2OTd9.dfVNC0KuAKizjPNaTD9qjrvgze56OIMJyGKgbK7jUYg
+ *                 refresh_token:
+ *                   type: string
+ *                   description: Refresh Token для обновления Access токена
+ *                   expample: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NmQxYjk3MzhkNjA3ZjZhZjhkMGQxNDY5NDc3YmU5Y2U3YjU0MjI3MTlmNzk0NTIxZTA3MWQwNDMzNWQ2Y2ZlIiwiY3JlYXRlZEF0IjoiMjAyNC0xMi0yMlQxMjowODoxNy4zMTBaIiwiaWF0IjoxNzM0ODY5Mjk3LCJleHAiOjE3MzQ5NTU2OTd9.dfVNC0KuAKizjPNaTD9qjrvgze56OIMJyGKgbK7jUYg
  *       400:
- *         description: Ошибка со сторны клиента. Проверьте запрос
+ *         description: Ошибка со стороны клиента. Проверьте запрос
  *         content:
  *           application/json:
  *             schema:
@@ -63,4 +67,6 @@ export const authRouter = express.Router();
  *                   type: string
  *                   desctiption: Подробное описание ошибки на сервере
  */
-authRouter.post('/first_registration', auth_functions.Authorization);
+authRouter.post('/first_registration', async (req: Request, res: Response) => {
+    auth_functions.Authorization(req, res);
+});
