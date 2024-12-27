@@ -1,16 +1,13 @@
 import { bucketName, getFileContentType } from '../../shared/config';
 import { minioClient } from '../minio-client';
-import { getKey } from '../utils';
 import { HTTP_STATUSES } from '../../shared/utils';
 import { Request, Response } from 'express';
 
 export const getMedia = async (req: Request, res: Response) => {
     if (req.params.id !== null && req.params.id !== undefined) {
-        let objectKey = await getKey(req.params.id);
-
-        let contentType = await getFileContentType(objectKey as string);
-
         try {
+            const objectKey = `${req.params.id}.webp`;
+
             let objStream;
             if (typeof objectKey === 'string') {
                 objStream = await minioClient.getObject(bucketName, objectKey);
@@ -25,18 +22,17 @@ export const getMedia = async (req: Request, res: Response) => {
 
                 objStream.on('end', () => {
                     res.writeHead(HTTP_STATUSES.OK_200, {
-                        'Content-Type': contentType,
+                        'Content-Type': 'image/webp',
                     });
                     return res.end(data);
                 });
             }
-        } catch (err) {
-            console.error('MinIO Error:', err);
+        } catch (error) {
             return res
-                .status(500)
-                .send('Error occurred while retrieving the file.');
+                .status(HTTP_STATUSES.NOT_FOUND_404)
+                .send(`No image with such ID`);
         }
     } else {
-        return res.status(HTTP_STATUSES.BAD_REQUEST_400).send('Request error.');
+        return res.status(500).send('Server error.');
     }
 };
