@@ -52,6 +52,13 @@ export class CreateProfileTable1733426544505 implements MigrationInterface {
                             type: 'text[]',
                             isNullable: true,
                         },
+                        {
+                            name: 'geolocation',
+                            type: 'geometry',
+                            spatialFeatureType: 'Point',
+                            srid: 4326,
+                            isNullable: true,
+                        },
                     ],
                 }),
             );

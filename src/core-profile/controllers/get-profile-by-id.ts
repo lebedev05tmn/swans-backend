@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { HTTP_STATUSES } from '../../shared/utils';
 import { profileRepository } from '../../shared/config';
-import { convertSex, ProfileType } from '../utils';
+import { convertSex } from '../utils';
 
 export const getProfileById = async (req: Request, res: Response) => {
     try {
@@ -17,6 +17,7 @@ export const getProfileById = async (req: Request, res: Response) => {
 
         if (user) {
             user.sex = await convertSex(user.sex);
+            user.geolocation = user.geolocation.coordinates;
             return res.json(user);
         } else {
             return res

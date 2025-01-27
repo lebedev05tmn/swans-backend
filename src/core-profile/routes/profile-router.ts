@@ -36,6 +36,10 @@ export const profileRouter = express.Router();
  *           type: array
  *           items:
  *             type: string
+ *         geolocation:
+ *           type: array
+ *           items:
+ *             type: number
  *     NoUserIdProfile:
  *       type: object
  *       properties:
@@ -58,6 +62,10 @@ export const profileRouter = express.Router();
  *           type: array
  *           items:
  *             type: string
+ *         geolocation:
+ *           type: array
+ *           items:
+ *             type: number
  *       example:
  *         user_name: Александр Ясюкевич
  *         birth_date: 1996-04-17
@@ -66,6 +74,7 @@ export const profileRouter = express.Router();
  *         short_desc: Краткое описание пользователя
  *         long_desc: Более подробное описание пользователя, которое может быть достаточно длинным.
  *         categories: [category1, category2, category3]
+ *         geolocation: [55.752004, 37.617734]
  */
 
 /**
