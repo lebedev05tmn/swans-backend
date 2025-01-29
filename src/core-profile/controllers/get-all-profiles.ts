@@ -14,6 +14,7 @@ export const getAllProfiles = async (req: Request, res: Response) => {
                 if (typeof user.sex === 'boolean') {
                     updatedUser.sex = await convertSex(user.sex);
                 }
+                updatedUser.geolocation = updatedUser.geolocation.coordinates;
                 usersTypisated.list.push(updatedUser);
             }),
         );
