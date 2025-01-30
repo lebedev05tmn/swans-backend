@@ -1,6 +1,7 @@
+import { profileTableName } from '../../shared/utils';
 import { Entity, Column, PrimaryColumn, BaseEntity } from 'typeorm';
 
-@Entity('profile')
+@Entity(profileTableName)
 export class Profile extends BaseEntity {
     @PrimaryColumn()
     user_id!: number;
