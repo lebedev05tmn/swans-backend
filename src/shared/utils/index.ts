@@ -17,3 +17,6 @@ export const enum FileContentTypes {
     JPEG = 'image/jpeg',
     PNG = 'image/png',
 }
+
+export const profileTableName = 'profile';
+export const metadataTableName = 'metadata';
