@@ -30,16 +30,12 @@ export const mediaRouter = express.Router();
  *       200:
  *         description: Изображение успешно получено
  *         content:
- *           image/png:
+ *           image/webp:
  *             schema:
  *               type: string
  *               format: binary
- *           image/jpeg:
- *             schema:
- *               type: string
- *               format: binary
- *       400:
- *         description: Неверный запрос
+ *       404:
+ *         description: Изображение с таким id не найдено
  *       500:
  *         description: Ошибка на стороне сервера
  */
@@ -66,7 +62,7 @@ mediaRouter.get('/get/:id', async (req: Request, res: Response) => {
  *                 format: binary
  *                 description: Изображение для загрузки
  *     responses:
- *       200:
+ *       201:
  *         description: Изображение успешно загружено
  *         content:
  *           text/html:
