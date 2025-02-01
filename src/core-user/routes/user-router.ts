@@ -82,7 +82,7 @@ userRouter.get("/userAuthData", async (req: Request, res: Response) => {
 
 /**
  * @openapi
- * /api/user/refresh-token:
+ * /api/user/refreshToken:
  *   post:
  *     summary: Обновление Access Token
  *     tags: [User]
