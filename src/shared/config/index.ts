@@ -3,7 +3,7 @@ import { AppDataSource } from '../model';
 import { Profile } from '../../core-profile/entities/Profile';
 import { FileContentTypes, FileExtensions } from '../utils';
 
-export const bucketName = 'swans-pics';
+export const bucketName = 'ed801ea0-cd711ac8-b8f5-4d49-9ce4-0c272318ef45';
 export const profileRepository = AppDataSource.getRepository(Profile);
 
 export const getFileContentType = async (objectKey: string) => {

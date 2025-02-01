@@ -3,8 +3,3 @@ node_modules
 dist
 .env.local
 .env
-!*.exe
-minio/Data/.minio.sys/buckets
-minio/Data/.minio.sys/tmp
-minio/Data/.minio.sys/config
-minio/Data/.minio.sys/pool.bin

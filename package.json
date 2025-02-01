@@ -5,21 +5,17 @@
     "license": "MIT",
     "scripts": {
         "start": "nodemon --exec ts-node src/app.ts",
-        "dev:win": "yarn minio:win & yarn start",
-        "dev:other": "yarn minio:other & yarn start",
-        "minio:win": "start ./minio/minio.exe server ./minio/Data --console-address \":9001\"",
-        "minio:other": "minio server ./minio/Data --console-address :9001",
         "build": "node prebuild.js && webpack",
         "preview": "node dist/bundle.js",
         "migration": "yarn typeorm migration:run --dataSource=./ormconfig.js",
-        "prod:win": "yarn minio:win & yarn build && yarn preview && yarn typeorm migration:run",
-        "prod:other": "yarn minio:other & yarn build && yarn preview && yarn typeorm migration:run"
+        "prod": "yarn build && yarn preview && yarn typeorm migration:run"
     },
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.738.0",
+        "@aws-sdk/s3-request-presigner": "^3.738.0",
         "dotenv": "^16.4.7",
         "express": "^4.21.1",
         "express-fileupload": "^1.5.1",
-        "minio": "^8.0.2",
         "pg": "^8.13.1",
         "sharp": "^0.33.5",
         "swagger-jsdoc": "^6.2.8",

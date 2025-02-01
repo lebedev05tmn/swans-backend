@@ -89,7 +89,7 @@ mediaRouter.post('/create', async (req: Request, res: Response) => {
  *         required: true
  *         description: id медиафайла
  *     responses:
- *       204:
+ *       200:
  *         description: Файл удален успешно
  *       404:
  *         description: Файл не найден
