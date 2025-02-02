@@ -6,7 +6,7 @@ import { HTTP_STATUSES } from "../../shared/utils/index";
 import { User } from "../../core-user/models/entities/User";
 import { Auth } from "../models/entities/Auth";
 import { AppDataSource } from "../../shared/model";
-import { Services } from "../../shared/utils/index";
+import { AuthTypes } from "../../shared/utils/index";
 
 
 async function Authorization(req: Request, res: Response) {
@@ -18,15 +18,18 @@ async function Authorization(req: Request, res: Response) {
     if (service_id && service_name && (typeof service_id === 'number' && typeof service_name === 'string')) {
         let new_service_name: string = "";
 
-        switch (service_name.toLowerCase()) {
-            case "apple":
-                new_service_name = Services.APPLE;
+        switch (service_name) {
+            case AuthTypes.APPLE:
+                new_service_name = AuthTypes.APPLE;
                 break;
-            case "telegram":
-                new_service_name = Services.TELEGRAM;
+            case AuthTypes.TELEGRAM:
+                new_service_name = AuthTypes.TELEGRAM;
                 break;
-            case "vk":
-                new_service_name = Services.VK;
+            case AuthTypes.VK:
+                new_service_name = AuthTypes.VK;
+                break;
+            case AuthTypes.APP:
+                new_service_name = AuthTypes.APP;
                 break;
             default:
                 new_service_name = "Unknown";

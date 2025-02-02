@@ -21,9 +21,9 @@ export const enum FileContentTypes {
     PNG = 'image/png',
 }
 
-export const Services = Object.freeze({
-    TELEGRAM: "Telegram",
-    APPLE: "Apple",
-    VK: "Vkontakte",
-    EMAIL: "Email"
-})
+export const enum AuthTypes {
+    TELEGRAM = "Telegram",
+    APPLE = "Apple",
+    VK = "Vkontakte",
+    APP = "App"
+}
