@@ -1,11 +1,10 @@
 import crypto from 'crypto';
 
 
-function generateUniqueId(service_id: number, service_name: string): string {
+function generateUniqueId(service_id: string, service_name: string): string {
     const currentDate: string = new Date().toISOString(); // Берем текущее время
-    const service_id_string: string = String(service_id); // Конвертируем service_id в string
 
-    const elements: string[] = [service_id_string, service_name, currentDate]; // Создаем массив из элементов пользователя
+    const elements: string[] = [service_id, service_name, currentDate]; // Создаем массив из элементов пользователя
     const shuffled: string[] = shuffleArray(elements);
     const combinedString = shuffled.join('-');
 

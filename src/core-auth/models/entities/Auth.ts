@@ -12,7 +12,7 @@ export class Auth extends BaseEntity {
     user!: User;
 
     @Column({ nullable: false })
-    service_user_id!: number;
+    service_user_id!: string;
 
     @Column({ type: 'text', nullable: false })
     service_name!: string;

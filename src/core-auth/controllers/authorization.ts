@@ -15,7 +15,7 @@ async function Authorization(req: Request, res: Response) {
     const request_data: any = req.body;
     let { service_id, service_name } = request_data;
 
-    if (service_id && service_name && (typeof service_id === 'number' && typeof service_name === 'string')) {
+    if (service_id && service_name && (typeof service_id === 'string' && typeof service_name === 'string')) {
         let new_service_name: string = "";
 
         switch (service_name) {
@@ -76,7 +76,7 @@ async function Authorization(req: Request, res: Response) {
 
     } else {
         return res.status(400).json({
-            message: "Missing Data. Check your request data!"
+            message: "Missing Data or invalid type. Check your request data!"
         });
     }
 }
