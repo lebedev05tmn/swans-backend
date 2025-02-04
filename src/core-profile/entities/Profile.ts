@@ -34,4 +34,7 @@ export class Profile extends BaseEntity {
         nullable: true,
     })
     geolocation!: any;
+
+    @Column({ type: 'text', nullable: true })
+    city!: string;
 }

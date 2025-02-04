@@ -15,6 +15,7 @@ export const createProfile = async (req: Request, res: Response) => {
             long_desc: req.body.long_desc,
             categories: req.body.categories,
             geolocation: req.body.geolocation,
+            city: req.body.city,
         };
         const user_id = Number(req.query.user_id);
 
@@ -33,6 +34,7 @@ export const createProfile = async (req: Request, res: Response) => {
                 newUser.sex,
                 newUser.images,
                 newUser.geolocation,
+                newUser.city,
             ];
             let correctParamsFlag = true;
             requiredParams.forEach((param) => {
@@ -63,6 +65,7 @@ export const createProfile = async (req: Request, res: Response) => {
                             newUser.geolocation[1],
                         ],
                     },
+                    city: newUser.city,
                 });
 
                 await profileRepository.save(user);

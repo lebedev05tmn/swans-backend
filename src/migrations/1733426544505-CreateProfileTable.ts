@@ -58,6 +58,11 @@ export class CreateProfileTable1733426544505 implements MigrationInterface {
                             srid: 4326,
                             isNullable: true,
                         },
+                        {
+                            name: 'city',
+                            type: 'text',
+                            isNullable: true,
+                        },
                     ],
                 }),
             );
