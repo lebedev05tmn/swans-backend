@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 
-
 function generateUniqueId(service_id: string, service_name: string): string {
     const currentDate: string = new Date().toISOString(); // Берем текущее время
 
@@ -8,7 +7,10 @@ function generateUniqueId(service_id: string, service_name: string): string {
     const shuffled: string[] = shuffleArray(elements);
     const combinedString = shuffled.join('-');
 
-    const hash: string = crypto.createHash('sha256').update(combinedString).digest('hex');
+    const hash: string = crypto
+        .createHash('sha256')
+        .update(combinedString)
+        .digest('hex');
 
     return hash;
 }
@@ -17,8 +19,11 @@ function shuffleArray(array: string[]): string[] {
     const shuffled: string[] = [...array];
     for (let i = shuffled.length; i > 0; i--) {
         const randomIndex = Math.floor(Math.random() * (i + 1)); // Рандомный индекс от 0 до i
-        [shuffled[i], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[i]];
-    };
+        [shuffled[i], shuffled[randomIndex]] = [
+            shuffled[randomIndex],
+            shuffled[i],
+        ];
+    }
 
     return shuffled;
 }

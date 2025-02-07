@@ -1,13 +1,18 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from "typeorm";
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    BaseEntity,
+    ManyToOne,
+} from 'typeorm';
 
-import { User } from "../../../core-user/models/entities/User";
-
+import { User } from '../../../core-user/models/entities/User';
 
 @Entity('auth')
 export class Auth extends BaseEntity {
     @PrimaryGeneratedColumn()
     auth_id!: number;
-    
+
     @ManyToOne(() => User, (user) => user.resources, { onDelete: 'CASCADE' })
     user!: User;
 
@@ -16,5 +21,4 @@ export class Auth extends BaseEntity {
 
     @Column({ type: 'text', nullable: false })
     service_name!: string;
-
 }

@@ -17,7 +17,7 @@ export const convertSex = async (sex: string | boolean) => {
                 reject('Invalid sex');
                 break;
         }
-    }); 
+    });
 };
 
 export type ProfileType = {

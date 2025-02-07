@@ -15,5 +15,4 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME,
     entities: [Profile, Auth, User],
     synchronize: true,
-
 });

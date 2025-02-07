@@ -13,7 +13,8 @@
         "preview": "node dist/bundle.js",
         "migration": "yarn typeorm migration:run --dataSource=./ormconfig.js",
         "prod:win": "yarn minio:win & yarn build && yarn preview && yarn typeorm migration:run",
-        "prod:other": "yarn minio:other & yarn build && yarn preview && yarn typeorm migration:run"
+        "prod:other": "yarn minio:other & yarn build && yarn preview && yarn typeorm migration:run",
+        "format": "prettier --write ."
     },
     "dependencies": {
         "dotenv": "^16.4.7",

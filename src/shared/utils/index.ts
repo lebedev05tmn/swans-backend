@@ -22,8 +22,8 @@ export const enum FileContentTypes {
 }
 
 export const enum AuthTypes {
-    TELEGRAM = "Telegram",
-    APPLE = "Apple",
-    VK = "Vkontakte",
-    APP = "App"
+    TELEGRAM = 'Telegram',
+    APPLE = 'Apple',
+    VK = 'Vkontakte',
+    APP = 'App',
 }

@@ -1,7 +1,6 @@
-import { Entity, PrimaryColumn, BaseEntity, OneToMany, Column } from "typeorm";
+import { Entity, PrimaryColumn, BaseEntity, OneToMany, Column } from 'typeorm';
 
-import { Auth } from '../../../core-auth/models/entities/Auth'
-
+import { Auth } from '../../../core-auth/models/entities/Auth';
 
 @Entity('user')
 export class User extends BaseEntity {

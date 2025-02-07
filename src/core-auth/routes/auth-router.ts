@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express';
 
-import auth_functions from '../controllers/authorization'
-
+import first_auth from '../controllers/authorization';
+import get_access_token from '../controllers/getAccessToken';
+import update_user_auth from '../controllers/updateAuth';
 
 export const authRouter = express.Router();
 
@@ -20,7 +21,7 @@ export const authRouter = express.Router();
  *             type: object
  *             properties:
  *               service_id:
- *                 type: number
+ *                 type: string
  *                 description: Сторонний идентификатор от сервиса авторизации
  *               service_name:
  *                 type: string
@@ -69,5 +70,13 @@ export const authRouter = express.Router();
  *                   desctiption: Подробное описание ошибки на сервере
  */
 authRouter.post('/first_registration', async (req: Request, res: Response) => {
-    auth_functions.Authorization(req, res);
+    first_auth.Authorization(req, res);
+});
+
+authRouter.get('/auth_user', async (req: Request, res: Response) => {
+    get_access_token.getAccessTokenByServiceAuth(req, res);
+});
+
+authRouter.patch('/update_user_auth', async (req: Request, res: Response) => {
+    update_user_auth.updateUserAuth(req, res);
 });
