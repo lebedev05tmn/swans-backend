@@ -4,6 +4,7 @@ import first_auth from '../controllers/authorization';
 import get_access_token from '../controllers/getAccessToken';
 import update_user_auth from '../controllers/updateAuth';
 import refreshAccessToken from '../../core-auth/controllers/refreshAccessToken';
+import sendmailer from '../../core-auth/controllers/sendMail';
 
 export const authRouter = express.Router();
 
@@ -304,4 +305,6 @@ authRouter.post('/refresh_token', async (req: Request, res: Response) => {
     refreshAccessToken(req, res);
 });
 
-authRouter.get('/send_message')
+authRouter.get('/send_message', async (req: Request, res: Response) => {
+    sendmailer.sendMail(req, res);
+});
