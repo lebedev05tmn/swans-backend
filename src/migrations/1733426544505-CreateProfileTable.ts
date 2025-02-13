@@ -1,13 +1,12 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
-
-let tableName = 'profile';
+import { profileTableName } from './shared/utils';
 
 export class CreateProfileTable1733426544505 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         try {
             await queryRunner.createTable(
                 new Table({
-                    name: tableName,
+                    name: profileTableName,
                     columns: [
                         {
                             name: 'user_id',
@@ -52,6 +51,18 @@ export class CreateProfileTable1733426544505 implements MigrationInterface {
                             type: 'text[]',
                             isNullable: true,
                         },
+                        {
+                            name: 'geolocation',
+                            type: 'geometry',
+                            spatialFeatureType: 'Point',
+                            srid: 4326,
+                            isNullable: true,
+                        },
+                        {
+                            name: 'city',
+                            type: 'text',
+                            isNullable: true,
+                        },
                     ],
                 }),
             );
@@ -61,25 +72,25 @@ export class CreateProfileTable1733426544505 implements MigrationInterface {
                     'already exists',
                 )
             ) {
-                console.error(`The table "${tableName}" already exists`);
+                console.error(`The table "${profileTableName}" already exists`);
             } else {
-                console.error(`Failed to create table "${tableName}"`);
+                console.error(`Failed to create table "${profileTableName}"`);
             }
         }
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         try {
-            await queryRunner.dropTable(tableName);
+            await queryRunner.dropTable(profileTableName);
         } catch (error) {
             if (
                 (error as { message: string }).message.includes(
                     'does not exist',
                 )
             ) {
-                console.error(`The table "${tableName}" does not exist`);
+                console.error(`The table "${profileTableName}" does not exist`);
             } else {
-                console.error(`Failed to delete table "${tableName}"`);
+                console.error(`Failed to delete table "${profileTableName}"`);
             }
         }
     }

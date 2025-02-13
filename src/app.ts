@@ -3,7 +3,6 @@ import { mediaRouter } from './core-media/routes/media-router';
 import fileUpload from 'express-fileupload';
 import { profileRouter } from './core-profile/routes/profile-router';
 import { AppDataSource } from './shared/model';
-import { initMedia } from './core-media';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import { options } from './shared/config';
@@ -20,8 +19,21 @@ app.use(
         tempFileDir: '/tmp/',
     }),
 );
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:8081');
+    res.header(
+        'Access-Control-Allow-Methods',
+        'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+    );
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
 
-initMedia();
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(204);
+        return;
+    }
+    next();
+});
 
 AppDataSource.initialize().then(() => {
     app.use('/api/profile', profileRouter);

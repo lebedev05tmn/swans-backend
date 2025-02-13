@@ -27,3 +27,6 @@ export const enum AuthTypes {
     VK = 'Vkontakte',
     APP = 'App',
 }
+
+export const profileTableName = 'profile';
+export const metadataTableName = 'metadata';
