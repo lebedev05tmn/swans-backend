@@ -6,9 +6,7 @@ import { convertSex } from '../utils';
 export const getProfileById = async (req: Request, res: Response) => {
     try {
         if (req.params.id === null || req.params.id === undefined) {
-            return res
-                .status(HTTP_STATUSES.BAD_REQUEST_400)
-                .send('Incorrect ID');
+            return res.status(400).send('Incorrect ID');
         }
 
         let user = (await profileRepository.findOneBy({
@@ -20,9 +18,7 @@ export const getProfileById = async (req: Request, res: Response) => {
             user.geolocation = user.geolocation.coordinates;
             return res.json(user);
         } else {
-            return res
-                .status(HTTP_STATUSES.NOT_FOUND_404)
-                .send('User not found');
+            return res.status(404).send('User not found');
         }
     } catch (error) {
         return res.status(500).send(`Failed to load user: ${error}`);

@@ -18,11 +18,8 @@ export class Profile extends BaseEntity {
     @Column({ type: 'text', array: true, nullable: true })
     images!: string[];
 
-    @Column({ nullable: true })
-    short_desc!: string;
-
     @Column({ type: 'text', nullable: true })
-    long_desc!: string;
+    description!: string;
 
     @Column({ type: 'text', array: true, nullable: true })
     categories!: string[];

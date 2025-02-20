@@ -11,8 +11,7 @@ export const createProfile = async (req: Request, res: Response) => {
             birth_date: req.body.birth_date,
             sex: req.body.sex,
             images: req.body.images,
-            short_desc: req.body.short_desc,
-            long_desc: req.body.long_desc,
+            description: req.body.description,
             categories: req.body.categories,
             geolocation: req.body.geolocation,
             city: req.body.city,
@@ -23,9 +22,7 @@ export const createProfile = async (req: Request, res: Response) => {
             user_id: user_id,
         });
         if (existingUser) {
-            return res
-                .status(HTTP_STATUSES.BAD_REQUEST_400)
-                .send('User with this ID already exists');
+            return res.status(400).send('User with this ID already exists');
         } else {
             const requiredParams = [
                 user_id,
@@ -40,9 +37,7 @@ export const createProfile = async (req: Request, res: Response) => {
             requiredParams.forEach((param) => {
                 if (param === null || param === undefined) {
                     correctParamsFlag = false;
-                    return res
-                        .status(HTTP_STATUSES.BAD_REQUEST_400)
-                        .send('Invalid input data');
+                    return res.status(400).send('Invalid input data');
                 }
             });
 
@@ -55,8 +50,7 @@ export const createProfile = async (req: Request, res: Response) => {
                     birth_date: newUser.birth_date,
                     sex: newUser.sex,
                     images: newUser.images,
-                    short_desc: newUser.short_desc,
-                    long_desc: newUser.long_desc,
+                    description: newUser.description,
                     categories: newUser.categories,
                     geolocation: {
                         type: 'Point',
@@ -70,7 +64,7 @@ export const createProfile = async (req: Request, res: Response) => {
 
                 await profileRepository.save(user);
                 newUser.sex = await convertSex(newUser.sex);
-                return res.status(HTTP_STATUSES.CREATED_201).json(newUser);
+                return res.status(201).json(newUser);
             }
         }
     } catch (error) {

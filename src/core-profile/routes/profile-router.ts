@@ -28,9 +28,7 @@ export const profileRouter = express.Router();
  *           type: array
  *           items:
  *             type: string
- *         short_desc:
- *           type: string
- *         long_desc:
+ *         description:
  *           type: string
  *         categories:
  *           type: array
@@ -56,9 +54,7 @@ export const profileRouter = express.Router();
  *           type: array
  *           items:
  *             type: string
- *         short_desc:
- *           type: string
- *         long_desc:
+ *         description:
  *           type: string
  *         categories:
  *           type: array
@@ -75,8 +71,7 @@ export const profileRouter = express.Router();
  *         birth_date: 1996-04-17
  *         sex: male
  *         images: [firstimage, secondimage]
- *         short_desc: Краткое описание пользователя
- *         long_desc: Более подробное описание пользователя, которое может быть достаточно длинным.
+ *         description: Описание пользователя, которое он придумал себе сам.
  *         categories: [category1, category2, category3]
  *         geolocation: [55.752004, 37.617734]
  *         city: Москва

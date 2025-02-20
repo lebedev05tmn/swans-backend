@@ -19,7 +19,7 @@ export const getAllProfiles = async (req: Request, res: Response) => {
             }),
         );
         usersTypisated.length = usersTypisated.list.length;
-        return res.status(HTTP_STATUSES.OK_200).json(usersTypisated);
+        return res.status(200).json(usersTypisated);
     } catch (error) {
         return res.status(500).send(`Unable to load users: ${error}`);
     }

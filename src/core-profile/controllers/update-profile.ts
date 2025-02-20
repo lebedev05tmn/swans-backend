@@ -37,11 +37,9 @@ export const updateProfile = async (req: Request, res: Response) => {
             geo = JSON.parse(geo.geolocation);
             updatedProfile.geolocation = geo.coordinates;
 
-            return res.status(HTTP_STATUSES.OK_200).send(updatedProfile);
+            return res.status(200).send(updatedProfile);
         } else {
-            return res
-                .status(HTTP_STATUSES.NOT_FOUND_404)
-                .send('User not found');
+            return res.status(404).send('User not found');
         }
     } catch (error) {
         return res.status(500).send(`Failed to upload profile: ${error}`);
