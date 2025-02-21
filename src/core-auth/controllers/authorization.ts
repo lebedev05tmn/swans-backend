@@ -9,7 +9,6 @@ import { HTTP_STATUSES } from '../../shared/utils/index';
 import { User } from '../../core-user/models/entities/User';
 import { Auth } from '../models/entities/Auth';
 import { AppDataSource } from '../../shared/model';
-import { AuthTypes } from '../../shared/utils/index';
 
 const Authorization = async (req: Request, res: Response) => {
     /* Приходит id пользователя от стороннего ресурса + принадлежность к ресурсу в виде строки */
@@ -23,24 +22,8 @@ const Authorization = async (req: Request, res: Response) => {
         typeof service_id === 'string' &&
         typeof service_name === 'string'
     ) {
-        let new_service_name: string = '';
+        let new_service_name: string = service_name ? service_name : 'Unknown';
 
-        switch (service_name) {
-            case AuthTypes.APPLE:
-                new_service_name = AuthTypes.APPLE;
-                break;
-            case AuthTypes.TELEGRAM:
-                new_service_name = AuthTypes.TELEGRAM;
-                break;
-            case AuthTypes.VK:
-                new_service_name = AuthTypes.VK;
-                break;
-            case AuthTypes.APP:
-                new_service_name = AuthTypes.APP;
-                break;
-            default:
-                new_service_name = 'Unknown';
-        }
         if (new_service_name === 'Unknown') {
             return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
                 message: 'Bad Service name!',
@@ -71,9 +54,9 @@ const Authorization = async (req: Request, res: Response) => {
             );
 
             return res.status(HTTP_STATUSES.OK_200).json({
-                userId: user_id,
-                accessToken: access_token,
-                refreshToken: refresh_token,
+                user_id: user_id,
+                access_token: access_token,
+                refresh_token: refresh_token,
             });
         } catch (error) {
             return res.status(HTTP_STATUSES.SERVER_ERROR_500).json({

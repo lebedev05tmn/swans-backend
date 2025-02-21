@@ -4,7 +4,8 @@ import first_auth from '../controllers/authorization';
 import get_access_token from '../controllers/getAccessToken';
 import update_user_auth from '../controllers/updateAuth';
 import refreshAccessToken from '../../core-auth/controllers/refreshAccessToken';
-import sendmailer from '../../core-auth/controllers/sendMail';
+import server from '../utils/server';
+import { forget_password } from '../controllers/forgetPassword';
 
 export const authRouter = express.Router();
 
@@ -126,7 +127,7 @@ authRouter.post('/first_registration', async (req: Request, res: Response) => {
  *                 message:
  *                   type: string
  *       404:
- *         description: Ошибка при получении данных. 
+ *         description: Ошибка при получении данных.
  *         content:
  *           application/json:
  *             schema:
@@ -305,6 +306,69 @@ authRouter.post('/refresh_token', async (req: Request, res: Response) => {
     refreshAccessToken(req, res);
 });
 
-authRouter.get('/send_message', async (req: Request, res: Response) => {
-    sendmailer.sendMail(req, res);
+authRouter.post('/email_registration', async (req: Request, res: Response) => {
+    const jsonRPCRequest = req.body;
+    const response = await server.receive(jsonRPCRequest);
+    if (response) {
+        res.json(response);
+    }
+});
+
+/**
+ * @openapi
+ * /api/auth/forget_password:
+ *   post:
+ *     summary: Высылание на почту нового пароля
+ *     tags: [Auth]
+ *     description: Высылание на почту нового пароля, который заново записывается в базу данных
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Почта пользователя
+ *     responses:
+ *       200:
+ *         description: Успешное обновление пароля
+ *       400:
+ *         description: Ошибка со стороны клиента. Проверьте запрос
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Missing refresh token!
+ *       404:
+ *         description: Пользователь не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User not found!
+ *       500:
+ *         description: Ошибка со стороны сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Описание ошибки
+ *                   example: Error occurred while refreshing token.
+ *                 details:
+ *                   type: string
+ *                   description: Подробное описание ошибки
+ */
+authRouter.post('/forget_password', async (req: Request, res: Response) => {
+    forget_password(req, res);
 });

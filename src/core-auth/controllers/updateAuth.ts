@@ -4,7 +4,6 @@ import { HTTP_STATUSES } from '../../shared/utils/index';
 import { User } from '../../core-user/models/entities/User';
 import { Auth } from '../models/entities/Auth';
 import { AppDataSource } from '../../shared/model';
-import { AuthTypes } from '../../shared/utils/index';
 
 const updateUserAuth = async (req: Request, res: Response) => {
     const request_data: any = req.body;
@@ -20,18 +19,8 @@ const updateUserAuth = async (req: Request, res: Response) => {
         typeof service_id === 'string' &&
         typeof service_name === 'string'
     ) {
-        switch (service_name) {
-            case AuthTypes.APPLE:
-                break;
-            case AuthTypes.TELEGRAM:
-                break;
-            case AuthTypes.VK:
-                break;
-            case AuthTypes.APP:
-                break;
-            default:
-                service_name = 'Unknown';
-        }
+        service_name = service_name ? service_name : 'Unknown';
+
         if (service_name === 'Unknown') {
             return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
                 message: 'Bad Service name!',
