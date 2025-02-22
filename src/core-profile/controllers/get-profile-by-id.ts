@@ -10,7 +10,7 @@ export const getProfileById = async (req: Request, res: Response) => {
         }
 
         let user = (await profileRepository.findOneBy({
-            user_id: Number(req.params.id),
+            user_id: req.params.id,
         })) as any;
 
         if (user) {

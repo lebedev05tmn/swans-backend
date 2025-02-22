@@ -13,12 +13,11 @@ export const updateProfile = async (req: Request, res: Response) => {
                 coordinates: req.body.geolocation,
             };
 
-        const user_id = Number(req.query.id);
         const update = await profileRepository
             .createQueryBuilder()
             .update(Profile)
             .set(req.body)
-            .where('user_id = :id', { id: user_id })
+            .where('user_id = :id', { id: req.query.id })
             .returning('*')
             .execute();
 
@@ -31,7 +30,7 @@ export const updateProfile = async (req: Request, res: Response) => {
             let geo = await profileRepository
                 .createQueryBuilder()
                 .select('ST_AsGeoJSON(geolocation)', 'geolocation')
-                .where('user_id = :id', { id: user_id })
+                .where('user_id = :id', { id: req.query.id })
                 .getRawOne();
 
             geo = JSON.parse(geo.geolocation);

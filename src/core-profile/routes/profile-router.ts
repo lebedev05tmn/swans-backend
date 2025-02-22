@@ -16,7 +16,7 @@ export const profileRouter = express.Router();
  *       type: object
  *       properties:
  *         user_id:
- *           type: number
+ *           type: string
  *         user_name:
  *           type: string
  *         birth_date:
@@ -148,7 +148,7 @@ profileRouter.get('/get/:id', async (req: Request, res: Response) => {
  *       - in: query
  *         name: user_id
  *         schema:
- *           type: number
+ *           type: string
  *         required: true
  *         description: id профиля
  *     requestBody:
@@ -183,7 +183,7 @@ profileRouter.post('/create', async (req: Request, res: Response) => {
  *       - in: query
  *         name: id
  *         schema:
- *           type: number
+ *           type: string
  *         required: true
  *         description: id профиля
  *     requestBody:

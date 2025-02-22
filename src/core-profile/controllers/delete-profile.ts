@@ -4,7 +4,7 @@ import { HTTP_STATUSES } from '../../shared/utils';
 
 export const deleteProfile = async (req: Request, res: Response) => {
     try {
-        const user_id = Number(req.params.id);
+        const user_id = req.params.id;
         const user = await profileRepository.findOneBy({
             user_id: user_id,
         });

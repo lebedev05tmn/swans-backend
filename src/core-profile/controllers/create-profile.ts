@@ -16,7 +16,7 @@ export const createProfile = async (req: Request, res: Response) => {
             geolocation: req.body.geolocation,
             city: req.body.city,
         };
-        const user_id = Number(req.query.user_id);
+        const user_id = req.query.user_id as string;
 
         const existingUser = await profileRepository.findOneBy({
             user_id: user_id,
