@@ -6,9 +6,17 @@ import { AppDataSource } from './shared/model';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import { options } from './shared/config';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { socketHandler } from './core-chat/config';
 
 export const app = express();
 const port = process.env.PORT || 8080;
+
+const server = createServer(app);
+const io = new Server(server);
+
+socketHandler(io);
 
 app.use(express.json());
 app.use(
@@ -37,7 +45,7 @@ AppDataSource.initialize().then(() => {
     app.use('/api/profile', profileRouter);
     app.use('/api/media', mediaRouter);
 
-    app.listen(port, () => {
+    server.listen(port, () => {
         console.log(`App listening on port ${port}`);
     });
 });

@@ -19,4 +19,6 @@ export const enum FileContentTypes {
 }
 
 export const profileTableName = 'profile';
-export const metadataTableName = 'metadata';
+export const chatsTableName = 'chats';
+export const messagesTableName = 'messages';
+export const socketsTableName = 'sockets';
