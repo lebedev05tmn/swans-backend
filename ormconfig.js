@@ -10,9 +10,13 @@ module.exports = new DataSource({
     port: DB_PORT,
     database: process.env.DB_NAME,
     synchronize: true,
-    entities: ['src/core-profile/entities/Profile.ts'],
-    migrations: ['migrations/*.ts'],
+    entities: [
+        'dist/core-profile/entities/Profile.js',
+        'dist/core-user/models/entities/User.js',
+        'dist/core-auth/models/entities/Auth.js',
+    ],
+    migrations: ['dist/migrations/*.js'],
     cli: {
-        migrationsDir: 'migrations',
+        migrationsDir: 'src/migrations',
     },
 });
