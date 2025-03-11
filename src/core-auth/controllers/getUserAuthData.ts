@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import jwtConfig from '../../shared/config/JWTConfig';
 
-import { User } from '../models/entities/User';
+import { User } from '../../core-user/models/entities/User';
 import { AppDataSource } from '../../shared/model';
 import { HTTP_STATUSES } from '../../shared/utils/index';
 

@@ -19,10 +19,9 @@ function shuffleArray(array: string[]): string[] {
     const shuffled: string[] = [...array];
     for (let i = shuffled.length; i > 0; i--) {
         const randomIndex = Math.floor(Math.random() * (i + 1)); // Рандомный индекс от 0 до i
-        [shuffled[i], shuffled[randomIndex]] = [
-            shuffled[randomIndex],
-            shuffled[i],
-        ];
+        const temp = shuffled[i];
+        shuffled[i] = shuffled[randomIndex];
+        shuffled[randomIndex] = temp;
     }
 
     return shuffled;

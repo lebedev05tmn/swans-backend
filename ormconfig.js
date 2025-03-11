@@ -4,11 +4,11 @@ const DB_PORT = process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432;
 
 module.exports = new DataSource({
     type: 'postgres',
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    host: process.env.DB_HOST,
-    port: DB_PORT,
-    database: process.env.DB_NAME,
+    username: 'postgres',
+    password: '123',
+    host: '127.0.0.1',
+    port: '5432',
+    database: 'swans',
     synchronize: true,
     entities: [
         'dist/core-profile/entities/Profile.js',
