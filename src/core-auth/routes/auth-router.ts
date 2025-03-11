@@ -13,10 +13,11 @@ export const authRouter = express.Router();
 /**
  * @openapi
  * tags:
- *   name: Auth
- *   description: Взаимодействие с базой данных аутентификаций
+ *   - name: Auth
+ *     description: Взаимодействие с базой данных аутентификаций
+ *   - name: Email
+ *     description: Работа с электронной почтой
  */
-
 
 /**
  * @openapi
@@ -314,7 +315,9 @@ authRouter.post('/update/access_token', async (req: Request, res: Response) => {
  * /api/auth/email_registration:
  *   post:
  *     summary: Обработка регистрации пользователя через email с использованием JSON-RPC
- *     tags: [Auth]
+ *     tags:
+ *       - Auth
+ *       - Email
  *     description: |
  *       Этот эндпоинт обрабатывает регистрацию пользователя через email с использованием JSON-RPC.
  *       Поддерживает три метода: `send_code`, `verify_code` и `create_user`.
