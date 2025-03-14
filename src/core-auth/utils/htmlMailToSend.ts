@@ -1,5 +1,5 @@
 export const mail_to_send = (code: string): string => {
-    const mail_to_send: string = `<!DOCTYPE html>
+    return `<!DOCTYPE html>
         <html lang="ru">
         <head>
         <meta charset="UTF-8">
@@ -114,6 +114,4 @@ export const mail_to_send = (code: string): string => {
         </div>
         </body>
         </html>`;
-
-    return mail_to_send;
 };

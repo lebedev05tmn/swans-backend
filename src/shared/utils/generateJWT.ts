@@ -2,8 +2,7 @@ import jwt from 'jsonwebtoken';
 
 import jwtConfig from '../config/JWTConfig';
 
-function generateJWT(user_id: string): string {
-    /* Создание JWT на основе user_id */
+const generateJWT = (user_id: string): string => {
 
     const payload = {
         userId: user_id,
@@ -18,7 +17,7 @@ function generateJWT(user_id: string): string {
     return token;
 }
 
-function generateRefreshToken(user_id: string): string {
+const generateRefreshToken = (user_id: string): string => {
     const payload = {
         userId: user_id,
         type: 'refresh',

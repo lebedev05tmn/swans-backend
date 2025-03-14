@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
 
-import first_auth from '../controllers/authorization';
-import get_access_token from '../controllers/getAccessToken';
-import update_user_auth from '../controllers/updateAuth';
-import refreshAccessToken from '../../core-auth/controllers/refreshAccessToken';
+import first_auth from '../controllers/authorization/authorization';
+import get_access_token from '../controllers/getAccessToken/getAccessToken';
+import update_user_auth from '../controllers/updateAuth/updateAuth';
+import refreshAccessToken from '../controllers/refreshAccessToken/refreshAccessToken';
 import server from '../utils/server';
-import { forget_password } from '../controllers/forgetPassword';
-import getUserAuthData from '../controllers/getUserAuthData';
+import { forget_password } from '../controllers/forgetPassword/forgetPassword';
+import getUserAuthData from '../controllers/getUserAuthData/getUserAuthData';
 
 export const authRouter = express.Router();
 
@@ -21,10 +21,84 @@ export const authRouter = express.Router();
 
 /**
  * @openapi
+ * /api/auth/get/user_auth_data:
+ *   get:
+ *     summary: Получение данных авторизации пользователя
+ *     tags: [Auth]
+ *     description: Возвращает данные авторизации пользователя на основе токена, переданного в заголовке Authorization
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Данные пользователя успешно получены
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userId:
+ *                   type: string
+ *                   description: Уникальный идентификатор пользователя в БД
+ *                 resources:
+ *                   type: array
+ *                   description: Список ресурсов авторизации пользователя
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       authId:
+ *                         type: number
+ *                         description: Уникальный идентификатор авторизации
+ *                       serviceUserId:
+ *                         type: number
+ *                         description: Идентификатор пользователя в стороннем сервисе
+ *                       serviceName:
+ *                         type: string
+ *                         description: Название стороннего сервиса
+ *       401:
+ *         description: Ошибка авторизации. Токен отсутствует, неверен или истек
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Описание ошибки
+ *       404:
+ *         description: Пользователь не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Описание ошибки
+ *       500:
+ *         description: Ошибка со стороны сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Описание ошибки
+ *                 details:
+ *                   type: string
+ *                   description: Подробное описание ошибки на сервере
+ */
+authRouter.get('/get/user_auth_data', async (req: Request, res: Response) => {
+    getUserAuthData(req, res);
+});
+
+/**
+ * @openapi
  * /api/auth/create_user:
  *   post:
  *     summary: Авторизация пользователя
- *     security: basicAuth[]
+ *     security:
+ *       - basicAuth: []
  *     tags: [Auth]
  *     description: Создание пользователя в БД, а также создание записи конкретной авторизации пользователя
  *     requestBody:
@@ -55,12 +129,12 @@ export const authRouter = express.Router();
  *                   example: 76d1b9738d607f6af8d0d1469477be9ce7b5422719f794521e071d04335d6cfe
  *                 access_token:
  *                   type: string
- *                   desctiption: JWT для сессий
- *                   expample: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NmQxYjk3MzhkNjA3ZjZhZjhkMGQxNDY5NDc3YmU5Y2U3YjU0MjI3MTlmNzk0NTIxZTA3MWQwNDMzNWQ2Y2ZlIiwiY3JlYXRlZEF0IjoiMjAyNC0xMi0yMlQxMjowODoxNy4zMTBaIiwiaWF0IjoxNzM0ODY5Mjk3LCJleHAiOjE3MzQ5NTU2OTd9.dfVNC0KuAKizjPNaTD9qjrvgze56OIMJyGKgbK7jUYg
+ *                   description: JWT для сессий
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NmQxYjk3MzhkNjA3ZjZhZjhkMGQxNDY5NDc3YmU5Y2U3YjU0MjI3MTlmNzk0NTIxZTA3MWQwNDMzNWQ2Y2ZlIiwiY3JlYXRlZEF0IjoiMjAyNC0xMi0yMlQxMjowODoxNy4zMTBaIiwiaWF0IjoxNzM0ODY5Mjk3LCJleHAiOjE3MzQ5NTU2OTd9.dfVNC0KuAKizjPNaTD9qjrvgze56OIMJyGKgbK7jUYg
  *                 refresh_token:
  *                   type: string
  *                   description: Refresh Token для обновления Access токена
- *                   expample: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NmQxYjk3MzhkNjA3ZjZhZjhkMGQxNDY5NDc3YmU5Y2U3YjU0MjI3MTlmNzk0NTIxZTA3MWQwNDMzNWQ2Y2ZlIiwiY3JlYXRlZEF0IjoiMjAyNC0xMi0yMlQxMjowODoxNy4zMTBaIiwiaWF0IjoxNzM0ODY5Mjk3LCJleHAiOjE3MzQ5NTU2OTd9.dfVNC0KuAKizjPNaTD9qjrvgze56OIMJyGKgbK7jUYg
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NmQxYjk3MzhkNjA3ZjZhZjhkMGQxNDY5NDc3YmU5Y2U3YjU0MjI3MTlmNzk0NTIxZTA3MWQwNDMzNWQ2Y2ZlIiwiY3JlYXRlZEF0IjoiMjAyNC0xMi0yMlQxMjowODoxNy4zMTBaIiwiaWF0IjoxNzM0ODY5Mjk3LCJleHAiOjE3MzQ5NTU2OTd9.dfVNC0KuAKizjPNaTD9qjrvgze56OIMJyGKgbK7jUYg
  *       400:
  *         description: Ошибка со стороны клиента. Проверьте запрос
  *         content:
@@ -71,7 +145,7 @@ export const authRouter = express.Router();
  *                 message:
  *                   type: string
  *       500:
- *         desctiption: Ошибка со стороны сервера
+ *         description: Ошибка со стороны сервера
  *         content:
  *           application/json:
  *             schema:
@@ -81,7 +155,7 @@ export const authRouter = express.Router();
  *                   type: string
  *                 details:
  *                   type: string
- *                   desctiption: Подробное описание ошибки на сервере
+ *                   description: Подробное описание ошибки на сервере
  */
 authRouter.post('/create_user', async (req: Request, res: Response) => {
     first_auth.Authorization(req, res);
@@ -89,24 +163,25 @@ authRouter.post('/create_user', async (req: Request, res: Response) => {
 
 /**
  * @openapi
- * /api/auth/get_access_and_refresh_tokens/{service_user_id}/{service_name}:
- *   get:
+ * /api/auth/get-tokens:
+ *   post:
  *     summary: Получение access и refresh при повторной авторизации
  *     tags: [Auth]
- *     description: Обработка запроса, включающего service_user_id и service_name, для получения нового access и refresh токенов
- *     parameters:
- *       - name: service_user_id
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *         description: Уникальный идентификатор пользователя от стороннего ресурса
- *       - name: service_name
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *         description: Наименование стороннего ресурса
+ *     description: Обработка запроса, включающего service_user_id и service_name, для получения нового access и refresh токенов при повторной авторизации
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               service_user_id:
+ *                 type: string
+ *                 description: Сторонний идентификатор от сервиса авторизации
+ *               service_name:
+ *                 type: string
+ *                 description: Название стороннего ресурса
+ *                 example: Telegram
  *     responses:
  *       200:
  *         description: Введенные данные успешно найдены в базе данных, и также успешно сгенерированы новые токены
@@ -152,8 +227,8 @@ authRouter.post('/create_user', async (req: Request, res: Response) => {
  *                   type: string
  *                   desctiption: Подробное описание ошибки на сервере
  */
-authRouter.get(
-    '/get_access_and_refresh_tokens/:service_user_id/:service_name',
+authRouter.post(
+    '/get-access-tokens',
     async (req: Request, res: Response) => {
         get_access_token.getAccessTokenByServiceAuth(req, res);
     },
@@ -161,77 +236,11 @@ authRouter.get(
 
 /**
  * @openapi
- * /api/auth/update/user_auth:
- *   patch:
- *     summary: Добавление новой авторизации пользователя
- *     tags: [Auth]
- *     description: Поиск пользователя по базе данных и добавление в массив его авторизаций новой записи
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               user_id:
- *                 type: string
- *                 description: Идентификатор пользователя нашего приложения
- *               service_user_id:
- *                 type: string
- *                 description: Сторонний идентификатор пользователя от сервиса
- *               service_name:
- *                 type: string
- *                 description: Название стороннего сервиса
- *     responses:
- *       200:
- *         description: Пользователь и его авторизация успешно созданы и добавлены в БД
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *       400:
- *         description: Ошибка со стороны клиента. Проверьте запрос
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *       404:
- *         description: Ошибка связанная с поиском пользователя в БД
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *       500:
- *         desctiption: Ошибка со стороны сервера
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 details:
- *                   type: string
- *                   desctiption: Подробное описание ошибки на сервере
- */
-authRouter.patch('/update/user_auth', async (req: Request, res: Response) => {
-    update_user_auth.updateUserAuth(req, res);
-});
-
-/**
- * @openapi
  * /api/auth/update/access_token:
  *   post:
  *     summary: Обновление Access Token
+ *     security:
+ *       - basicAuth: []
  *     tags: [Auth]
  *     description: Генерация нового Access Token и Refresh Token на основе действующего Refresh Token
  *     requestBody:
@@ -312,11 +321,82 @@ authRouter.post('/update/access_token', async (req: Request, res: Response) => {
 
 /**
  * @openapi
+ * /api/auth/update/user_auth:
+ *   patch:
+ *     summary: Добавление новой авторизации пользователя
+ *     security:
+ *       - basicAuth: []
+ *     tags: [Auth]
+ *     description: Поиск пользователя по базе данных и добавление в массив его авторизаций новой записи
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user_id:
+ *                 type: string
+ *                 description: Идентификатор пользователя нашего приложения
+ *               service_user_id:
+ *                 type: string
+ *                 description: Сторонний идентификатор пользователя от сервиса
+ *               service_name:
+ *                 type: string
+ *                 description: Название стороннего сервиса
+ *     responses:
+ *       200:
+ *         description: Пользователь и его авторизация успешно созданы и добавлены в БД
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Ошибка со стороны клиента. Проверьте запрос
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Ошибка связанная с поиском пользователя в БД
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         desctiption: Ошибка со стороны сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 details:
+ *                   type: string
+ *                   desctiption: Подробное описание ошибки на сервере
+ */
+authRouter.patch('/update/user_auth', async (req: Request, res: Response) => {
+    update_user_auth.updateUserAuth(req, res);
+});
+
+/**
+ * @openapi
  * /api/auth/email_registration:
  *   post:
  *     summary: Обработка регистрации пользователя через email с использованием JSON-RPC
+ *     security:
+ *       - basicAuth: []
  *     tags:
- *       - Auth
  *       - Email
  *     description: |
  *       Этот эндпоинт обрабатывает регистрацию пользователя через email с использованием JSON-RPC.
@@ -435,7 +515,9 @@ authRouter.post('/email_registration', async (req: Request, res: Response) => {
  * /api/auth/send_new_password:
  *   post:
  *     summary: Высылание на почту нового пароля
- *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     tags: [Email]
  *     description: Высылание на почту нового пароля, который заново записывается в базу данных
  *     requestBody:
  *       required: true
@@ -487,77 +569,4 @@ authRouter.post('/email_registration', async (req: Request, res: Response) => {
  */
 authRouter.post('/send_new_password', async (req: Request, res: Response) => {
     forget_password(req, res);
-});
-
-/**
- * @openapi
- * /api/auth/get/user_auth_data:
- *   get:
- *     summary: Получение данных авторизации пользователя
- *     tags: [Auth]
- *     description: Возвращает данные авторизации пользователя на основе токена, переданного в заголовке Authorization
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Данные пользователя успешно получены
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 userId:
- *                   type: string
- *                   description: Уникальный идентификатор пользователя в БД
- *                 resources:
- *                   type: array
- *                   description: Список ресурсов авторизации пользователя
- *                   items:
- *                     type: object
- *                     properties:
- *                       authId:
- *                         type: number
- *                         description: Уникальный идентификатор авторизации
- *                       serviceUserId:
- *                         type: number
- *                         description: Идентификатор пользователя в стороннем сервисе
- *                       serviceName:
- *                         type: string
- *                         description: Название стороннего сервиса
- *       401:
- *         description: Ошибка авторизации. Токен отсутствует, неверен или истек
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Описание ошибки
- *       404:
- *         description: Пользователь не найден
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Описание ошибки
- *       500:
- *         description: Ошибка со стороны сервера
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Описание ошибки
- *                 details:
- *                   type: string
- *                   description: Подробное описание ошибки на сервере
- */
-authRouter.get('/get/user_auth_data', async (req: Request, res: Response) => {
-    getUserAuthData(req, res);
 });
