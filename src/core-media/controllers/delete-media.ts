@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { bucketName } from '../../shared/config';
+import { s3BucketName } from '../../shared/utils';
 import { DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { s3client } from '../s3_client';
 
@@ -7,7 +7,7 @@ export const deleteMedia = async (req: Request, res: Response) => {
     const id = req.params.id;
 
     let command = new HeadObjectCommand({
-        Bucket: bucketName,
+        Bucket: s3BucketName,
         Key: `${id}.webp`,
     });
 
@@ -15,7 +15,7 @@ export const deleteMedia = async (req: Request, res: Response) => {
         await s3client.send(command);
 
         command = new DeleteObjectCommand({
-            Bucket: bucketName,
+            Bucket: s3BucketName,
             Key: `${id}.webp`,
         });
 

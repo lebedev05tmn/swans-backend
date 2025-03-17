@@ -4,11 +4,12 @@
     "main": "./src/app.ts",
     "license": "MIT",
     "scripts": {
-        "start": "nodemon --exec ts-node src/app.ts",
+        "docker": "docker-compose up -d && wait-port localhost:6379",
+        "start": "yarn docker && nodemon --exec ts-node src/app.ts",
         "build": "node prebuild.js && webpack",
         "preview": "node dist/bundle.js",
         "migration": "yarn typeorm migration:run --dataSource=./ormconfig.js",
-        "prod": "yarn build && yarn preview && yarn typeorm migration:run"
+        "prod": "yarn docker && yarn build && yarn preview && yarn typeorm migration:run"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.738.0",
@@ -16,7 +17,8 @@
         "dotenv": "^16.4.7",
         "express": "^4.21.1",
         "express-fileupload": "^1.5.1",
-        "pg": "^8.13.1",
+        "pg": "^8.14.0",
+        "redis": "^4.7.0",
         "sharp": "^0.33.5",
         "socket.io": "^4.8.1",
         "swagger-jsdoc": "^6.2.8",
@@ -44,6 +46,7 @@
         "ts-node": "^10.9.2",
         "typescript": "^5.6.3",
         "typescript-eslint": "^8.15.0",
+        "wait-port": "^1.1.0",
         "webpack": "^5.96.1",
         "webpack-cli": "^5.1.4"
     }

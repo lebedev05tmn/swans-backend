@@ -1,104 +1,78 @@
 import { Server } from 'socket.io';
-import {
-    profileRepository,
-    chatsRepository,
-    messagesRepository,
-} from '../../shared/config';
-import { Chat } from '../entities/Chat';
-import { Message } from '../entities/Message';
+import { socketRegistration } from '../controllers/registration';
+import { socketJoin } from '../controllers/join';
+import { socketPaginate } from '../controllers/paginate';
+import { socketSendMessage } from '../controllers/send-message';
+import { socketOffline } from '../controllers/offline';
+import { socketDisconnect } from '../controllers/disconnect';
+import { socketDeleteMessage } from '../controllers/delete-message';
+import { socketReadMessage } from '../controllers/read-message';
+import { socketEditMessage } from '../controllers/edit-message';
 
 export const socketHandler = (io: Server) => {
     io.on('connection', (socket) => {
-        let myDatabaseId: string;
-        let myUsername: string;
+        let myDatabaseId: string | undefined;
+        let myUsername: string | undefined;
 
         socket.on('disconnect', async () => {
-            const user = await profileRepository.findOneBy({
-                socket_id: socket.id,
-            });
-
-            if (user) {
-                user.socket_id = null;
-                await profileRepository.save(user);
-            }
+            await socketDisconnect(socket);
         });
 
         socket.on('join', async (recipientId) => {
-            const user = await profileRepository.findOneBy({
-                user_id: recipientId,
-            });
+            await socketJoin(socket, recipientId, myDatabaseId);
+        });
 
-            if (!user) return;
-
-            const existingChat = await chatsRepository.findOne({
-                where: [
-                    { user1_id: myDatabaseId, user2_id: recipientId },
-                    { user1_id: recipientId, user2_id: myDatabaseId },
-                ],
-            });
-
-            if (!existingChat) {
-                const chat = Chat.create({
-                    user1_id: myDatabaseId,
-                    user2_id: recipientId,
-                });
-
-                await chatsRepository.save(chat);
-            }
-
-            socket.emit('joined', {
-                recipientSocketId: user.socket_id || null,
-                recipientName: user.user_name,
-            });
+        socket.on('offline', async ({ chatId }) => {
+            await socketOffline(chatId);
         });
 
         socket.on(
-            'send-private-message',
+            'send-message',
             async ({ recipientUserId, messageText, chatId }) => {
-                const message = Message.create({
-                    chat_id: chatId,
-                    sender_id: myDatabaseId,
-                    recipient_id: recipientUserId,
-                    message: messageText,
-                });
-
-                await messagesRepository.save(message);
-
-                const recipient = await profileRepository.findOneBy({
-                    user_id: recipientUserId,
-                });
-
-                if (recipient?.socket_id) {
-                    io.to(recipient?.socket_id).emit('add-private-message', {
-                        sender: myUsername,
-                        messageId: message.message_id,
-                        messageText: messageText,
-                    });
-                }
+                await socketSendMessage(
+                    io,
+                    recipientUserId,
+                    messageText,
+                    chatId,
+                    myUsername,
+                    myDatabaseId,
+                );
             },
         );
 
-        socket.on('delete-message', async ({ recipient, messageId }) => {
-            await messagesRepository.delete({ message_id: messageId });
-
-            io.to(socket.id).emit('remove-message', messageId);
-            io.to(recipient).emit('remove-message', messageId);
+        socket.on('paginate', async ({ chatId, page }) => {
+            await socketPaginate(socket, chatId, page);
         });
 
+        socket.on('read-message', async ({ chatId, messageId }) => {
+            await socketReadMessage(io, chatId, messageId);
+        });
+
+        socket.on(
+            'edit-message',
+            async ({ chatId, messageId, messageText }) => {
+                await socketEditMessage(io, chatId, messageId, messageText);
+            },
+        );
+
+        socket.on(
+            'delete-message',
+            async ({ recipientUserId, chatId, messageId }) => {
+                await socketDeleteMessage(
+                    io,
+                    socket,
+                    recipientUserId,
+                    chatId,
+                    messageId,
+                );
+            },
+        );
+
         socket.on('registration', async (senderId) => {
-            myDatabaseId = senderId;
-
-            const user = await profileRepository.findOneBy({
-                user_id: senderId,
-            });
-
-            if (user) {
-                user.socket_id = socket.id;
-                await profileRepository.save(user);
-
-                myUsername = user.user_name;
-                socket.emit('registrated', myUsername);
-            }
+            [myDatabaseId, myUsername] = await socketRegistration(
+                socket,
+                senderId,
+            );
         });
     });
 };

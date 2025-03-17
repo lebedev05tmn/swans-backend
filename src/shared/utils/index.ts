@@ -7,18 +7,9 @@ export const HTTP_STATUSES = {
     NOT_FOUND_404: 404,
 };
 
-export const enum FileExtensions {
-    JPG = '.jpg',
-    JPEG = '.jpeg',
-    PNG = '.png',
-}
-
-export const enum FileContentTypes {
-    JPEG = 'image/jpeg',
-    PNG = 'image/png',
-}
-
 export const profileTableName = 'profile';
 export const chatsTableName = 'chats';
 export const messagesTableName = 'messages';
 export const socketsTableName = 'sockets';
+
+export const s3BucketName = 'ed801ea0-cd711ac8-b8f5-4d49-9ce4-0c272318ef45';

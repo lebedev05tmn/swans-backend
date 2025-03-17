@@ -1,5 +1,5 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { bucketName } from '../../shared/config';
+import { s3BucketName } from '../../shared/utils';
 import { Request, Response } from 'express';
 import { s3client } from '../s3_client';
 
@@ -9,7 +9,7 @@ export const getMedia = async (req: Request, res: Response) => {
 
         try {
             const command = new GetObjectCommand({
-                Bucket: bucketName,
+                Bucket: s3BucketName,
                 Key: fileName,
             });
 

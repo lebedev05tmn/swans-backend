@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { v4 as uuid } from 'uuid';
 import { UploadedFile } from 'express-fileupload';
-import { bucketName } from '../../shared/config';
+import { s3BucketName } from '../../shared/utils';
 import sharp from 'sharp';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { s3client } from '../s3_client';
@@ -19,7 +19,7 @@ export const uploadMedia = async (req: Request, res: Response) => {
                 .toBuffer();
 
             const command = new PutObjectCommand({
-                Bucket: bucketName,
+                Bucket: s3BucketName,
                 Key: webpFileName,
                 Body: webpBuffer,
             });

@@ -2,7 +2,7 @@ import express from 'express';
 import { mediaRouter } from './core-media/routes/media-router';
 import fileUpload from 'express-fileupload';
 import { profileRouter } from './core-profile/routes/profile-router';
-import { AppDataSource } from './shared/model';
+import { AppDataSource, redis } from './shared/model';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import { options } from './shared/config';
@@ -17,6 +17,12 @@ const server = createServer(app);
 const io = new Server(server);
 
 socketHandler(io);
+
+const redisInit = async () => {
+    redis.on('error', (error) => console.log(`Redis client error: ${error}`));
+    await redis.connect();
+};
+redisInit();
 
 app.use(express.json());
 app.use(

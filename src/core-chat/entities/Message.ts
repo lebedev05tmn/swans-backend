@@ -5,13 +5,14 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     JoinColumn,
+    PrimaryColumn,
 } from 'typeorm';
 import { messagesTableName } from '../../shared/utils';
 import { Chat } from './Chat';
 
 @Entity(messagesTableName)
 export class Message extends BaseEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn()
     message_id!: number;
 
     @Column()
@@ -24,5 +25,14 @@ export class Message extends BaseEntity {
     recipient_id!: string;
 
     @Column()
-    message!: string;
+    message_text!: string;
+
+    @Column()
+    sending_time!: Date;
+
+    @Column()
+    is_readen!: boolean;
+
+    @Column({ type: 'timestamp', nullable: true })
+    reading_time!: Date | null;
 }

@@ -3,6 +3,7 @@ import { Profile } from '../../core-profile/entities/Profile';
 import 'dotenv/config';
 import { Chat } from '../../core-chat/entities/Chat';
 import { Message } from '../../core-chat/entities/Message';
+import { createClient } from 'redis';
 
 const DB_PORT = process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432;
 
@@ -16,3 +17,5 @@ export const AppDataSource = new DataSource({
     entities: [Profile, Chat, Message],
     synchronize: true,
 });
+
+export const redis = createClient();

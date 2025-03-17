@@ -14,10 +14,8 @@ export class CreateMessagesTable1739482958852 implements MigrationInterface {
                 columns: [
                     {
                         name: 'message_id',
-                        type: 'serial',
+                        type: 'int',
                         isPrimary: true,
-                        isGenerated: true,
-                        generationStrategy: 'increment',
                     },
                     {
                         name: 'chat_id',
@@ -35,9 +33,24 @@ export class CreateMessagesTable1739482958852 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
-                        name: 'message',
+                        name: 'message_text',
                         type: 'text',
                         isNullable: false,
+                    },
+                    {
+                        name: 'sending_time',
+                        type: 'timestamp',
+                        isNullable: false,
+                    },
+                    {
+                        name: 'is_readen',
+                        type: 'boolean',
+                        isNullable: false,
+                    },
+                    {
+                        name: 'reading_time',
+                        type: 'timestamp',
+                        isNullable: true,
                     },
                 ],
             }),

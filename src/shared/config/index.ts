@@ -1,26 +1,11 @@
-import path from 'path';
 import { AppDataSource } from '../model';
 import { Profile } from '../../core-profile/entities/Profile';
-import { FileContentTypes, FileExtensions } from '../utils';
 import { Chat } from '../../core-chat/entities/Chat';
 import { Message } from '../../core-chat/entities/Message';
-
-export const bucketName = 'ed801ea0-cd711ac8-b8f5-4d49-9ce4-0c272318ef45';
 
 export const profileRepository = AppDataSource.getRepository(Profile);
 export const chatsRepository = AppDataSource.getRepository(Chat);
 export const messagesRepository = AppDataSource.getRepository(Message);
-
-export const getFileContentType = async (objectKey: string) => {
-    switch (path.extname(<string>objectKey)) {
-        case FileExtensions.JPG:
-            return FileContentTypes.JPEG;
-        case FileExtensions.JPEG:
-            return FileContentTypes.JPEG;
-        case FileExtensions.PNG:
-            return FileContentTypes.PNG;
-    }
-};
 
 const routes = ['./**/routes/*.ts'];
 
