@@ -2,7 +2,7 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    target: 'node',
+    target: 'node', // Убедитесь, что цель — Node.js
     mode: 'production',
     entry: './src/app.ts',
     module: {
@@ -12,6 +12,10 @@ module.exports = {
                 use: 'ts-loader',
                 include: path.resolve(__dirname, 'src'),
                 exclude: /node_modules/,
+            },
+            {
+                test: /\.html$/,
+                use: 'html-loader',
             },
         ],
     },
@@ -24,6 +28,7 @@ module.exports = {
     },
     externals: {
         sharp: 'commonjs sharp',
+        _http_common: 'commonjs _http_common', 
     },
     plugins: [
         new CopyWebpackPlugin({
