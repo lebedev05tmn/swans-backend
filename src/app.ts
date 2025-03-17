@@ -6,6 +6,8 @@ import { AppDataSource } from './shared/model';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import { options } from './shared/config';
+import { authRouter } from './core-auth/routes/auth-router';
+import basicAuth from 'express-basic-auth';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -36,6 +38,7 @@ app.use((req, res, next) => {
 AppDataSource.initialize().then(() => {
     app.use('/api/profile', profileRouter);
     app.use('/api/media', mediaRouter);
+    app.use('/api/auth', authRouter);
 
     app.listen(port, () => {
         console.log(`App listening on port ${port}`);
@@ -44,4 +47,13 @@ AppDataSource.initialize().then(() => {
 
 const swaggerDocs = swaggerJsDoc(options);
 
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use(
+    '/api/docs',
+    basicAuth({
+        users: { admin: `${process.env.SWAGGER_PASSWORD}` },
+        challenge: true,
+        unauthorizedResponse: 'Access denied!',
+    }),
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocs),
+);
