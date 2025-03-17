@@ -3,8 +3,8 @@ import { Entity, Column, PrimaryColumn, BaseEntity } from 'typeorm';
 
 @Entity(profileTableName)
 export class Profile extends BaseEntity {
-    @PrimaryColumn()
-    user_id!: number;
+    @PrimaryColumn({ type: 'text' })
+    user_id!: string;
 
     @Column({ nullable: true })
     user_name!: string;
@@ -18,11 +18,8 @@ export class Profile extends BaseEntity {
     @Column({ type: 'text', array: true, nullable: true })
     images!: string[];
 
-    @Column({ nullable: true })
-    short_desc!: string;
-
     @Column({ type: 'text', nullable: true })
-    long_desc!: string;
+    description!: string | null;
 
     @Column({ type: 'text', array: true, nullable: true })
     categories!: string[];
@@ -37,4 +34,7 @@ export class Profile extends BaseEntity {
 
     @Column({ type: 'text', nullable: true })
     city!: string;
+
+    @Column({ type: 'text', nullable: true })
+    socket_id!: string | null;
 }
