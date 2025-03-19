@@ -1,5 +1,5 @@
 import { JSONRPCServer } from 'json-rpc-2.0';
-import { send_code, verify_code, create_user } from '../controllers/sendMail/sendMail';
+import { send_code, verify_code, create_user } from '../controllers/sendMail';
 
 const server = new JSONRPCServer();
 
