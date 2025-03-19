@@ -28,7 +28,7 @@ module.exports = {
     },
     externals: {
         sharp: 'commonjs sharp',
-        _http_common: 'commonjs _http_common', 
+        _http_common: 'commonjs _http_common',
     },
     plugins: [
         new CopyWebpackPlugin({
@@ -38,6 +38,7 @@ module.exports = {
                 './node_modules/swagger-ui-dist/swagger-ui-standalone-preset.js',
                 './node_modules/swagger-ui-dist/favicon-16x16.png',
                 './node_modules/swagger-ui-dist/favicon-32x32.png',
+                './package.json',
             ],
         }),
     ],

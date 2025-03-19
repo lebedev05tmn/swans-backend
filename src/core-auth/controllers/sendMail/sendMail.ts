@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt-nodejs';
 
 import { transporter } from '../../../shared/config/NodeMailer';
 import { AuthTypes } from '../../../shared/utils/index';
@@ -68,7 +68,8 @@ export const verify_code = async (params: any) => {
 export const create_user = async (params: any) => {
     const { session_id, email, password } = params;
     const session = session_container.get(session_id);
-    const password_hash = await bcrypt.hash(password, 10);
+    const salt = bcrypt.genSaltSync();
+    const password_hash = bcrypt.hashSync(password, salt);
 
     if (!session || session.state !== 'password')
         throw new Error("Session doesn't exists or has invalid state!");

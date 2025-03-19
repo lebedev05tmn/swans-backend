@@ -3,19 +3,18 @@ import jwt from 'jsonwebtoken';
 import jwtConfig from '../config/JWTConfig';
 
 const generateJWT = (user_id: string): string => {
-
     const payload = {
         userId: user_id,
         createdAt: new Date().toISOString(),
     };
 
     const token = jwt.sign(payload, jwtConfig.secret, {
-        expiresIn: jwtConfig.expiresIn,
+        expiresIn: jwtConfig.expiresIn as any,
         algorithm: jwtConfig.algorithm as jwt.Algorithm,
     });
 
     return token;
-}
+};
 
 const generateRefreshToken = (user_id: string): string => {
     const payload = {
@@ -24,11 +23,11 @@ const generateRefreshToken = (user_id: string): string => {
     };
 
     const token = jwt.sign(payload, jwtConfig.secret, {
-        expiresIn: jwtConfig.refreshExpiresIn,
+        expiresIn: jwtConfig.refreshExpiresIn as any,
         algorithm: jwtConfig.algorithm as jwt.Algorithm,
     });
 
     return token;
-}
+};
 
 export { generateJWT, generateRefreshToken };

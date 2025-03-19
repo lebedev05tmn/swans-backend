@@ -1,12 +1,11 @@
-import { Auth } from "../../../../core-auth/models/entities/Auth";
-import { AppDataSource } from "../../../../shared/model";
-import { Like } from "typeorm";
-import { v4 } from "uuid";
-import bcrypt from 'bcrypt';
-import { HTTP_STATUSES } from "../../../../shared/utils";
+import { Auth } from '../../../../core-auth/models/entities/Auth';
+import { AppDataSource } from '../../../../shared/model';
+import { Like } from 'typeorm';
+import { v4 } from 'uuid';
+import bcrypt from 'bcrypt-nodejs';
+import { HTTP_STATUSES } from '../../../../shared/utils';
 
 const save_new_password = async (data: any) => {
-
     const [email, res] = data;
 
     const authRepository = AppDataSource.getRepository(Auth);
@@ -16,7 +15,8 @@ const save_new_password = async (data: any) => {
     });
 
     const new_password = v4().slice(0, 12);
-    const new_password_hash = await bcrypt.hash(new_password, 10);
+    const salt = bcrypt.genSaltSync();
+    const new_password_hash = bcrypt.hashSync(new_password, salt);
 
     if (current_auth) {
         const authRepository = AppDataSource.getRepository(Auth);
@@ -29,6 +29,6 @@ const save_new_password = async (data: any) => {
     }
 
     return new_password;
-}
+};
 
 export default save_new_password;
