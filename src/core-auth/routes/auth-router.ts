@@ -163,7 +163,7 @@ authRouter.post('/create_user', async (req: Request, res: Response) => {
 
 /**
  * @openapi
- * /api/auth/get-tokens:
+ * /api/auth/get_tokens:
  *   post:
  *     summary: Получение access и refresh при повторной авторизации
  *     tags: [Auth]
@@ -227,7 +227,7 @@ authRouter.post('/create_user', async (req: Request, res: Response) => {
  *                   type: string
  *                   desctiption: Подробное описание ошибки на сервере
  */
-authRouter.post('/get-tokens', async (req: Request, res: Response) => {
+authRouter.post('/get_tokens', async (req: Request, res: Response) => {
     get_access_token.getAccessTokenByServiceAuth(req, res);
 });
 
