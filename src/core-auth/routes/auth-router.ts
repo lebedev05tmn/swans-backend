@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
 
-import first_auth from '../controllers/authorization/authorization';
-import get_access_token from '../controllers/getAccessToken/getAccessToken';
-import update_user_auth from '../controllers/updateAuth/updateAuth';
-import refreshAccessToken from '../controllers/refreshAccessToken/refreshAccessToken';
+import first_auth from '../controllers/authorization';
+import get_access_token from '../controllers/getAccessToken';
+import update_user_auth from '../controllers/updateAuth';
+import refreshAccessToken from '../controllers/refreshAccessToken';
 import server from '../utils/server';
-import { forget_password } from '../controllers/forgetPassword/forgetPassword';
-import getUserAuthData from '../controllers/getUserAuthData/getUserAuthData';
+import { forget_password } from '../controllers/forgetPassword';
+import getUserAuthData from '../controllers/getUserAuthData';
 
 export const authRouter = express.Router();
 
@@ -227,12 +227,9 @@ authRouter.post('/create_user', async (req: Request, res: Response) => {
  *                   type: string
  *                   desctiption: Подробное описание ошибки на сервере
  */
-authRouter.post(
-    '/get-access-tokens',
-    async (req: Request, res: Response) => {
-        get_access_token.getAccessTokenByServiceAuth(req, res);
-    },
-);
+authRouter.post('/get-tokens', async (req: Request, res: Response) => {
+    get_access_token.getAccessTokenByServiceAuth(req, res);
+});
 
 /**
  * @openapi
@@ -325,7 +322,7 @@ authRouter.post('/update/access_token', async (req: Request, res: Response) => {
  *   patch:
  *     summary: Добавление новой авторизации пользователя
  *     security:
- *       - basicAuth: []
+ *       - bearerAuth: []
  *     tags: [Auth]
  *     description: Поиск пользователя по базе данных и добавление в массив его авторизаций новой записи
  *     requestBody:
@@ -335,9 +332,6 @@ authRouter.post('/update/access_token', async (req: Request, res: Response) => {
  *           schema:
  *             type: object
  *             properties:
- *               user_id:
- *                 type: string
- *                 description: Идентификатор пользователя нашего приложения
  *               service_user_id:
  *                 type: string
  *                 description: Сторонний идентификатор пользователя от сервиса
