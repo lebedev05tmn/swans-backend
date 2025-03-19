@@ -13,7 +13,7 @@ export class Auth extends BaseEntity {
     @PrimaryGeneratedColumn()
     auth_id!: number;
 
-    @ManyToOne(() => User, (user) => user.resources, { onDelete: 'CASCADE' })
+    @ManyToOne(() => User, (user) => user.resources, { onDelete: 'CASCADE', eager: false })
     user!: User;
 
     @Column({ nullable: false })

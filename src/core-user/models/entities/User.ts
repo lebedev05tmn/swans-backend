@@ -10,6 +10,6 @@ export class User extends BaseEntity {
     @Column({ nullable: true })
     refresh_token!: string;
 
-    @OneToMany(() => Auth, (auth) => auth.user, { cascade: true })
+    @OneToMany(() => Auth, (auth) => auth.user, { cascade: true, eager: false })
     resources!: Auth[];
 }
