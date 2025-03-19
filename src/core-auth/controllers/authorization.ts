@@ -11,8 +11,6 @@ import { Auth } from '../models/entities/Auth';
 import { AppDataSource } from '../../shared/model';
 
 const Authorization = async (req: Request, res: Response) => {
-    /* Приходит id пользователя от стороннего ресурса + принадлежность к ресурсу в виде строки */
-
     const request_data: any = req.body;
     let { service_id, service_name } = request_data;
 
@@ -49,9 +47,6 @@ const Authorization = async (req: Request, res: Response) => {
 
             // Сохранение пользователя и его авторизацию в БД
             await userRepository.save(newUser);
-            console.log(
-                `User with id: ${user_id} successfully added to the data base.`,
-            );
 
             return res.status(HTTP_STATUSES.OK_200).json({
                 user_id: user_id,

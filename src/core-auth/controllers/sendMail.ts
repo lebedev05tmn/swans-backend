@@ -1,8 +1,6 @@
-import { Request, Response } from 'express';
 import { v4 as uuid } from 'uuid';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt-nodejs';
 
-import { HTTP_STATUSES } from '../../shared/utils/index';
 import { transporter } from '../../shared/config/NodeMailer';
 import { AppDataSource } from '../../shared/model';
 import { Auth } from '../models/entities/Auth';
@@ -37,9 +35,6 @@ export const send_code = async (params: any) => {
     setTimeout(
         () => {
             session_container.delete(session_id);
-            console.log(
-                `Session with id ${session_id} has expired and deleted.`,
-            );
         },
         5 * 60 * 1000,
     );
@@ -165,13 +160,10 @@ export const send_code = async (params: any) => {
 </html>`,
     };
 
-    console.log(session_container);
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             throw new Error('Send mail Error!');
-        } else {
-            console.log(info);
         }
     });
 
@@ -197,7 +189,7 @@ export const verify_code = async (params: any) => {
 export const create_user = async (params: any) => {
     const { session_id, email, password } = params;
     const session = session_container.get(session_id);
-    const password_hash = await bcrypt.hash(password, 10);
+    const password_hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
 
     if (!session || session.state !== 'password')
         throw new Error("Session doesn't exists or has invalid state!");
@@ -227,14 +219,14 @@ export const create_user = async (params: any) => {
 
         // Сохранение пользователя и его авторизацию в БД
         await userRepository.save(newUser);
-        console.log(
-            `User with id: ${user_id} successfully added to the data base.`,
-        );
 
         session_container.delete(session_id);
         // Также в return должен пойти access и refresh токены для последующей работы
-        return { success: true, access_token: access_token, refresh_token: refresh_token };
-        
+        return {
+            success: true,
+            access_token: access_token,
+            refresh_token: refresh_token,
+        };
     } catch (error) {
         throw new Error(`${error}`);
     }

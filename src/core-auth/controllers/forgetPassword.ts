@@ -1,15 +1,54 @@
 import { Request, Response } from 'express';
 import { Like } from 'typeorm';
 import { v4 } from 'uuid';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt-nodejs';
+import jwt from 'jsonwebtoken';
 
 import { HTTP_STATUSES } from '../../shared/utils/index';
 import { transporter } from '../../shared/config/NodeMailer';
 import { AppDataSource } from '../../shared/model';
 import { Auth } from '../models/entities/Auth';
+import { User } from '../../core-user/models/entities/User';
+import jwtConfig from '../../shared/config/JWTConfig';
 
 export const forget_password = async (req: Request, res: Response) => {
     const { email } = req.body;
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
+            message: 'Missing or invalid Authorization header!',
+        });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    let decodedToken: any;
+    try {
+        decodedToken = jwt.verify(token, jwtConfig.secret);
+    } catch (error) {
+        return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
+            message: 'Invalid or expired token!',
+        });
+    }
+
+    const user_id = decodedToken.userId;
+    if (!user_id) {
+        return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
+            message: 'Invalid token payload!',
+        });
+    }
+
+    const userRepository = AppDataSource.getRepository(User);
+    const currentUser = await userRepository.findOne({
+        where: { user_id: user_id },
+        relations: ['resources'],
+    });
+
+    if (!currentUser)
+        return res.status(HTTP_STATUSES.NOT_FOUND_404).json({
+            message: `User doesn't exists.`,
+        });
+
     if (email) {
         try {
             const authRepository = AppDataSource.getRepository(Auth);
@@ -19,7 +58,10 @@ export const forget_password = async (req: Request, res: Response) => {
             });
 
             const new_password = v4();
-            const new_password_hash = await bcrypt.hash(new_password, 10);
+            const new_password_hash = bcrypt.hashSync(
+                new_password,
+                bcrypt.genSaltSync(),
+            );
 
             if (current_auth) {
                 const authRepository = AppDataSource.getRepository(Auth);

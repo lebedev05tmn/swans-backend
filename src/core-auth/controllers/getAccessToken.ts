@@ -11,7 +11,7 @@ import { AppDataSource } from '../../shared/model';
 
 const getAccessTokenByServiceAuth = async (req: Request, res: Response) => {
     /* Получение аксесс и рефреш токена при повторной регистрации через сторонние сервисы */
-    const request_data = req.params;
+    const request_data = req.body;
     let { service_user_id, service_name } = request_data;
 
     if (
