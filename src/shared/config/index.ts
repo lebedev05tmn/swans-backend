@@ -39,12 +39,12 @@ export const options = {
         components: {
             securitySchemes: {
                 bearerAuth: {
-                    type: 'http',
+                    type: 'https',
                     scheme: 'bearer',
                     bearerFormat: 'JWT',
                 },
                 basicAuth: {
-                    type: 'http',
+                    type: 'https',
                     scheme: 'basic',
                 },
             },

@@ -57,7 +57,7 @@ const Authorization = async (req: Request, res: Response) => {
             return res.status(HTTP_STATUSES.SERVER_ERROR_500).json({
                 message:
                     'Error occured while creating user_id or JWT for session.',
-                details: error,
+                details: `${error}`,
             });
         }
     } else {
