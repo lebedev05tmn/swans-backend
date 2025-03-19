@@ -42,11 +42,14 @@ const Authorization = async (req: Request, res: Response) => {
             newAuth.service_user_id = service_id;
             newAuth.service_name = service_name;
 
+            console.log('created newUser and newAuth');
             // Установка связи oneToMany в User
             newUser.resources = [newAuth];
 
+            console.log('successfully added relationship');
             // Сохранение пользователя и его авторизацию в БД
             await userRepository.save(newUser);
+            console.log('save user in DB');
 
             return res.status(HTTP_STATUSES.OK_200).json({
                 user_id: user_id,
