@@ -21,6 +21,14 @@ const Authorization = async (req: Request, res: Response) => {
         typeof service_name === 'string'
     ) {
         let new_service_name: string = service_name ? service_name : 'Unknown';
+        const authRepository = AppDataSource.getRepository(Auth);
+        const existing_auth = await authRepository.findOne({
+            where: { service_name: service_name, service_user_id: service_id },
+        });
+        if (existing_auth)
+            return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
+                message: 'User already exist!',
+            });
 
         if (new_service_name === 'Unknown') {
             return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({

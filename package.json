@@ -7,7 +7,7 @@
         "start": "nodemon --exec ts-node src/app.ts",
         "build": "node prebuild.js && webpack",
         "preview": "node dist/bundle.js",
-        "migration": "yarn typeorm migration:run --dataSource=./ormconfig.js",
+        "migration": "yarn typeorm migration:run --dataSource=./ormconfig.json",
         "prod": "yarn build && yarn preview && yarn typeorm migration:run"
     },
     "dependencies": {
@@ -31,7 +31,6 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.15.0",
-        "@types/bcrypt": "^5.0.2",
         "@types/bcrypt-nodejs": "^0.0.31",
         "@types/express": "^5.0.0",
         "@types/express-fileupload": "^1.5.1",
@@ -52,8 +51,8 @@
         "ts-loader": "^9.5.1",
         "ts-node": "^10.9.2",
         "typescript": "^5.6.3",
-        "typescript-eslint": "^8.15.0",
         "webpack": "^5.96.1",
-        "webpack-cli": "^5.1.4"
+        "webpack-cli": "^5.1.4",
+        "webpack-node-externals": "^3.0.0"
     }
 }

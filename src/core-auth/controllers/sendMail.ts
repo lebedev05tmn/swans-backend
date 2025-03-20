@@ -160,7 +160,6 @@ export const send_code = async (params: any) => {
 </html>`,
     };
 
-
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             throw new Error('Send mail Error!');
