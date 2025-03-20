@@ -5,6 +5,7 @@ import {
     BaseEntity,
     ManyToOne,
 } from 'typeorm';
+import { Exclude, Type } from 'class-transformer';
 
 import { User } from '../../../core-user/models/entities/User';
 
@@ -13,7 +14,12 @@ export class Auth extends BaseEntity {
     @PrimaryGeneratedColumn()
     auth_id!: number;
 
-    @ManyToOne(() => User, (user) => user.resources, { onDelete: 'CASCADE', eager: false })
+    @ManyToOne(() => User, (user) => user.resources, {
+        onDelete: 'CASCADE',
+        eager: false,
+    })
+    @Type(() => User)
+    @Exclude({ toPlainOnly: true })
     user!: User;
 
     @Column({ nullable: false })
