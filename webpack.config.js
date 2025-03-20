@@ -38,7 +38,7 @@ module.exports = {
                 './node_modules/swagger-ui-dist/favicon-16x16.png',
                 './node_modules/swagger-ui-dist/favicon-32x32.png',
 
-                { from: 'ormconfig.json', to: 'ormconfig.json' },
+                { from: 'ormconfig.js', to: 'ormconfig.js' },
 
                 { from: 'src/migrations', to: 'migrations' },
             ],

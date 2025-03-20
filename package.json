@@ -7,12 +7,11 @@
         "start": "nodemon --exec ts-node src/app.ts",
         "build": "node prebuild.js && webpack",
         "preview": "node dist/bundle.js",
-        "migration": "yarn typeorm migration:run --dataSource=./ormconfig.json",
+        "migration": "yarn typeorm migration:run --dataSource=./ormconfig.js",
         "prod": "yarn build && yarn preview && yarn typeorm migration:run"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.738.0",
-        "@aws-sdk/s3-request-presigner": "^3.738.0",
         "bcrypt-nodejs": "^0.0.3",
         "class-transformer": "^0.5.1",
         "dotenv": "^16.4.7",
