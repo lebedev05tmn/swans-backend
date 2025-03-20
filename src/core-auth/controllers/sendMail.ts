@@ -162,7 +162,10 @@ export const send_code = async (params: any) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
+            console.error('Error sending email:', error);
             throw new Error('Send mail Error!');
+        } else {
+            console.log('Email sent:', info.response);
         }
     });
 
