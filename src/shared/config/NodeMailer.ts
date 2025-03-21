@@ -13,6 +13,15 @@ export const transporter = nodemailer.createTransport({
         user: process.env.WORK_EMAIL || 'swans.test.mail@gmail.com',
         pass: process.env.WORK_EMAIL_PASSWORD || 'dCN-j6X-uDY-ijN',
     },
-    connectionTimeout: 10000,
-    socketTimeout: 10000,
+    tls: {
+        rejectUnauthorized: true,
+    },
+    pool: true,
+    maxConnections: 5,
+    maxMessages: 100,
+    rateDelta: 1000,
+    rateLimit: 5,
+    connectionTimeout: 30000,
+    greetingTimeout: 10000,
+    socketTimeout: 30000,
 });
