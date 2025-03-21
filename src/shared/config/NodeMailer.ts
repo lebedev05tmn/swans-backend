@@ -7,7 +7,7 @@ console.log(
 );
 export const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
+    port: 25,
     secure: false,
     requireTLS: true,
     auth: {
