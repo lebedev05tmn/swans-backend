@@ -59,10 +59,10 @@ const emitEditEvent = async (
 ) => {
     try {
         const user_1 = await profileRepository.findOneBy({
-            user_id: message.user1_id,
+            user_id: message.sender_id,
         });
         const user_2 = await profileRepository.findOneBy({
-            user_id: message.user2_id,
+            user_id: message.recipient_id,
         });
 
         if (!user_1 || !user_2) {
@@ -78,7 +78,7 @@ const emitEditEvent = async (
             messageText,
         });
     } catch (err) {
-        console.error('Ошибка в emitEditEvent:', err);
+        console.log('Ошибка в emitEditEvent:', err);
         io.emit('error', {
             message: 'Ошибка при отправке события редактирования',
             details: err instanceof Error ? err.message : 'Неизвестная ошибка',

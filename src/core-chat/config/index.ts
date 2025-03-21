@@ -1,13 +1,13 @@
 import { Server } from 'socket.io';
 import { socketRegistration } from '../controllers/registration';
 import { socketJoin } from '../controllers/join';
-import { socketPaginate } from '../controllers/paginate';
 import { socketSendMessage } from '../controllers/send-message';
 import { socketOffline } from '../controllers/offline';
 import { socketDisconnect } from '../controllers/disconnect';
 import { socketDeleteMessage } from '../controllers/delete-message';
 import { socketReadMessage } from '../controllers/read-message';
 import { socketEditMessage } from '../controllers/edit-message';
+import { socketReaction } from '../controllers/reaction';
 
 export const socketHandler = (io: Server) => {
     io.on('connection', (socket) => {
@@ -18,7 +18,7 @@ export const socketHandler = (io: Server) => {
             await socketDisconnect(socket);
         });
 
-        socket.on('join', async (recipientId) => {
+        socket.on('join', async ({ recipientId }) => {
             await socketJoin(socket, recipientId, myDatabaseId);
         });
 
@@ -28,25 +28,36 @@ export const socketHandler = (io: Server) => {
 
         socket.on(
             'send-message',
-            async ({ recipientUserId, messageText, chatId }) => {
+            async ({
+                recipientUserId,
+                messageText,
+                chatId,
+                responseTo,
+                images,
+            }) => {
                 await socketSendMessage(
                     io,
                     recipientUserId,
                     messageText,
                     chatId,
+                    responseTo,
+                    images,
                     myUsername,
                     myDatabaseId,
                 );
             },
         );
 
-        socket.on('paginate', async ({ chatId, page }) => {
-            await socketPaginate(socket, chatId, page);
-        });
-
         socket.on('read-message', async ({ chatId, messageId }) => {
             await socketReadMessage(io, chatId, messageId);
         });
+
+        socket.on(
+            'reaction',
+            async ({ chatId, messageId, userId, reaction }) => {
+                await socketReaction(io, chatId, messageId, userId, reaction);
+            },
+        );
 
         socket.on(
             'edit-message',
@@ -68,7 +79,7 @@ export const socketHandler = (io: Server) => {
             },
         );
 
-        socket.on('registration', async (senderId) => {
+        socket.on('registration', async ({ senderId }) => {
             [myDatabaseId, myUsername] = await socketRegistration(
                 socket,
                 senderId,

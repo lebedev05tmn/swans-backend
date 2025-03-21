@@ -1,12 +1,5 @@
-import {
-    Entity,
-    Column,
-    BaseEntity,
-    PrimaryGeneratedColumn,
-    OneToMany,
-} from 'typeorm';
+import { Entity, Column, BaseEntity, PrimaryGeneratedColumn } from 'typeorm';
 import { chatsTableName } from '../../shared/utils';
-import { Message } from './Message';
 
 @Entity(chatsTableName)
 export class Chat extends BaseEntity {

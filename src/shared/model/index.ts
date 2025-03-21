@@ -18,4 +18,11 @@ export const AppDataSource = new DataSource({
     synchronize: true,
 });
 
-export const redis = createClient();
+export const redis = createClient({
+    socket: {
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
+    },
+    username: process.env.REDIS_USERNAME,
+    password: process.env.REDIS_PASSWORD,
+});

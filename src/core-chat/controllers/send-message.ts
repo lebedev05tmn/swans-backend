@@ -7,6 +7,8 @@ export const socketSendMessage = async (
     recipientUserId: string,
     messageText: string,
     chatId: number,
+    responseTo: number | null,
+    images: string[] | null,
     myUsername: string | undefined,
     myDatabaseId: string | undefined,
 ) => {
@@ -18,13 +20,22 @@ export const socketSendMessage = async (
         const redisKeyCurrentId = `currentMessageId:${chatId}`;
         const keyChat = `chat:${chatId}`;
 
-        const lastMessage = await messagesRepository.findOne({
-            where: { chat_id: chatId },
-            order: { message_id: 'DESC' },
-        });
+        let newMessageId = await redis
+            .get(redisKeyCurrentId)
+            .then((data) => Number(data));
 
-        const newMessageId = lastMessage ? lastMessage.message_id + 1 : 1;
-        await redis.set(redisKeyCurrentId, newMessageId);
+        if (!newMessageId) {
+            const lastMessage = await messagesRepository.findOne({
+                where: { chat_id: chatId },
+                order: { message_id: 'DESC' },
+            });
+
+            newMessageId = lastMessage ? lastMessage.message_id + 1 : 1;
+            await redis.set(redisKeyCurrentId, newMessageId);
+        } else {
+            await redis.incr(redisKeyCurrentId);
+            newMessageId++;
+        }
 
         const message = {
             message_id: newMessageId,
@@ -34,7 +45,10 @@ export const socketSendMessage = async (
             message_text: messageText,
             sending_time: new Date(),
             is_readen: false,
-            reading_time: null,
+            images: images ? images : null,
+            response_to: responseTo ? responseTo : null,
+            reaction_sender: null,
+            reaction_recipient: null,
         };
 
         const chatExists = await redis.exists(keyChat);

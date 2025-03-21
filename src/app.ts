@@ -9,6 +9,7 @@ import { options } from './shared/config';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { socketHandler } from './core-chat/config';
+import { chatRouter } from './core-chat/routes/chat-router';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -50,6 +51,7 @@ app.use((req, res, next) => {
 AppDataSource.initialize().then(() => {
     app.use('/api/profile', profileRouter);
     app.use('/api/media', mediaRouter);
+    app.use('/api/chat', chatRouter);
 
     server.listen(port, () => {
         console.log(`App listening on port ${port}`);

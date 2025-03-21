@@ -48,8 +48,23 @@ export class CreateMessagesTable1739482958852 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
-                        name: 'reading_time',
-                        type: 'timestamp',
+                        name: 'images',
+                        type: 'text[10]',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'response_to',
+                        type: 'int',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'reaction_sender',
+                        type: 'text',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'reaction_recipient',
+                        type: 'text',
                         isNullable: true,
                     },
                 ],

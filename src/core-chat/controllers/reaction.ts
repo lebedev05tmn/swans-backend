@@ -1,11 +1,13 @@
 import { Server } from 'socket.io';
-import { messagesRepository, profileRepository } from '../../shared/config';
 import { redis } from '../../shared/model';
+import { messagesRepository, profileRepository } from '../../shared/config';
 
-export const socketReadMessage = async (
-    io: any,
+export const socketReaction = async (
+    io: Server,
     chatId: number,
     messageId: number,
+    userId: string,
+    reaction: string | null,
 ) => {
     try {
         const redisChat = await redis.get(`chat:${chatId}`);
@@ -21,9 +23,11 @@ export const socketReadMessage = async (
         );
 
         if (message) {
-            message.is_readen = true;
+            if (userId === message.user1_id) message.reaction_sender = reaction;
+            else message.reaction_recipient = reaction;
+
             await redis.set(`chat:${chatId}`, JSON.stringify(chat));
-            emitReadEvent(io, message, chatId, messageId);
+            emitReactionEvent(io, message, chatId, messageId, userId, reaction);
         } else {
             message = await messagesRepository.findOneBy({
                 chat_id: chatId,
@@ -31,9 +35,19 @@ export const socketReadMessage = async (
             });
 
             if (message) {
-                message.is_readen = true;
+                if (userId === message.sender_id)
+                    message.reaction_sender = reaction;
+                else message.reaction_recipient = reaction;
+
                 await messagesRepository.save(message);
-                emitReadEvent(io, message, chatId, messageId);
+                emitReactionEvent(
+                    io,
+                    message,
+                    chatId,
+                    messageId,
+                    userId,
+                    reaction,
+                );
             } else {
                 throw new Error(
                     `Message with ID ${messageId} not found in Redis or Postgres`,
@@ -41,19 +55,21 @@ export const socketReadMessage = async (
             }
         }
     } catch (err) {
-        console.error('Ошибка в socketReadMessage:', err);
+        console.error('Ошибка в socketReaction:', err);
         io.emit('error', {
-            message: 'Ошибка при отметке сообщения как прочитанного',
+            message: 'Ошибка при установке реакции на сообщение',
             details: err instanceof Error ? err.message : 'Неизвестная ошибка',
         });
     }
 };
 
-const emitReadEvent = async (
+const emitReactionEvent = async (
     io: Server,
     message: any,
     chatId: number,
     messageId: number,
+    userId: string,
+    reaction: string | null,
 ) => {
     try {
         const user_1 = await profileRepository.findOneBy({
@@ -70,14 +86,16 @@ const emitReadEvent = async (
         const senderSocketId = user_1.socket_id as string;
         const recipientSocketId = user_2.socket_id as string;
 
-        io.to([senderSocketId, recipientSocketId]).emit('message-is-readen', {
+        io.to([senderSocketId, recipientSocketId]).emit('message-is-reacted', {
             chatId,
             messageId,
+            userId,
+            reaction,
         });
     } catch (err) {
-        console.log('Ошибка в emitReadEvent:', err);
+        console.log('Ошибка в emitReactionEvent:', err);
         io.emit('error', {
-            message: 'Ошибка при отправке события прочтения',
+            message: 'Ошибка при отправке события реакции',
             details: err instanceof Error ? err.message : 'Неизвестная ошибка',
         });
     }

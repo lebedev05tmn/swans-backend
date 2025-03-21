@@ -1,14 +1,5 @@
-import {
-    Entity,
-    Column,
-    BaseEntity,
-    PrimaryGeneratedColumn,
-    ManyToOne,
-    JoinColumn,
-    PrimaryColumn,
-} from 'typeorm';
+import { Entity, Column, BaseEntity, PrimaryColumn } from 'typeorm';
 import { messagesTableName } from '../../shared/utils';
-import { Chat } from './Chat';
 
 @Entity(messagesTableName)
 export class Message extends BaseEntity {
@@ -33,6 +24,15 @@ export class Message extends BaseEntity {
     @Column()
     is_readen!: boolean;
 
-    @Column({ type: 'timestamp', nullable: true })
-    reading_time!: Date | null;
+    @Column({ type: 'text', array: true, nullable: true })
+    images!: string[];
+
+    @Column({ type: 'integer', nullable: true })
+    response_to!: number | null;
+
+    @Column({ type: 'text', nullable: true })
+    reaction_sender!: string | null;
+
+    @Column({ type: 'text', nullable: true })
+    reaction_recipient!: string | null;
 }
