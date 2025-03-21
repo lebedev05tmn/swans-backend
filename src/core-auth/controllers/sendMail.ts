@@ -159,6 +159,13 @@ export const send_code = async (params: any) => {
 </body>
 </html>`,
     };
+    transporter.verify((error, success) => {
+        if (error) {
+            console.error('Error verifying transporter:', error);
+        } else {
+            console.log('Transporter is ready to send emails', success);
+        }
+    });
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {

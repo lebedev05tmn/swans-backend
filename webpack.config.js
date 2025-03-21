@@ -27,7 +27,7 @@ module.exports = {
     externals: [nodeExternals()],
     plugins: [
         new webpack.IgnorePlugin({
-            resourceRegExp: /^nodemailer\/lib\/stream-transport$|^nodemailer\/lib\/sendmail-transport$|^nodemailer\/lib\/smtp-transport$|^pg-native$|^pg$/,
+            resourceRegExp: /^pg-native$|^pg$/,
         }),
 
         new CopyWebpackPlugin({
