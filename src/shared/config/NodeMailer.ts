@@ -7,8 +7,8 @@ console.log(
 );
 export const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false,
     auth: {
         user: process.env.WORK_EMAIL || 'swans.test.mail@gmail.com',
         pass: process.env.WORK_EMAIL_PASSWORD || 'dCN-j6X-uDY-ijN',
