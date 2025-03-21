@@ -6,7 +6,9 @@ console.log(
     process.env.WORK_EMAIL_PASSWORD,
 );
 export const transporter = nodemailer.createTransport({
-    service: process.env.WORK_EMAIL_SERVICE,
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
         user: process.env.WORK_EMAIL || 'swans.test.mail@gmail.com',
         pass: process.env.WORK_EMAIL_PASSWORD || 'dCN-j6X-uDY-ijN',
