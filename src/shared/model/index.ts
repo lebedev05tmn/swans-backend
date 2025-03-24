@@ -4,6 +4,8 @@ import 'dotenv/config';
 import { Chat } from '../../core-chat/entities/Chat';
 import { Message } from '../../core-chat/entities/Message';
 import { createClient } from 'redis';
+import { Auth } from '../../core-auth/models/entities/Auth';
+import { User } from '../../core-user/models/entities/User';
 
 const DB_PORT = process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432;
 
@@ -14,7 +16,7 @@ export const AppDataSource = new DataSource({
     host: process.env.DB_HOST,
     port: DB_PORT,
     database: process.env.DB_NAME,
-    entities: [Profile, Chat, Message],
+    entities: [Profile, Chat, Message, Auth, User],
     synchronize: true,
 });
 

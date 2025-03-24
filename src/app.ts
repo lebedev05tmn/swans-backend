@@ -10,6 +10,8 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { socketHandler } from './core-chat/config';
 import { chatRouter } from './core-chat/routes/chat-router';
+import { authRouter } from './core-auth/routes/auth-router';
+import basicAuth from 'express-basic-auth';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -52,6 +54,7 @@ AppDataSource.initialize().then(() => {
     app.use('/api/profile', profileRouter);
     app.use('/api/media', mediaRouter);
     app.use('/api/chat', chatRouter);
+    app.use('/api/auth', authRouter);
 
     server.listen(port, () => {
         console.log(`App listening on port ${port}`);
@@ -60,4 +63,13 @@ AppDataSource.initialize().then(() => {
 
 const swaggerDocs = swaggerJsDoc(options);
 
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use(
+    '/api/docs',
+    basicAuth({
+        users: { admin: `${process.env.SWAGGER_PASSWORD}` },
+        challenge: true,
+        unauthorizedResponse: 'Access denied!',
+    }),
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocs),
+);

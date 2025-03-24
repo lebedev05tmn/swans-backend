@@ -4,8 +4,29 @@ export const HTTP_STATUSES = {
     NO_CONTENT_204: 204,
 
     BAD_REQUEST_400: 400,
+    UNAUTHORIZED_401: 401,
     NOT_FOUND_404: 404,
+
+    SERVER_ERROR_500: 500,
 };
+
+export const enum FileExtensions {
+    JPG = '.jpg',
+    JPEG = '.jpeg',
+    PNG = '.png',
+}
+
+export const enum FileContentTypes {
+    JPEG = 'image/jpeg',
+    PNG = 'image/png',
+}
+
+export const enum AuthTypes {
+    TELEGRAM = 'Telegram',
+    APPLE = 'Apple',
+    VK = 'Vkontakte',
+    APP = 'App',
+}
 
 export const profileTableName = 'profile';
 export const chatsTableName = 'chats';

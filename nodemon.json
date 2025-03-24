@@ -2,5 +2,4 @@
     "exec": "ts-node",
     "watch": ["src"],
     "ext": "ts"
-    
 }
