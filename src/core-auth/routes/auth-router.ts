@@ -445,7 +445,7 @@ authRouter.patch('/update/user_auth', async (req: Request, res: Response) => {
  *             Параметры для вызова метода. Зависят от выбранного метода:
  *             - Для `send_code`: `{ "email": "user@example.com" }`
  *             - Для `verify_code`: `{ "session_id": "session-id", "code": "12345" }`
- *             - Для `create_user`: `{ "session_id": "session-id", "email": "user@example.com", "password": "secure-password" }`
+ *             - Для `create_user`: `{ "session_id": "session-id", "password": "secure-password" }`
  *           example: { "email": "user@example.com" }
  *         id:
  *           type: string
