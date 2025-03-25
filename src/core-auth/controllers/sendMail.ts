@@ -18,11 +18,17 @@ export const send_code = async (params: any) => {
     const { email } = params;
     const code: string = Math.floor(Math.random() * 90000 + 10000).toString();
     const session_id: string = uuid();
+    const current_date: any = new Date();
 
     for (let [session_id, session] of session_container) {
-        if (session.email === email) {
+        if (
+            session.email === email &&
+            (current_date - session.start_time) / 1000 > 60
+        ) {
             session_container.delete(session_id);
             break;
+        } else if (session.email === email) {
+            return { success: false };
         }
     }
 
@@ -30,6 +36,7 @@ export const send_code = async (params: any) => {
         email,
         code,
         state: 'code',
+        start_time: new Date(),
     });
 
     setTimeout(
@@ -196,8 +203,9 @@ export const verify_code = async (params: any) => {
 };
 
 export const create_user = async (params: any) => {
-    const { session_id, email, password } = params;
+    const { session_id, password } = params;
     const session = session_container.get(session_id);
+    const email = session.email;
     const password_hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
 
     if (!session || session.state !== 'password')
