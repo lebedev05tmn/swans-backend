@@ -9,7 +9,7 @@ const generateJWT = (user_id: string): string => {
         createdAt: new Date().toISOString(),
     };
 
-    const token = jwt.sign(payload, jwtConfig.secret, {
+    const token = (jwt as any).sign(payload, jwtConfig.secret, {
         expiresIn: jwtConfig.expiresIn,
         algorithm: jwtConfig.algorithm as jwt.Algorithm,
     });
@@ -23,7 +23,7 @@ const generateRefreshToken = (user_id: string): string => {
         type: 'refresh',
     };
 
-    const token = jwt.sign(payload, jwtConfig.secret, {
+    const token = (jwt as any).sign(payload, jwtConfig.secret, {
         expiresIn: jwtConfig.refreshExpiresIn,
         algorithm: jwtConfig.algorithm as jwt.Algorithm,
     });

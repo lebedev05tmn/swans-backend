@@ -8,6 +8,7 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import { options } from './shared/config';
 import { authRouter } from './core-auth/routes/auth-router';
 import basicAuth from 'express-basic-auth';
+import { userRouter } from './core-user/routes/user-router';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -39,6 +40,7 @@ AppDataSource.initialize().then(() => {
     app.use('/api/profile', profileRouter);
     app.use('/api/media', mediaRouter);
     app.use('/api/auth', authRouter);
+    app.use('/api/metadata', userRouter)
 
     app.listen(port, () => {
         console.log(`App listening on port ${port}`);
