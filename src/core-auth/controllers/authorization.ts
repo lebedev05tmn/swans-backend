@@ -51,18 +51,7 @@ const Authorization = async (req: Request, res: Response) => {
             newAuth.service_user_id = service_id;
             newAuth.service_name = service_name;
 
-            const newProfile = Profile.create({
-                user_name: 'Александр Ясюкевич',
-                birth_date: '1996-04-17',
-                sex: 'male',
-                images: ['imageOne'],
-                description: 'Описание',
-                categories: ['категория1', 'категория2'],
-                city: 'Москва',
-            });
-
             newUser.resources = [newAuth];
-            newUser.profile = newProfile;
 
             await userRepository.save(newUser);
 
