@@ -16,11 +16,6 @@ export const updateProfile = async (req: Request, res: Response) => {
     }
 
     try {
-        if (req.body.geolocation)
-            req.body.geolocation = {
-                type: 'Point',
-                coordinates: req.body.geolocation,
-            };
         const update = await profileRepository
             .createQueryBuilder()
             .update(Profile)
@@ -32,13 +27,6 @@ export const updateProfile = async (req: Request, res: Response) => {
             let updatedProfile = update.raw[0];
             const date = new Date(updatedProfile.birth_date);
             updatedProfile.birth_date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            let geo = await profileRepository
-                .createQueryBuilder()
-                .select('ST_AsGeoJSON(geolocation)', 'geolocation')
-                .where('user_id = :id', { id: req.query.id })
-                .getRawOne();
-            geo = JSON.parse(geo.geolocation);
-            updatedProfile.geolocation = geo.coordinates;
             return res.status(200).send(updatedProfile);
         } else {
             return res.status(404).send('User not found');

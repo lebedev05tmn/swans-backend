@@ -37,14 +37,6 @@ export class Profile extends BaseEntity {
     @Column({ type: 'text', array: true, nullable: true })
     categories!: string[];
 
-    @Column({
-        type: 'geometry',
-        spatialFeatureType: 'Point',
-        srid: 4326,
-        nullable: true,
-    })
-    geolocation!: any;
-
     @Column({ type: 'text', nullable: true })
     city!: string;
 

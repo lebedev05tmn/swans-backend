@@ -10,7 +10,6 @@ export const getAllProfiles = async (req: Request, res: Response) => {
         await Promise.all(
             users.map(async (user) => {
                 const updatedUser: any = { ...user };
-                updatedUser.geolocation = updatedUser.geolocation.coordinates;
                 usersTypisated.list.push(updatedUser);
             }),
         );

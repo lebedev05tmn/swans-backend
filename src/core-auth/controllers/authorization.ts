@@ -58,10 +58,6 @@ const Authorization = async (req: Request, res: Response) => {
                 images: ['imageOne'],
                 description: 'Описание',
                 categories: ['категория1', 'категория2'],
-                geolocation: {
-                    type: 'Point',
-                    coordinates: [55.752004, 37.617734],
-                },
                 city: 'Москва',
             });
 
