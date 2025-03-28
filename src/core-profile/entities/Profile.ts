@@ -26,7 +26,7 @@ export class Profile extends BaseEntity {
     birth_date!: Date;
 
     @Column({ nullable: true })
-    sex!: string;
+    sex!: 'male' | 'female';
 
     @Column({ type: 'text', array: true, nullable: true })
     images!: string[];

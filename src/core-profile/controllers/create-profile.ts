@@ -8,7 +8,7 @@ import { User } from '../../core-user/models/entities/User';
 export const createProfile = async (req: Request, res: Response) => {
     let user_id;
     try {
-        user_id = getUserId(req, res);
+        user_id = getUserId(req);
     } catch (error) {
         if (error instanceof Error)
             return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({

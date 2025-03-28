@@ -1,9 +1,8 @@
-import { Request, Response } from 'express';
-import { HTTP_STATUSES } from '../../../src/shared/utils';
+import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import jwtConfig from '../../shared/config/JWTConfig';
 
-export default (req: Request, res: Response): string => {
+export default (req: Request): string => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer '))

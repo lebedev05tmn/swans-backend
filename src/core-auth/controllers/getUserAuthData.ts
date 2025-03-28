@@ -9,7 +9,7 @@ async function getUserAuthData(req: Request, res: Response) {
     try {
         let user_id;
         try {
-            user_id = getUserId(req, res);
+            user_id = getUserId(req);
         } catch (error) {
             if (error instanceof Error)
                 return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
