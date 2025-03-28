@@ -43,28 +43,27 @@ export const createProfile = async (req: Request, res: Response) => {
             newUser.images,
             newUser.city,
         ];
-        let correctParamsFlag = true;
-        requiredParams.forEach((param) => {
-            if (param === null || param === undefined) {
-                correctParamsFlag = false;
-                return res.status(400).send('Invalid input data');
-            }
+
+        const correct = requiredParams.reduce(
+            (acc, param) => acc && !param,
+            true,
+        );
+
+        if (!correct) return res.status(400).send('Invalid input data');
+
+        const profile = Profile.create({
+            user_name: newUser.user_name,
+            birth_date: newUser.birth_date,
+            sex: newUser.sex,
+            images: newUser.images,
+            description: newUser.description,
+            categories: newUser.categories,
+            city: newUser.city,
         });
 
-        if (correctParamsFlag) {
-            const profile = Profile.create({
-                user_name: newUser.user_name,
-                birth_date: newUser.birth_date,
-                sex: newUser.sex,
-                images: newUser.images,
-                description: newUser.description,
-                categories: newUser.categories,
-                city: newUser.city,
-            });
-            currentUser.profile = profile;
-            await userRepository.save(currentUser);
-            return res.status(201).json(newUser);
-        }
+        currentUser.profile = profile;
+        await userRepository.save(currentUser);
+        return res.status(201).json(newUser);
     } catch (error) {
         return res.status(500).send(`Failed to create user profile: ${error}`);
     }

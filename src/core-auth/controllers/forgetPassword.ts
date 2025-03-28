@@ -65,9 +65,7 @@ export const forget_password = async (req: Request, res: Response) => {
 
             if (current_auth) {
                 const authRepository = AppDataSource.getRepository(Auth);
-                current_auth.service_user_id = [email, new_password_hash].join(
-                    ':',
-                );
+                current_auth.service_user_id = `${email}:${new_password_hash}`;
                 await authRepository.save(current_auth);
             } else {
                 return res.status(HTTP_STATUSES.NOT_FOUND_404).json({
