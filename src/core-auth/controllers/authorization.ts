@@ -9,6 +9,7 @@ import { HTTP_STATUSES } from '../../shared/utils/index';
 import { User } from '../../core-user/models/entities/User';
 import { Auth } from '../models/entities/Auth';
 import { AppDataSource } from '../../shared/model';
+import { Profile } from '../../core-profile/entities/Profile';
 
 const Authorization = async (req: Request, res: Response) => {
     const request_data: any = req.body;
@@ -50,14 +51,9 @@ const Authorization = async (req: Request, res: Response) => {
             newAuth.service_user_id = service_id;
             newAuth.service_name = service_name;
 
-            console.log('created newUser and newAuth');
-            // Установка связи oneToMany в User
             newUser.resources = [newAuth];
 
-            console.log('successfully added relationship');
-            // Сохранение пользователя и его авторизацию в БД
             await userRepository.save(newUser);
-            console.log('save user in DB');
 
             return res.status(HTTP_STATUSES.OK_200).json({
                 user_id: user_id,

@@ -1,10 +1,23 @@
 import { profileTableName } from '../../shared/utils';
-import { Entity, Column, PrimaryColumn, BaseEntity } from 'typeorm';
+import {
+    Entity,
+    Column,
+    BaseEntity,
+    PrimaryGeneratedColumn,
+    OneToOne,
+    JoinColumn,
+} from 'typeorm';
+
+import { User } from '../../core-user/models/entities/User';
 
 @Entity(profileTableName)
 export class Profile extends BaseEntity {
-    @PrimaryColumn({ type: 'text' })
-    user_id!: string;
+    @PrimaryGeneratedColumn()
+    profile_id!: number;
+
+    @OneToOne(() => User, (user) => user.profile)
+    @JoinColumn({ name: 'user_id' })
+    user!: User;
 
     @Column({ nullable: true })
     user_name!: string;
@@ -13,7 +26,7 @@ export class Profile extends BaseEntity {
     birth_date!: Date;
 
     @Column({ nullable: true })
-    sex!: boolean;
+    sex!: 'male' | 'female';
 
     @Column({ type: 'text', array: true, nullable: true })
     images!: string[];
@@ -23,14 +36,6 @@ export class Profile extends BaseEntity {
 
     @Column({ type: 'text', array: true, nullable: true })
     categories!: string[];
-
-    @Column({
-        type: 'geometry',
-        spatialFeatureType: 'Point',
-        srid: 4326,
-        nullable: true,
-    })
-    geolocation!: any;
 
     @Column({ type: 'text', nullable: true })
     city!: string;

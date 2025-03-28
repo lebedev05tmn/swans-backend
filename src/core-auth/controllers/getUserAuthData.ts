@@ -1,36 +1,20 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
 
 import { User } from '../../core-user/models/entities/User';
 import { AppDataSource } from '../../shared/model';
 import { HTTP_STATUSES } from '../../shared/utils/index';
-import jwtConfig from '../../shared/config/JWTConfig';
+import getUserId from '../utils/getUserId';
 
 async function getUserAuthData(req: Request, res: Response) {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
-                message: 'Missing or invalid Authorization header!',
-            });
-        }
-
-        const token = authHeader.split(' ')[1];
-
-        let decodedToken: any;
+        let user_id;
         try {
-            decodedToken = jwt.verify(token, jwtConfig.secret);
+            user_id = getUserId(req);
         } catch (error) {
-            return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
-                message: 'Invalid or expired token!',
-            });
-        }
-
-        const user_id = decodedToken.userId;
-        if (!user_id) {
-            return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
-                message: 'Invalid token payload!',
-            });
+            if (error instanceof Error)
+                return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
+                    message: error.message,
+                });
         }
 
         const userRepository = AppDataSource.getRepository(User);

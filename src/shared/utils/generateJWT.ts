@@ -1,34 +1,40 @@
 import jwt from 'jsonwebtoken';
 
-import jwtConfig from '../config/JWTConfig';
+import jwtConfig, {
+    JWTPayload,
+    RefreshTokenPayload,
+} from '../config/JWTConfig';
 
 const generateJWT = (user_id: string): string => {
-
-    const payload = {
+    const payload: JWTPayload = {
         userId: user_id,
         createdAt: new Date().toISOString(),
     };
 
-    const token = jwt.sign(payload, jwtConfig.secret, {
+    const options = {
         expiresIn: jwtConfig.expiresIn,
-        algorithm: jwtConfig.algorithm as jwt.Algorithm,
-    });
+        algorithm: jwtConfig.algorithm,
+    };
+
+    const token = jwt.sign(payload, jwtConfig.secret, options);
 
     return token;
-}
+};
 
 const generateRefreshToken = (user_id: string): string => {
-    const payload = {
+    const payload: RefreshTokenPayload = {
         userId: user_id,
         type: 'refresh',
     };
 
-    const token = jwt.sign(payload, jwtConfig.secret, {
+    const options = {
         expiresIn: jwtConfig.refreshExpiresIn,
-        algorithm: jwtConfig.algorithm as jwt.Algorithm,
-    });
+        algorithm: jwtConfig.algorithm,
+    };
+
+    const token = jwt.sign(payload, jwtConfig.secret, options);
 
     return token;
-}
+};
 
 export { generateJWT, generateRefreshToken };
