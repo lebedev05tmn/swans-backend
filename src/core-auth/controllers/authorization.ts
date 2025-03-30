@@ -9,11 +9,10 @@ import { HTTP_STATUSES } from '../../shared/utils/index';
 import { User } from '../../core-user/models/entities/User';
 import { Auth } from '../models/entities/Auth';
 import { AppDataSource } from '../../shared/model';
-import { Profile } from '../../core-profile/entities/Profile';
 
 const Authorization = async (req: Request, res: Response) => {
-    const request_data: any = req.body;
-    let { service_id, service_name } = request_data;
+    const request_data = req.body;
+    let { service_id, service_name }: Record<string, string> = request_data;
 
     if (
         service_id &&
