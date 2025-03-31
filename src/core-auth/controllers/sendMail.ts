@@ -10,7 +10,7 @@ import {
     generateRefreshToken,
 } from '../../shared/utils/generateJWT';
 import generateUniqueId from '../utils/generateUniqueId';
-import { AuthTypes } from '../../shared/utils/index';
+import { AuthServiceName } from '../../shared/utils/index';
 import { Like } from 'typeorm';
 
 interface Session {
@@ -248,7 +248,7 @@ export const create_user = async (params: CreateUserParams) => {
     // + используем любой способ шифрования для хранения паролей в БД
 
     try {
-        const service_name: string = AuthTypes.APP;
+        const service_name: string = AuthServiceName.APP;
         const service_id: string = `${email}:${password_hash}`;
         const user_id: string = generateUniqueId(service_id, service_name);
         const access_token: string = generateJWT(user_id);
