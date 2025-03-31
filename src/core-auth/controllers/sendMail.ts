@@ -11,6 +11,7 @@ import {
 } from '../../shared/utils/generateJWT';
 import generateUniqueId from '../utils/generateUniqueId';
 import { AuthTypes } from '../../shared/utils/index';
+import { Like } from 'typeorm';
 
 interface Session {
     email: string;
@@ -30,6 +31,17 @@ export const send_code = async (params: SendCodeParams) => {
     const code: string = Math.floor(Math.random() * 90000 + 10000).toString();
     const session_id: string = uuid();
     const current_date: Date = new Date();
+
+    const authRepository = AppDataSource.getRepository(Auth);
+
+    const existnig_auth = await authRepository.findOne({
+        where: { service_user_id: Like(`${email}:%`) },
+    });
+    if (existnig_auth)
+        return {
+            success: false,
+            message: 'User with this email alredy exist!',
+        };
 
     for (let [session_id, session] of session_container) {
         if (
@@ -237,8 +249,7 @@ export const create_user = async (params: CreateUserParams) => {
 
     try {
         const service_name: string = AuthTypes.APP;
-        const service_id: string = [email, password_hash].join(':');
-
+        const service_id: string = `${email}:${password_hash}`;
         const user_id: string = generateUniqueId(service_id, service_name);
         const access_token: string = generateJWT(user_id);
         const refresh_token: string = generateRefreshToken(user_id);

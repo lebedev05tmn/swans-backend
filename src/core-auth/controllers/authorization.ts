@@ -9,7 +9,6 @@ import { HTTP_STATUSES } from '../../shared/utils/index';
 import { User } from '../../core-user/models/entities/User';
 import { Auth } from '../models/entities/Auth';
 import { AppDataSource } from '../../shared/model';
-
 import { AuthServiceName } from '../../shared/utils/index';
 
 type AuthRequest = Record<string, string> & {

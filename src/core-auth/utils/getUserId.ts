@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import jwtConfig from '../../shared/config/JWTConfig';
 
 export default (req: Request): string => {
@@ -10,9 +10,9 @@ export default (req: Request): string => {
 
     const token = authHeader.split(' ')[1];
 
-    let decodedToken: any;
+    let decodedToken: JwtPayload;
     try {
-        decodedToken = jwt.verify(token, jwtConfig.secret);
+        decodedToken = jwt.verify(token, jwtConfig.secret) as JwtPayload;
     } catch (error) {
         throw new Error('Invalid or expired token!');
     }

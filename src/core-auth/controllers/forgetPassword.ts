@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Like } from 'typeorm';
 import { v4 } from 'uuid';
 import bcrypt from 'bcrypt-nodejs';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import { HTTP_STATUSES } from '../../shared/utils/index';
 import { transporter } from '../../shared/config/NodeMailer';
@@ -22,15 +22,14 @@ export const forget_password = async (req: Request, res: Response) => {
 
     const token = authHeader.split(' ')[1];
 
-    let decodedToken: any;
+    let decodedToken: JwtPayload;
     try {
-        decodedToken = jwt.verify(token, jwtConfig.secret);
+        decodedToken = jwt.verify(token, jwtConfig.secret) as JwtPayload;
     } catch (error) {
         return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
             message: 'Invalid or expired token!',
         });
     }
-
     const user_id = decodedToken.userId;
     if (!user_id) {
         return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
