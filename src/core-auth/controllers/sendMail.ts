@@ -68,6 +68,7 @@ export const send_code = async (params: SendCodeParams) => {
         },
         5 * 60 * 1000,
     );
+    console.log(session_container);
 
     const mailOptions = {
         from: process.env.WORK_EMAIL,
@@ -223,6 +224,7 @@ export const verify_code = async (params: VerifyCodeParams) => {
     if (session.code !== code) throw new Error('Wrong code!');
 
     session.state = 'password';
+    console.log(session_container);
 
     return {
         success: true,
@@ -270,6 +272,7 @@ export const create_user = async (params: CreateUserParams) => {
         await userRepository.save(newUser);
 
         session_container.delete(session_id);
+        console.log(session_container);
         // Также в return должен пойти access и refresh токены для последующей работы
         return {
             success: true,
