@@ -12,7 +12,8 @@
         "prod": "yarn build && yarn preview && yarn typeorm migration:run",
         "lint": "eslint src/**/*.ts",
         "lint:fix": "eslint src/ --fix",
-        "format": "prettier --write \"src/**/*.ts\""
+        "format": "prettier --write \"src/**/*.ts\"",
+        "test": "echo \"No tests specified\" && exit 0"
     },
     "lint-staged": {
         "*.ts": [
