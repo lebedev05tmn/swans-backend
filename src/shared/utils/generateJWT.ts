@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import jwtConfig from '../config/JWTConfig';
 
 const generateJWT = (user_id: string): string => {
-
     const payload = {
         userId: user_id,
         createdAt: new Date().toISOString(),
@@ -15,7 +14,7 @@ const generateJWT = (user_id: string): string => {
     });
 
     return token;
-}
+};
 
 const generateRefreshToken = (user_id: string): string => {
     const payload = {
@@ -29,6 +28,6 @@ const generateRefreshToken = (user_id: string): string => {
     });
 
     return token;
-}
+};
 
 export { generateJWT, generateRefreshToken };

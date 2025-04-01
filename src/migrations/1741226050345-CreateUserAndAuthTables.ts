@@ -1,14 +1,6 @@
-import {
-    MigrationInterface,
-    QueryRunner,
-    Table,
-    TableForeignKey,
-    TableColumn,
-} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableForeignKey, TableColumn } from 'typeorm';
 
-export class CreateUserAndAuthTables1741226050345
-    implements MigrationInterface
-{
+export class CreateUserAndAuthTables1741226050345 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         const userTableExists = await queryRunner.hasTable('user');
         const authTableExists = await queryRunner.hasTable('auth');
@@ -37,11 +29,7 @@ export class CreateUserAndAuthTables1741226050345
 
         // AlterTable для USER
         const userTable = await queryRunner.getTable('user');
-        if (
-            !userTable?.columns.find(
-                (column) => column.name === 'refresh_token',
-            )
-        ) {
+        if (!userTable?.columns.find((column) => column.name === 'refresh_token')) {
             await queryRunner.addColumn(
                 'user',
                 new TableColumn({
@@ -87,11 +75,7 @@ export class CreateUserAndAuthTables1741226050345
 
         // AlterTable для AUTH
         const authTable = await queryRunner.getTable('auth');
-        if (
-            !authTable?.columns.find(
-                (column) => column.name === 'service_user_id',
-            )
-        ) {
+        if (!authTable?.columns.find((column) => column.name === 'service_user_id')) {
             await queryRunner.addColumn(
                 'auth',
                 new TableColumn({
@@ -101,9 +85,7 @@ export class CreateUserAndAuthTables1741226050345
                 }),
             );
         }
-        if (
-            !authTable?.columns.find((column) => column.name === 'service_name')
-        ) {
+        if (!authTable?.columns.find((column) => column.name === 'service_name')) {
             await queryRunner.addColumn(
                 'auth',
                 new TableColumn({
@@ -113,9 +95,7 @@ export class CreateUserAndAuthTables1741226050345
                 }),
             );
         }
-        if (
-            !authTable?.columns.find((column) => column.name === 'userUserId')
-        ) {
+        if (!authTable?.columns.find((column) => column.name === 'userUserId')) {
             await queryRunner.addColumn(
                 'auth',
                 new TableColumn({
@@ -128,9 +108,7 @@ export class CreateUserAndAuthTables1741226050345
 
         if (userTableExists && authTableExists) {
             const authTable = await queryRunner.getTable('auth');
-            const foreignKey = authTable?.foreignKeys.find(
-                (fk) => fk.columnNames.indexOf('userUserId') !== -1,
-            );
+            const foreignKey = authTable?.foreignKeys.find((fk) => fk.columnNames.indexOf('userUserId') !== -1);
             if (!foreignKey) {
                 await queryRunner.createForeignKey(
                     'auth',

@@ -5,10 +5,7 @@ import jwtConfig from '../../shared/config/JWTConfig';
 import { User } from '../../core-user/models/entities/User';
 import { AppDataSource } from '../../shared/model';
 import { HTTP_STATUSES } from '../../shared/utils';
-import {
-    generateJWT,
-    generateRefreshToken,
-} from '../../shared/utils/generateJWT';
+import { generateJWT, generateRefreshToken } from '../../shared/utils/generateJWT';
 
 async function refreshAccessToken(req: Request, res: Response) {
     try {

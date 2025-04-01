@@ -1,10 +1,7 @@
 import { Request, Response } from 'express';
 
 import generateUniqueId from '../utils/generateUniqueId';
-import {
-    generateJWT,
-    generateRefreshToken,
-} from '../../shared/utils/generateJWT';
+import { generateJWT, generateRefreshToken } from '../../shared/utils/generateJWT';
 import { HTTP_STATUSES } from '../../shared/utils/index';
 import { User } from '../../core-user/models/entities/User';
 import { Auth } from '../models/entities/Auth';
@@ -14,12 +11,7 @@ const Authorization = async (req: Request, res: Response) => {
     const request_data: any = req.body;
     let { service_id, service_name } = request_data;
 
-    if (
-        service_id &&
-        service_name &&
-        typeof service_id === 'string' &&
-        typeof service_name === 'string'
-    ) {
+    if (service_id && service_name && typeof service_id === 'string' && typeof service_name === 'string') {
         let new_service_name: string = service_name ? service_name : 'Unknown';
         const authRepository = AppDataSource.getRepository(Auth);
         const existing_auth = await authRepository.findOne({
@@ -66,8 +58,7 @@ const Authorization = async (req: Request, res: Response) => {
             });
         } catch (error) {
             return res.status(HTTP_STATUSES.SERVER_ERROR_500).json({
-                message:
-                    'Error occured while creating user_id or JWT for session.',
+                message: 'Error occured while creating user_id or JWT for session.',
                 details: `${error}`,
             });
         }

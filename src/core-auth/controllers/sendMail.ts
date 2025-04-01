@@ -5,10 +5,7 @@ import { transporter } from '../../shared/config/NodeMailer';
 import { AppDataSource } from '../../shared/model';
 import { Auth } from '../models/entities/Auth';
 import { User } from '../../core-user/models/entities/User';
-import {
-    generateJWT,
-    generateRefreshToken,
-} from '../../shared/utils/generateJWT';
+import { generateJWT, generateRefreshToken } from '../../shared/utils/generateJWT';
 import generateUniqueId from '../utils/generateUniqueId';
 import { AuthTypes } from '../../shared/utils/index';
 
@@ -183,8 +180,7 @@ export const verify_code = async (params: any) => {
     const { session_id, code } = params;
     const session = session_container.get(session_id);
 
-    if (!session || session.state !== 'code')
-        throw new Error("Session doesn't exists or in invalid state!");
+    if (!session || session.state !== 'code') throw new Error("Session doesn't exists or in invalid state!");
     if (session.code !== code) throw new Error('Wrong code!');
 
     session.state = 'password';
@@ -200,8 +196,7 @@ export const create_user = async (params: any) => {
     const session = session_container.get(session_id);
     const password_hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
 
-    if (!session || session.state !== 'password')
-        throw new Error("Session doesn't exists or has invalid state!");
+    if (!session || session.state !== 'password') throw new Error("Session doesn't exists or has invalid state!");
 
     // Алгоритм для создания нового пользователя, повторяем все то, что использовали в authentification
     // + используем любой способ шифрования для хранения паролей в БД

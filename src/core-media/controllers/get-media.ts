@@ -16,9 +16,7 @@ export const getMedia = async (req: Request, res: Response) => {
             const image = await s3client.send(command);
 
             if (image.Body) {
-                const buffer = Buffer.from(
-                    await image.Body.transformToByteArray(),
-                );
+                const buffer = Buffer.from(await image.Body.transformToByteArray());
                 res.setHeader('Content-Type', 'image/webp');
                 res.status(200).end(buffer);
             }

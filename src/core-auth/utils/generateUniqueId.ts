@@ -10,7 +10,7 @@ const shuffleArray = (array: string[]): string[] => {
     }
 
     return shuffled;
-}
+};
 
 const generateUniqueId = (service_id: string, service_name: string): string => {
     const currentDate: string = new Date().toISOString(); // Берем текущее время
@@ -19,12 +19,9 @@ const generateUniqueId = (service_id: string, service_name: string): string => {
     const shuffled: string[] = shuffleArray(elements);
     const combinedString = shuffled.join('-');
 
-    const hash: string = crypto
-        .createHash('sha256')
-        .update(combinedString)
-        .digest('hex');
+    const hash: string = crypto.createHash('sha256').update(combinedString).digest('hex');
 
     return hash;
-}
+};
 
 export default generateUniqueId;

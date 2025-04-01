@@ -1,10 +1,4 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    BaseEntity,
-    ManyToOne,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
 
 import { User } from '../../../core-user/models/entities/User';

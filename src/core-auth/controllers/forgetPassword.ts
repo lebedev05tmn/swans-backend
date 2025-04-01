@@ -58,16 +58,11 @@ export const forget_password = async (req: Request, res: Response) => {
             });
 
             const new_password = v4();
-            const new_password_hash = bcrypt.hashSync(
-                new_password,
-                bcrypt.genSaltSync(),
-            );
+            const new_password_hash = bcrypt.hashSync(new_password, bcrypt.genSaltSync());
 
             if (current_auth) {
                 const authRepository = AppDataSource.getRepository(Auth);
-                current_auth.service_user_id = [email, new_password_hash].join(
-                    ':',
-                );
+                current_auth.service_user_id = [email, new_password_hash].join(':');
                 await authRepository.save(current_auth);
             } else {
                 return res.status(HTTP_STATUSES.NOT_FOUND_404).json({

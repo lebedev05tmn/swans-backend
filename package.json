@@ -1,5 +1,6 @@
 {
     "name": "swans-minio",
+    "type": "module",
     "version": "1.0.0",
     "main": "./src/app.ts",
     "license": "MIT",
@@ -8,7 +9,21 @@
         "build": "node prebuild.js && webpack",
         "preview": "node dist/bundle.js",
         "migration": "yarn typeorm migration:run --dataSource=./ormconfig.js",
-        "prod": "yarn build && yarn preview && yarn typeorm migration:run"
+        "prod": "yarn build && yarn preview && yarn typeorm migration:run",
+        "lint": "eslint src/**/*.ts",
+        "lint:fix": "eslint src/ --fix",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "lint-staged": {
+        "*.ts": [
+            "yarn lint:fix",
+            "yarn format"
+        ]
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.738.0",
@@ -43,8 +58,11 @@
         "copy-webpack-plugin": "^12.0.2",
         "eslint": "^9.15.0",
         "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.31.0",
         "eslint-plugin-prettier": "^5.2.1",
         "globals": "^15.12.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^15.5.0",
         "nodemon": "^3.1.7",
         "prettier": "^3.3.3",
         "ts-loader": "^9.5.1",

@@ -29,10 +29,7 @@ export const options = {
         },
         servers: [
             {
-                url:
-                    process.env.NODE_ENV == 'production'
-                        ? process.env.SERVER_HOST
-                        : process.env.LOCAL_HOST,
+                url: process.env.NODE_ENV == 'production' ? process.env.SERVER_HOST : process.env.LOCAL_HOST,
                 description: 'V1 Local Server',
             },
         ],

@@ -54,10 +54,7 @@ export const createProfile = async (req: Request, res: Response) => {
                     categories: newUser.categories,
                     geolocation: {
                         type: 'Point',
-                        coordinates: [
-                            newUser.geolocation[0],
-                            newUser.geolocation[1],
-                        ],
+                        coordinates: [newUser.geolocation[0], newUser.geolocation[1]],
                     },
                     city: newUser.city,
                 });
