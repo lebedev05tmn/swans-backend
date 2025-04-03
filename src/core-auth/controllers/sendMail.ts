@@ -10,20 +10,43 @@ import {
     generateRefreshToken,
 } from '../../shared/utils/generateJWT';
 import generateUniqueId from '../utils/generateUniqueId';
-import { AuthTypes } from '../../shared/utils/index';
+import { AuthServiceName } from '../../shared/utils/index';
+import { Like } from 'typeorm';
 
-const session_container = new Map();
+interface Session {
+    email: string;
+    code: string;
+    state: string;
+    start_time: Date;
+}
 
-export const send_code = async (params: any) => {
+const session_container: Map<string, Session> = new Map();
+
+interface SendCodeParams {
+    email: string;
+}
+
+export const send_code = async (params: SendCodeParams) => {
     const { email } = params;
     const code: string = Math.floor(Math.random() * 90000 + 10000).toString();
     const session_id: string = uuid();
-    const current_date: any = new Date();
+    const current_date: Date = new Date();
+
+    const authRepository = AppDataSource.getRepository(Auth);
+
+    const existnig_auth = await authRepository.findOne({
+        where: { service_user_id: Like(`${email}:%`) },
+    });
+    if (existnig_auth)
+        return {
+            success: false,
+            message: 'User with this email alredy exist!',
+        };
 
     for (let [session_id, session] of session_container) {
         if (
             session.email === email &&
-            (current_date - session.start_time) / 1000 > 60
+            (current_date.getTime() - session.start_time.getTime()) / 1000 > 60
         ) {
             session_container.delete(session_id);
             break;
@@ -45,6 +68,7 @@ export const send_code = async (params: any) => {
         },
         5 * 60 * 1000,
     );
+    console.log(session_container);
 
     const mailOptions = {
         from: process.env.WORK_EMAIL,
@@ -186,7 +210,12 @@ export const send_code = async (params: any) => {
     return { success: true, session_id: session_id };
 };
 
-export const verify_code = async (params: any) => {
+interface VerifyCodeParams {
+    session_id: string;
+    code: string;
+}
+
+export const verify_code = async (params: VerifyCodeParams) => {
     const { session_id, code } = params;
     const session = session_container.get(session_id);
 
@@ -195,6 +224,7 @@ export const verify_code = async (params: any) => {
     if (session.code !== code) throw new Error('Wrong code!');
 
     session.state = 'password';
+    console.log(session_container);
 
     return {
         success: true,
@@ -202,10 +232,15 @@ export const verify_code = async (params: any) => {
     };
 };
 
-export const create_user = async (params: any) => {
+interface CreateUserParams {
+    session_id: string;
+    password: string;
+}
+
+export const create_user = async (params: CreateUserParams) => {
     const { session_id, password } = params;
     const session = session_container.get(session_id);
-    const email = session.email;
+    const email = session?.email;
     const password_hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
 
     if (!session || session.state !== 'password')
@@ -215,9 +250,8 @@ export const create_user = async (params: any) => {
     // + используем любой способ шифрования для хранения паролей в БД
 
     try {
-        const service_name: string = AuthTypes.APP;
-        const service_id: string = [email, password_hash].join(':');
-
+        const service_name: string = AuthServiceName.APP;
+        const service_id: string = `${email}:${password_hash}`;
         const user_id: string = generateUniqueId(service_id, service_name);
         const access_token: string = generateJWT(user_id);
         const refresh_token: string = generateRefreshToken(user_id);
@@ -238,6 +272,7 @@ export const create_user = async (params: any) => {
         await userRepository.save(newUser);
 
         session_container.delete(session_id);
+        console.log(session_container);
         // Также в return должен пойти access и refresh токены для последующей работы
         return {
             success: true,

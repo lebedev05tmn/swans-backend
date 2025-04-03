@@ -1,7 +1,14 @@
-import { Entity, PrimaryColumn, BaseEntity, OneToMany, Column } from 'typeorm';
-import { Exclude, Type } from 'class-transformer';
+import {
+    Entity,
+    PrimaryColumn,
+    BaseEntity,
+    OneToMany,
+    Column,
+    OneToOne,
+} from 'typeorm';
 
 import { Auth } from '../../../core-auth/models/entities/Auth';
+import { Profile } from '../../../core-profile/entities/Profile';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -50,7 +57,11 @@ export class User extends BaseEntity {
     reported!: number;
 
     @OneToMany(() => Auth, (auth) => auth.user, { cascade: true, eager: false })
-    @Type(() => User)
-    @Exclude({ toPlainOnly: true })
     resources!: Auth[];
+
+    @OneToOne(() => Profile, (profile) => profile.user, {
+        cascade: true,
+        eager: false,
+    })
+    profile!: Profile;
 }
