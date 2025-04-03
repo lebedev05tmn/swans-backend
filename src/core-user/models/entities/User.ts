@@ -9,6 +9,7 @@ import {
 
 import { Auth } from '../../../core-auth/models/entities/Auth';
 import { Profile } from '../../../core-profile/entities/Profile';
+import { PointTransformer } from '../../../shared/model/transformers';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -18,13 +19,8 @@ export class User extends BaseEntity {
     @Column({ nullable: true })
     refresh_token!: string;
 
-    @Column({
-        type: 'geometry',
-        spatialFeatureType: 'Point',
-        srid: 4326,
-        nullable: true,
-    })
-    geolocation!: any;
+    @Column({ nullable: true, type: 'point', transformer: PointTransformer })
+    geolocation!: { x: number; y: number } | null;
 
     @Column({ nullable: true })
     online!: boolean;
@@ -55,6 +51,9 @@ export class User extends BaseEntity {
 
     @Column({ nullable: true })
     reported!: number;
+
+    @Column({ nullable: true, type: 'text' })
+    socket_id!: string;
 
     @OneToMany(() => Auth, (auth) => auth.user, { cascade: true, eager: false })
     resources!: Auth[];

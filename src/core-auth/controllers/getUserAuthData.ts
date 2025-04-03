@@ -7,15 +7,9 @@ import getUserId from '../utils/getUserId';
 
 async function getUserAuthData(req: Request, res: Response) {
     try {
-        let user_id;
-        try {
-            user_id = getUserId(req);
-        } catch (error) {
-            if (error instanceof Error)
-                return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
-                    message: error.message,
-                });
-        }
+        const user_id = getUserId(req, res);
+
+        if (typeof user_id !== 'string') return;
 
         const userRepository = AppDataSource.getRepository(User);
         const currentUser = await userRepository.findOne({
