@@ -1,4 +1,4 @@
-import express, { application } from 'express';
+import express from 'express';
 import getUser from '../controllers/get-user';
 import updateUser from '../controllers/update-user';
 import { AppDataSource } from '../../shared/model';
@@ -18,7 +18,7 @@ export const userRepository = AppDataSource.getRepository(User);
  * @openapi
  * components:
  *   schemas:
- *     User:
+ *     Metadata:
  *       type: object
  *       properties:
  *         user_id:
@@ -109,14 +109,14 @@ export const userRepository = AppDataSource.getRepository(User);
  *     description: Извлекает метаданные для аутентифицированного пользователя.
  *     security:
  *       - bearerAuth: []
- *     tags: [User]
+ *     tags: [Metadata]
  *     responses:
  *       200:
  *         description: Метаданные пользователя успешно получены
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               $ref: '#/components/schemas/Metadata'
  *       401:
  *         description: Неавторизованный — токен отсутствует или недействителен
  *       404:
@@ -135,7 +135,7 @@ userRouter.get('/get', getUser);
  *     description: Обновляет метаданные для аутентифицированного пользователя
  *     security:
  *       - bearerAuth: []
- *     tags: [User]
+ *     tags: [Metadata]
  *     requestBody:
  *       content:
  *         application/json:
@@ -192,7 +192,7 @@ userRouter.get('/get', getUser);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               $ref: '#/components/schemas/Metadata'
  *       400:
  *         description: Неверные входные данные
  *       401:
