@@ -20,13 +20,19 @@ export default async (req: Request<{}, {}, Partial<User>>, res: Response) => {
         return;
     }
 
-    const update = await userRepository
-        .createQueryBuilder()
-        .update(User)
-        .set(req.body)
-        .where({ user_id })
-        .returning('*')
-        .execute();
+    try {
+        const update = await userRepository
+            .createQueryBuilder()
+            .update(User)
+            .set(req.body)
+            .where({ user_id })
+            .returning('*')
+            .execute();
 
-    res.json(update.raw);
+        res.json(update.raw);
+    } catch (error) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
+            message: 'Invalid request body',
+        });
+    }
 };
