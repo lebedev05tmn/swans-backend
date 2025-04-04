@@ -3,6 +3,7 @@ import getUser from '../controllers/get-user';
 import updateUser from '../controllers/update-user';
 import { AppDataSource } from '../../shared/model';
 import { User } from '../models/entities/User';
+import useController from 'src/shared/utils/useController';
 
 export const userRouter = express.Router();
 export const userRepository = AppDataSource.getRepository(User);
@@ -206,32 +207,42 @@ userRouter.patch('/update', updateUser);
 
 userRouter.get(
     '/hahah',
-    async () =>
-        await updateUser(
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    authorization:
-                        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMTdlM2VkYjBjNjVhMDgyNzg2YWFjM2FkZGE2NzFiNmVjNjIwM2JlOGU1YjMyZWU4ZDBiY2MzYTcwZTAyMzgwIiwiY3JlYXRlZEF0IjoiMjAyNS0wNC0wM1QyMjoxMTowMi45OThaIiwiaWF0IjoxNzQzNzE4MjYyLCJleHAiOjE3NDM4MDQ2NjJ9.MlYNfCOV6kf8X_vXpecG1nyPGEHV22QrqWQ9h3Ak35o',
-                },
-                body: {
-                    socket_id: '123e4567-e89b-12d3-a456-426614174000',
-                },
-            } as any,
-            {
-                json: (value: any) => {
-                    console.log(value);
-                    return;
-                },
-                status: (status: number) => {
-                    return {
-                        json: (value: any) => {
-                            console.log(status), value;
-                        },
-                    };
-                },
-            } as any,
-        ),
+    useController({
+        controller: updateUser,
+        req: {
+            body: { socket_id: '123e4567-e89b-12d3-a456-426614174000' },
+            headers: {
+                authorization:
+                    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMTdlM2VkYjBjNjVhMDgyNzg2YWFjM2FkZGE2NzFiNmVjNjIwM2JlOGU1YjMyZWU4ZDBiY2MzYTcwZTAyMzgwIiwiY3JlYXRlZEF0IjoiMjAyNS0wNC0wM1QyMjoxMTowMi45OThaIiwiaWF0IjoxNzQzNzE4MjYyLCJleHAiOjE3NDM4MDQ2NjJ9.MlYNfCOV6kf8X_vXpecG1nyPGEHV22QrqWQ9h3Ak35o',
+                'Content-Type': 'application/json',
+            },
+        } as any,
+    }) as any,
 );
 
+// await updateUser(
+//     {
+//         headers: {
+//             'Content-Type': 'application/json',
+//             authorization:
+//                 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMTdlM2VkYjBjNjVhMDgyNzg2YWFjM2FkZGE2NzFiNmVjNjIwM2JlOGU1YjMyZWU4ZDBiY2MzYTcwZTAyMzgwIiwiY3JlYXRlZEF0IjoiMjAyNS0wNC0wM1QyMjoxMTowMi45OThaIiwiaWF0IjoxNzQzNzE4MjYyLCJleHAiOjE3NDM4MDQ2NjJ9.MlYNfCOV6kf8X_vXpecG1nyPGEHV22QrqWQ9h3Ak35o',
+//         },
+//         body: {
+//             socket_id: '123e4567-e89b-12d3-a456-426614174000',
+//         },
+//     } as any,
+//     {
+//         json: (value: any) => {
+//             console.log(value);
+//             return;
+//         },
+//         status: (status: number) => {
+//             return {
+//                 json: (value: any) => {
+//                     console.log(status), value;
+//                 },
+//             };
+//         },
+//     } as any,
+// ),
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMTdlM2VkYjBjNjVhMDgyNzg2YWFjM2FkZGE2NzFiNmVjNjIwM2JlOGU1YjMyZWU4ZDBiY2MzYTcwZTAyMzgwIiwiY3JlYXRlZEF0IjoiMjAyNS0wNC0wM1QyMjoxMTowMi45OThaIiwiaWF0IjoxNzQzNzE4MjYyLCJleHAiOjE3NDM4MDQ2NjJ9.MlYNfCOV6kf8X_vXpecG1nyPGEHV22QrqWQ9h3Ak35o
