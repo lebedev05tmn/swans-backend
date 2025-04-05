@@ -12,19 +12,7 @@
         "prod": "yarn build && yarn preview && yarn typeorm migration:run",
         "lint": "eslint src/**/*.ts",
         "lint:fix": "eslint src/ --fix",
-        "format": "prettier --write \"src/**/*.ts\"",
-        "test": "echo \"No tests specified\" && exit 0"
-    },
-    "lint-staged": {
-        "*.ts": [
-            "yarn lint:fix",
-            "yarn format"
-        ]
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
+        "format": "prettier --write \"src/**/*.ts\""
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.738.0",
