@@ -3,7 +3,7 @@ import getUser from '../controllers/get-user';
 import updateUser from '../controllers/update-user';
 import { AppDataSource } from '../../shared/model';
 import { User } from '../models/entities/User';
-import useController from 'src/shared/utils/useController';
+import useController from '../../shared/utils/useController';
 
 export const userRouter = express.Router();
 export const userRepository = AppDataSource.getRepository(User);
