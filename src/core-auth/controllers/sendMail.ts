@@ -18,6 +18,7 @@ type Session = {
 };
 
 const set_hash_map = async (key: string, data: Session) => {
+    console.log('Entering Set Hash Map');
     await redisClient.hSet(key, {
         code: data.code,
         state: data.state,
@@ -51,9 +52,11 @@ export const send_code = async (params: SendCodeParams) => {
 
     const session: Record<string, string> = await redisClient.hGetAll(email);
     console.log(session);
-    if (session) {
+    if (session.start_time) {
+        console.log('enter check');
         if ((Date.parse(current_date) - Date.parse(session.start_time)) / 1000 > 60) {
             await redisClient.del(email);
+            console.log('Delete current session');
         } else return { success: false };
     }
 
@@ -194,7 +197,7 @@ export const send_code = async (params: SendCodeParams) => {
             return { success: false };
         }
     };
-
+    console.log('Last step');
     const result = await sendEmail(mailOptions);
     return result;
 };

@@ -10,7 +10,6 @@ import { profileRouter } from './core-profile/routes/profile-router';
 import { AppDataSource } from './shared/model';
 import { options } from './shared/config';
 import { authRouter } from './core-auth/routes/auth-router';
-import { error } from 'console';
 
 export const app = express();
 const port = process.env.PORT || 8080;
