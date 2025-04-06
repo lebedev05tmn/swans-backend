@@ -1,5 +1,6 @@
-import { v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt-nodejs';
+import { Like } from 'typeorm';
+import { Options } from 'nodemailer/lib/mailer';
 
 import { transporter } from '../../shared/config/NodeMailer';
 import { AppDataSource } from '../../shared/model';
@@ -8,17 +9,24 @@ import { User } from '../../core-user/models/entities/User';
 import { generateJWT, generateRefreshToken } from '../../shared/utils/generateJWT';
 import generateUniqueId from '../utils/generateUniqueId';
 import { AuthServiceName } from '../../shared/utils/index';
-import { Like } from 'typeorm';
-import { Options } from 'nodemailer/lib/mailer';
+import { redisClient } from '../../app';
 
-interface Session {
-    email: string;
+type Session = {
     code: string;
     state: string;
-    start_time: Date;
-}
+    start_time: string;
+};
 
-const session_container: Map<string, Session> = new Map();
+const set_hash_map = async (key: string, data: Session) => {
+    await redisClient.hSet(key, {
+        code: data.code,
+        state: data.state,
+        start_time: data.start_time,
+    });
+    await redisClient.expire(key, 300);
+};
+
+// const session_container: Map<string, Session> = new Map();
 
 interface SendCodeParams {
     email: string;
@@ -27,42 +35,33 @@ interface SendCodeParams {
 export const send_code = async (params: SendCodeParams) => {
     const { email } = params;
     const code: string = Math.floor(Math.random() * 90000 + 10000).toString();
-    const session_id: string = uuid();
-    const current_date: Date = new Date();
+    const current_date: string = new Date().toISOString();
 
     const authRepository = AppDataSource.getRepository(Auth);
 
     const existnig_auth = await authRepository.findOne({
         where: { service_user_id: Like(`${email}:%`) },
     });
+
     if (existnig_auth)
         return {
             success: false,
             message: 'User with this email alredy exist!',
         };
 
-    for (let [session_id, session] of session_container) {
-        if (session.email === email && (current_date.getTime() - session.start_time.getTime()) / 1000 > 60) {
-            session_container.delete(session_id);
-            break;
-        } else if (session.email === email) {
-            return { success: false };
-        }
+    const session: Record<string, string> = await redisClient.hGetAll(email);
+    console.log(session);
+    if (session) {
+        if ((Date.parse(current_date) - Date.parse(session.start_time)) / 1000 > 60) {
+            await redisClient.del(email);
+        } else return { success: false };
     }
 
-    session_container.set(session_id, {
-        email,
+    set_hash_map(email, {
         code,
         state: 'code',
-        start_time: new Date(),
+        start_time: new Date().toISOString(),
     });
-
-    setTimeout(
-        () => {
-            session_container.delete(session_id);
-        },
-        5 * 60 * 1000,
-    );
 
     const mailOptions = {
         from: process.env.WORK_EMAIL,
@@ -189,7 +188,7 @@ export const send_code = async (params: SendCodeParams) => {
         try {
             const info = await transporter.sendMail(mailOptions);
             console.log('Email sent:', info.response);
-            return { success: true, session_id: session_id };
+            return { success: true };
         } catch (error) {
             console.error('Error sending email:', error);
             return { success: false };
@@ -201,18 +200,18 @@ export const send_code = async (params: SendCodeParams) => {
 };
 
 interface VerifyCodeParams {
-    session_id: string;
+    email: string;
     code: string;
 }
 
 export const verify_code = async (params: VerifyCodeParams) => {
-    const { session_id, code } = params;
-    const session = session_container.get(session_id);
+    const { email, code } = params;
+    const session: Record<string, string> = await redisClient.hGetAll(email);
 
     if (!session || session.state !== 'code') throw new Error("Session doesn't exists or in invalid state!");
     if (session.code !== code) throw new Error('Wrong code!');
 
-    session.state = 'password';
+    await redisClient.hSet(email, 'state', 'password');
 
     return {
         success: true,
@@ -221,14 +220,13 @@ export const verify_code = async (params: VerifyCodeParams) => {
 };
 
 interface CreateUserParams {
-    session_id: string;
+    email: string;
     password: string;
 }
 
 export const create_user = async (params: CreateUserParams) => {
-    const { session_id, password } = params;
-    const session = session_container.get(session_id);
-    const email = session?.email;
+    const { email, password } = params;
+    const session: Record<string, string> = await redisClient.hGetAll(email);
     const password_hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
 
     if (!session || session.state !== 'password') throw new Error("Session doesn't exists or has invalid state!");
@@ -258,7 +256,7 @@ export const create_user = async (params: CreateUserParams) => {
         // Сохранение пользователя и его авторизацию в БД
         await userRepository.save(newUser);
 
-        session_container.delete(session_id);
+        await redisClient.del(email);
         // Также в return должен пойти access и refresh токены для последующей работы
         return {
             success: true,
