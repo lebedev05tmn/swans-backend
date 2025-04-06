@@ -5,13 +5,11 @@ import { transporter } from '../../shared/config/NodeMailer';
 import { AppDataSource } from '../../shared/model';
 import { Auth } from '../models/entities/Auth';
 import { User } from '../../core-user/models/entities/User';
-import {
-    generateJWT,
-    generateRefreshToken,
-} from '../../shared/utils/generateJWT';
+import { generateJWT, generateRefreshToken } from '../../shared/utils/generateJWT';
 import generateUniqueId from '../utils/generateUniqueId';
-import { AuthTypes } from '../../shared/utils/index';
+import { AuthServiceName } from '../../shared/utils/index';
 import { Like } from 'typeorm';
+import { Options } from 'nodemailer/lib/mailer';
 
 interface Session {
     email: string;
@@ -44,10 +42,7 @@ export const send_code = async (params: SendCodeParams) => {
         };
 
     for (let [session_id, session] of session_container) {
-        if (
-            session.email === email &&
-            (current_date.getTime() - session.start_time.getTime()) / 1000 > 60
-        ) {
+        if (session.email === email && (current_date.getTime() - session.start_time.getTime()) / 1000 > 60) {
             session_container.delete(session_id);
             break;
         } else if (session.email === email) {
@@ -189,24 +184,20 @@ export const send_code = async (params: SendCodeParams) => {
 </body>
 </html>`,
     };
-    transporter.verify((error, success) => {
-        if (error) {
-            console.error('Error verifying transporter:', error);
-        } else {
-            console.log('Transporter is ready to send emails', success);
-        }
-    });
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error('Error sending email:', error);
-            throw new Error('Send mail Error!');
-        } else {
+    const sendEmail = async (mailOptions: Options) => {
+        try {
+            const info = await transporter.sendMail(mailOptions);
             console.log('Email sent:', info.response);
+            return { success: true, session_id: session_id };
+        } catch (error) {
+            console.error('Error sending email:', error);
+            return { success: false };
         }
-    });
+    };
 
-    return { success: true, session_id: session_id };
+    const result = await sendEmail(mailOptions);
+    return result;
 };
 
 interface VerifyCodeParams {
@@ -218,8 +209,7 @@ export const verify_code = async (params: VerifyCodeParams) => {
     const { session_id, code } = params;
     const session = session_container.get(session_id);
 
-    if (!session || session.state !== 'code')
-        throw new Error("Session doesn't exists or in invalid state!");
+    if (!session || session.state !== 'code') throw new Error("Session doesn't exists or in invalid state!");
     if (session.code !== code) throw new Error('Wrong code!');
 
     session.state = 'password';
@@ -241,14 +231,13 @@ export const create_user = async (params: CreateUserParams) => {
     const email = session?.email;
     const password_hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
 
-    if (!session || session.state !== 'password')
-        throw new Error("Session doesn't exists or has invalid state!");
+    if (!session || session.state !== 'password') throw new Error("Session doesn't exists or has invalid state!");
 
     // Алгоритм для создания нового пользователя, повторяем все то, что использовали в authentification
     // + используем любой способ шифрования для хранения паролей в БД
 
     try {
-        const service_name: string = AuthTypes.APP;
+        const service_name: string = AuthServiceName.APP;
         const service_id: string = `${email}:${password_hash}`;
         const user_id: string = generateUniqueId(service_id, service_name);
         const access_token: string = generateJWT(user_id);
