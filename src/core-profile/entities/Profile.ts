@@ -38,8 +38,4 @@ export class Profile extends BaseEntity {
     categories!: string[];
 
     @Column({ type: 'text', nullable: true })
-    city!: string;
-
-    @Column({ type: 'text', nullable: true })
-    socket_id!: string | null;
-}
+    city!: string;}

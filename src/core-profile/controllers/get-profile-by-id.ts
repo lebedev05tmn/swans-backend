@@ -4,15 +4,9 @@ import { profileRepository } from '../../shared/config';
 import getUserId from '../../core-auth/utils/getUserId';
 
 export const getProfileById = async (req: Request, res: Response) => {
-    let user_id;
-    try {
-        user_id = getUserId(req);
-    } catch (error) {
-        if (error instanceof Error)
-            return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
-                message: error.message,
-            });
-    }
+    const user_id = getUserId(req, res);
+
+    if (typeof user_id !== 'string') return;
 
     try {
         const profile = await profileRepository.findOne({
@@ -22,9 +16,13 @@ export const getProfileById = async (req: Request, res: Response) => {
         if (profile) {
             return res.json(profile);
         } else {
-            return res.status(404).send('profile not found');
+            return res
+                .status(HTTP_STATUSES.NOT_FOUND_404)
+                .send('profile not found');
         }
     } catch (error) {
-        return res.status(500).send(`Failed to load profile: ${error}`);
+        return res
+            .status(HTTP_STATUSES.SERVER_ERROR_500)
+            .send(`Failed to load profile: ${error}`);
     }
 };

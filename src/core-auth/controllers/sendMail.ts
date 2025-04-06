@@ -11,6 +11,7 @@ import generateUniqueId from '../utils/generateUniqueId';
 import { AuthServiceName } from '../../shared/utils/index';
 import { redisClient } from '../../app';
 
+
 type Session = {
     code: string;
     state: string;
@@ -51,9 +52,7 @@ export const send_code = async (params: SendCodeParams) => {
         };
 
     const session: Record<string, string> = await redisClient.hGetAll(email);
-    console.log(session);
     if (session.start_time) {
-        console.log('enter check');
         if ((Date.parse(current_date) - Date.parse(session.start_time)) / 1000 > 60) {
             await redisClient.del(email);
             console.log('Delete current session');
@@ -197,7 +196,7 @@ export const send_code = async (params: SendCodeParams) => {
             return { success: false };
         }
     };
-    console.log('Last step');
+
     const result = await sendEmail(mailOptions);
     return result;
 };
@@ -260,6 +259,7 @@ export const create_user = async (params: CreateUserParams) => {
         await userRepository.save(newUser);
 
         await redisClient.del(email);
+
         // Также в return должен пойти access и refresh токены для последующей работы
         return {
             success: true,

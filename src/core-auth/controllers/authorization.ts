@@ -19,7 +19,12 @@ const Authorization = async (req: Request, res: Response) => {
     const request: AuthRequest = req.body;
     let { service_id, service_name } = request;
 
-    if (!service_id || !service_name || typeof service_id === 'string')
+    if (
+        !service_id ||
+        !service_name ||
+        typeof service_id !== 'string' ||
+        typeof service_name !== 'string'
+    )
         return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
             message: 'Missing Data or invalid type. Check your request data!',
         });
@@ -37,6 +42,7 @@ const Authorization = async (req: Request, res: Response) => {
             service_user_id: service_id,
         },
     });
+
     if (existing_auth)
         return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
             message: 'User already exist!',

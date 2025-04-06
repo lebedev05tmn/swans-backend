@@ -5,15 +5,7 @@ import { HTTP_STATUSES } from '../../shared/utils';
 import getUserId from '../../core-auth/utils/getUserId';
 
 export const updateProfile = async (req: Request, res: Response) => {
-    let user_id;
-    try {
-        user_id = getUserId(req);
-    } catch (error) {
-        if (error instanceof Error)
-            return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
-                message: error.message,
-            });
-    }
+    const user_id = getUserId(req, res);
 
     try {
         const update = await profileRepository
