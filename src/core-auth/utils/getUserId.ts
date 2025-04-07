@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import jwtConfig from '../../shared/config/JWTConfig';
 import { HTTP_STATUSES } from '../../shared/utils';
 
-export default (req: Request<any>, res: Response): string | Response => {
+export default (req: Request, res: Response): string | Response => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer '))
@@ -16,7 +16,7 @@ export default (req: Request<any>, res: Response): string | Response => {
     let decodedToken: JwtPayload;
     try {
         decodedToken = jwt.verify(token, jwtConfig.secret) as JwtPayload;
-    } catch (error) {
+    } catch {
         return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
             message: 'Invalid or expired token!',
         });

@@ -21,7 +21,7 @@ const updateUserAuth = async (req: Request, res: Response) => {
     let decodedToken: JwtPayload;
     try {
         decodedToken = jwt.verify(token, jwtConfig.secret) as JwtPayload;
-    } catch (error) {
+    } catch {
         return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
             message: 'Invalid or expired token!',
         });

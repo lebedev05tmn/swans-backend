@@ -7,7 +7,7 @@ import { PointTransformer } from '../../../shared/model/transformers';
 @Entity('user')
 export class User extends BaseEntity {
     @PrimaryColumn()
-    user_id!: string;   
+    user_id!: string;
 
     @Column({ nullable: true })
     refresh_token!: string;

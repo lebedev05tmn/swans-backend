@@ -20,7 +20,7 @@ export const getMedia = async (req: Request, res: Response) => {
                 res.setHeader('Content-Type', 'image/webp');
                 res.status(200).end(buffer);
             }
-        } catch (error) {
+        } catch {
             return res.status(404).send(`Not found.`);
         }
     } else {

@@ -20,7 +20,7 @@ const generateJWT = (user_id: string): string => {
 
 const generateRefreshToken = (user_id: string): string => {
     const payload: RefreshTokenPayload = {
-        userId: user_id   ,
+        userId: user_id,
         type: 'refresh',
     };
 

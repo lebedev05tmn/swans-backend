@@ -1,6 +1,4 @@
-import { Exclude, Type } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from 'typeorm';
-
 import { User } from '../../../core-user/models/entities/User';
 
 @Entity('auth')
