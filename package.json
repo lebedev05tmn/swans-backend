@@ -1,6 +1,5 @@
 {
     "name": "swans-minio",
-    "type": "module",
     "version": "1.0.0",
     "main": "./src/app.ts",
     "license": "MIT",
@@ -10,9 +9,9 @@
         "preview": "node dist/bundle.js",
         "migration": "yarn typeorm migration:run --dataSource=./ormconfig.js",
         "prod": "yarn build && yarn preview && yarn typeorm migration:run",
-        "lint": "eslint src/**/*.ts",
+        "lint": "eslint src/",
         "lint:fix": "eslint src/ --fix",
-        "format": "prettier --write \"src/**/*.ts\""
+        "format": "prettier --write src/"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.738.0",

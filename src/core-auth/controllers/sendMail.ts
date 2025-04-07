@@ -41,10 +41,7 @@ export const send_code = async (params: SendCodeParams) => {
         };
 
     for (let [session_id, session] of session_container) {
-        if (
-            session.email === email &&
-            (current_date.getTime() - session.start_time.getTime()) / 1000 > 60
-        ) {
+        if (session.email === email && (current_date.getTime() - session.start_time.getTime()) / 1000 > 60) {
             session_container.delete(session_id);
             break;
         } else if (session.email === email) {

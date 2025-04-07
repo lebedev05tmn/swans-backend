@@ -28,9 +28,9 @@ export default [
             'prettier/prettier': ['error', { endOfLine: 'auto' }],
             '@typescript-eslint/explicit-function-return-type': 'off',
             '@typescript-eslint/explicit-module-boundary-types': 'off',
-            '@typescript-eslint/no-explicit-any': 'warn',
-            '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-            'no-console': 'warn',
+            '@typescript-eslint/no-explicit-any': 'error',
+            '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+            'no-console': 0,
         },
     },
     {

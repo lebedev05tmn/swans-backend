@@ -1,11 +1,4 @@
-import {
-    Entity,
-    PrimaryColumn,
-    BaseEntity,
-    OneToMany,
-    Column,
-    OneToOne,
-} from 'typeorm';
+import { Entity, PrimaryColumn, BaseEntity, OneToMany, Column, OneToOne } from 'typeorm';
 
 import { Auth } from '../../../core-auth/models/entities/Auth';
 import { Profile } from '../../../core-profile/entities/Profile';
@@ -14,7 +7,7 @@ import { PointTransformer } from '../../../shared/model/transformers';
 @Entity('user')
 export class User extends BaseEntity {
     @PrimaryColumn()
-    user_id!: string;
+    user_id!: string;   
 
     @Column({ nullable: true })
     refresh_token!: string;

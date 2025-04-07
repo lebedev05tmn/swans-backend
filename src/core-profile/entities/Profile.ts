@@ -1,12 +1,5 @@
 import { profileTableName } from '../../shared/utils';
-import {
-    Entity,
-    Column,
-    BaseEntity,
-    PrimaryGeneratedColumn,
-    OneToOne,
-    JoinColumn,
-} from 'typeorm';
+import { Entity, Column, BaseEntity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 
 import { User } from '../../core-user/models/entities/User';
 
@@ -38,4 +31,5 @@ export class Profile extends BaseEntity {
     categories!: string[];
 
     @Column({ type: 'text', nullable: true })
-    city!: string;}
+    city!: string;
+}

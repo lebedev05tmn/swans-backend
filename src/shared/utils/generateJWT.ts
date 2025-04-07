@@ -1,9 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-import jwtConfig, {
-    JWTPayload,
-    RefreshTokenPayload,
-} from '../config/JWTConfig';
+import jwtConfig, { JWTPayload, RefreshTokenPayload } from '../config/JWTConfig';
 
 const generateJWT = (user_id: string): string => {
     const payload: JWTPayload = {
@@ -23,7 +20,7 @@ const generateJWT = (user_id: string): string => {
 
 const generateRefreshToken = (user_id: string): string => {
     const payload: RefreshTokenPayload = {
-        userId: user_id,
+        userId: user_id   ,
         type: 'refresh',
     };
 

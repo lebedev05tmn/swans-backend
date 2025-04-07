@@ -9,9 +9,7 @@ export default async (req: Request<{}, {}, Partial<User>>, res: Response) => {
 
     if (typeof user_id !== 'string') return;
 
-    const badRequest = Object.keys(req.body).some((value) =>
-        Object.keys(User).includes(value),
-    );
+    const badRequest = Object.keys(req.body).some((value) => Object.keys(User).includes(value));
 
     if (badRequest) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
