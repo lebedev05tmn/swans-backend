@@ -507,7 +507,7 @@ authRouter.post('/email_registration', async (req: Request, res: Response) => {
  *   post:
  *     summary: Высылание на почту нового пароля
  *     security:
- *       - bearerAuth: []
+ *       - basicAuth: []
  *     tags: [Email]
  *     description: Высылание на почту нового пароля, который заново записывается в базу данных
  *     requestBody:
