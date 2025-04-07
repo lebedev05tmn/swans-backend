@@ -8,7 +8,6 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import { options } from './shared/config';
 import { authRouter } from './core-auth/routes/auth-router';
-import basicAuth from 'express-basic-auth';
 import { userRouter } from './core-user/routes/userRouter';
 
 export const app = express();
@@ -34,7 +33,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use((req, res, next) => {
+app.use('/api', (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
         return next();
@@ -45,6 +44,7 @@ app.use((req, res, next) => {
             admin: process.env.SWAGGER_PASSWORD || 'admin',
         },
         challenge: true,
+        unauthorizedResponse: 'Access denied!',
     })(req, res, next);
 });
 
@@ -61,13 +61,4 @@ AppDataSource.initialize().then(() => {
 
 const swaggerDocs = swaggerJsDoc(options);
 
-app.use(
-    '/api/docs',
-    basicAuth({
-        users: { admin: `${process.env.SWAGGER_PASSWORD}` },
-        challenge: true,
-        unauthorizedResponse: 'Access denied!',
-    }),
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerDocs),
-);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
