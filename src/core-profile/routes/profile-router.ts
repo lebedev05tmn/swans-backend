@@ -2,11 +2,17 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { getAllProfiles } from '../controllers/get-all-profiles';
 import { getProfileById } from '../controllers/get-profile-by-id';
-import { createProfile } from '../controllers/create-profile';
 import { updateProfile } from '../controllers/update-profile';
-import { deleteProfile } from '../controllers/delete-profile';
+import { createProfile } from '../controllers/create-profile';
 
 export const profileRouter = express.Router();
+
+/**
+ * @openapi
+ * tags:
+ *   name: Profile
+ *   description: Взаимодействие с базой данных профилей
+ */
 
 /**
  * @openapi
@@ -15,8 +21,6 @@ export const profileRouter = express.Router();
  *     Profile:
  *       type: object
  *       properties:
- *         user_id:
- *           type: string
  *         user_name:
  *           type: string
  *         birth_date:
@@ -34,10 +38,6 @@ export const profileRouter = express.Router();
  *           type: array
  *           items:
  *             type: string
- *         geolocation:
- *           type: array
- *           items:
- *             type: number
  *         city:
  *           type: string
  *     NoUserIdProfile:
@@ -60,10 +60,6 @@ export const profileRouter = express.Router();
  *           type: array
  *           items:
  *             type: string
- *         geolocation:
- *           type: array
- *           items:
- *             type: number
  *         city:
  *           type: string
  *       example:
@@ -73,15 +69,7 @@ export const profileRouter = express.Router();
  *         images: [firstimage, secondimage]
  *         description: Описание пользователя, которое он придумал себе сам.
  *         categories: [category1, category2, category3]
- *         geolocation: [55.752004, 37.617734]
  *         city: Москва
- */
-
-/**
- * @openapi
- * tags:
- *   name: Profile
- *   description: Взаимодействие с базой данных профилей
  */
 
 /**
@@ -111,17 +99,12 @@ profileRouter.get('/', async (req: Request, res: Response) => {
 
 /**
  * @openapi
- * /api/profile/get/{id}:
+ * /api/profile/get:
  *   get:
  *     summary: Получить профиль по id
  *     tags: [Profile]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: id профиля
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Успешный ответ
@@ -134,7 +117,7 @@ profileRouter.get('/', async (req: Request, res: Response) => {
  *       500:
  *         description: Ошибка на стороне сервера
  */
-profileRouter.get('/get/:id', async (req: Request, res: Response) => {
+profileRouter.get('/get', async (req: Request, res: Response) => {
     getProfileById(req, res);
 });
 
@@ -144,13 +127,8 @@ profileRouter.get('/get/:id', async (req: Request, res: Response) => {
  *   post:
  *     summary: Создание нового пользователя
  *     tags: [Profile]
- *     parameters:
- *       - in: query
- *         name: user_id
- *         schema:
- *           type: string
- *         required: true
- *         description: id профиля
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -179,13 +157,8 @@ profileRouter.post('/create', async (req: Request, res: Response) => {
  *   patch:
  *     summary: Обновление информации о пользователе
  *     tags: [Profile]
- *     parameters:
- *       - in: query
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: id профиля
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -206,29 +179,4 @@ profileRouter.post('/create', async (req: Request, res: Response) => {
  */
 profileRouter.patch('/update', async (req: Request, res: Response) => {
     updateProfile(req, res);
-});
-
-/**
- * @openapi
- * /api/profile/delete/{id}:
- *   delete:
- *     summary: Удалить профиль по id
- *     tags: [Profile]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: id профиля
- *     responses:
- *       204:
- *         description: Профиль удален успешно
- *       404:
- *         description: Профиль не найден
- *       500:
- *         description: Ошибка на стороне сервера
- */
-profileRouter.delete('/delete/:id', async (req: Request, res: Response) => {
-    deleteProfile(req, res);
 });

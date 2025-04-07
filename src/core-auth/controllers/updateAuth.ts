@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import { HTTP_STATUSES } from '../../shared/utils/index';
 import { User } from '../../core-user/models/entities/User';
@@ -8,7 +8,7 @@ import { AppDataSource } from '../../shared/model';
 import jwtConfig from '../../shared/config/JWTConfig';
 
 const updateUserAuth = async (req: Request, res: Response) => {
-    const request_data: any = req.body;
+    const request_data: Record<string, string> = req.body;
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
@@ -18,9 +18,9 @@ const updateUserAuth = async (req: Request, res: Response) => {
 
     const token = authHeader.split(' ')[1];
 
-    let decodedToken: any;
+    let decodedToken: JwtPayload;
     try {
-        decodedToken = jwt.verify(token, jwtConfig.secret);
+        decodedToken = jwt.verify(token, jwtConfig.secret) as JwtPayload;
     } catch (error) {
         return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
             message: 'Invalid or expired token!',

@@ -1,5 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    BaseEntity,
+    ManyToOne,
+} from 'typeorm';
 
 import { User } from '../../../core-user/models/entities/User';
 
@@ -12,8 +18,6 @@ export class Auth extends BaseEntity {
         onDelete: 'CASCADE',
         eager: false,
     })
-    @Type(() => User)
-    @Exclude({ toPlainOnly: true })
     user!: User;
 
     @Column({ nullable: false })
