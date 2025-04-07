@@ -11,7 +11,8 @@
         "prod": "yarn build && yarn preview && yarn typeorm migration:run",
         "lint": "eslint src/",
         "lint:fix": "eslint src/ --fix",
-        "format": "prettier --write src/"
+        "pretttier": "prettier --check src/",
+        "prettier:fix": "prettier --write src/"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.738.0",
@@ -59,5 +60,10 @@
         "webpack": "^5.96.1",
         "webpack-cli": "^5.1.4",
         "webpack-node-externals": "^3.0.0"
+    },
+    "husky": {
+        "hooks": {
+         "pre-commit": "yarn prettier && yarn lint"
+        }
     }
 }
