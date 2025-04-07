@@ -1,4 +1,5 @@
 import express from 'express';
+import expressBasicAuth from 'express-basic-auth';
 import { mediaRouter } from './core-media/routes/media-router';
 import fileUpload from 'express-fileupload';
 import { profileRouter } from './core-profile/routes/profile-router';
@@ -31,6 +32,20 @@ app.use((req, res, next) => {
         return;
     }
     next();
+});
+
+app.use((req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        return next();
+    }
+
+    return expressBasicAuth({
+        users: {
+            admin: process.env.SWAGGER_PASSWORD || 'admin',
+        },
+        challenge: true,
+    })(req, res, next);
 });
 
 AppDataSource.initialize().then(() => {
