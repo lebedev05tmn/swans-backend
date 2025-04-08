@@ -1,11 +1,4 @@
-import {
-    Entity,
-    PrimaryColumn,
-    BaseEntity,
-    OneToMany,
-    Column,
-    OneToOne,
-} from 'typeorm';
+import { Entity, PrimaryColumn, BaseEntity, OneToMany, Column, OneToOne } from 'typeorm';
 
 import { Auth } from '../../../core-auth/models/entities/Auth';
 import { Profile } from '../../../core-profile/entities/Profile';

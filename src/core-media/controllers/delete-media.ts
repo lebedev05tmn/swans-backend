@@ -21,7 +21,7 @@ export const deleteMedia = async (req: Request, res: Response) => {
 
         await s3client.send(command);
         res.status(200).send('Deleted successfully.');
-    } catch (error) {
+    } catch {
         res.status(404).send('Not found.');
     }
 };

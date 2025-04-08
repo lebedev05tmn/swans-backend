@@ -4,14 +4,12 @@ import getUserId from '../../core-auth/utils/getUserId';
 import { HTTP_STATUSES } from '../../shared/utils';
 import { userRepository } from '../routes/userRouter';
 
-export default async (req: Request<{}, {}, Partial<User>>, res: Response) => {
+export default async (req: Request<Record<string, string>, Record<string, unknown>, Partial<User>>, res: Response) => {
     const user_id = getUserId(req, res);
 
     if (typeof user_id !== 'string') return;
 
-    const badRequest = Object.keys(req.body).some((value) =>
-        Object.keys(User).includes(value),
-    );
+    const badRequest = Object.keys(req.body).some((value) => Object.keys(User).includes(value));
 
     if (badRequest) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
@@ -30,7 +28,7 @@ export default async (req: Request<{}, {}, Partial<User>>, res: Response) => {
             .execute();
 
         res.json(update.raw);
-    } catch (error) {
+    } catch {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
             message: 'Invalid request body',
         });

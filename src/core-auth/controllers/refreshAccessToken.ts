@@ -5,10 +5,7 @@ import jwtConfig from '../../shared/config/JWTConfig';
 import { User } from '../../core-user/models/entities/User';
 import { AppDataSource } from '../../shared/model';
 import { HTTP_STATUSES } from '../../shared/utils';
-import {
-    generateJWT,
-    generateRefreshToken,
-} from '../../shared/utils/generateJWT';
+import { generateJWT, generateRefreshToken } from '../../shared/utils/generateJWT';
 
 async function refreshAccessToken(req: Request, res: Response) {
     try {
@@ -22,11 +19,8 @@ async function refreshAccessToken(req: Request, res: Response) {
 
         let decodedToken: JwtPayload;
         try {
-            decodedToken = jwt.verify(
-                refreshToken,
-                jwtConfig.secret,
-            ) as JwtPayload;
-        } catch (error) {
+            decodedToken = jwt.verify(refreshToken, jwtConfig.secret) as JwtPayload;
+        } catch {
             return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
                 message: 'Invalid or expired refresh token!',
             });

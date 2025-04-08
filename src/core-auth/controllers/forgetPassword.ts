@@ -25,7 +25,7 @@ export const forget_password = async (req: Request, res: Response) => {
     let decodedToken: JwtPayload;
     try {
         decodedToken = jwt.verify(token, jwtConfig.secret) as JwtPayload;
-    } catch (error) {
+    } catch {
         return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
             message: 'Invalid or expired token!',
         });
@@ -57,10 +57,7 @@ export const forget_password = async (req: Request, res: Response) => {
             });
 
             const new_password = v4();
-            const new_password_hash = bcrypt.hashSync(
-                new_password,
-                bcrypt.genSaltSync(),
-            );
+            const new_password_hash = bcrypt.hashSync(new_password, bcrypt.genSaltSync());
 
             if (current_auth) {
                 const authRepository = AppDataSource.getRepository(Auth);
