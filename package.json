@@ -11,6 +11,7 @@
     "prod": "yarn build && yarn start && yarn typeorm migration:run",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
+    "format": "prettier --check src/",
     "format:fix": "prettier --write src/",
     "prepare": "husky"
   },
@@ -55,5 +56,5 @@
     "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
-  },
+  }
 }
