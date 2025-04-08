@@ -9,7 +9,7 @@ async function getUserAuthData(req: Request, res: Response) {
     try {
         const user_id = getUserId(req, res);
 
-        if (typeof user_id !== 'string') return ;
+        if (typeof user_id !== 'string') return;
 
         const userRepository = AppDataSource.getRepository(User);
         const currentUser = await userRepository.findOne({
