@@ -17,7 +17,7 @@ export const getFileContentType = async (objectKey: string) => {
     }
 };
 
-const routes = ['./**/routes/*.ts'];
+const routes = ['./**/routes/*.ts', './**/core-web/**/*.ts'];
 
 export const options = {
     definition: {

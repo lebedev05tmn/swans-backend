@@ -9,6 +9,7 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import { options } from './shared/config';
 import { authRouter } from './core-auth/routes/auth-router';
 import { userRouter } from './core-user/routes/userRouter';
+import { contextRouter } from './core-web/context';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -49,6 +50,7 @@ app.use('/api', (req, res, next) => {
 });
 
 AppDataSource.initialize().then(() => {
+    app.use('/api/context', contextRouter);
     app.use('/api/profile', profileRouter);
     app.use('/api/media', mediaRouter);
     app.use('/api/auth', authRouter);
