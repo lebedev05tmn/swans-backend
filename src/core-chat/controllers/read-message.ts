@@ -1,11 +1,13 @@
 import { Server } from 'socket.io';
-import { messagesRepository, profileRepository } from '../../shared/config';
+import { messagesRepository } from '../../shared/config';
 import { redis } from '../../shared/model';
+import axios from 'axios';
 
 export const socketReadMessage = async (
-    io: any,
+    io: Server,
     chatId: number,
     messageId: number,
+    recipientAccessToken: string,
 ) => {
     try {
         const redisChat = await redis.get(`chat:${chatId}`);
@@ -15,31 +17,39 @@ export const socketReadMessage = async (
             throw new Error(`Data in Redis for chat:${chatId} is not an array`);
         }
 
-        let message = chat.find(
-            (message: { message_id: number }) =>
-                message.message_id === messageId,
+        const updatedChat = chat.map(
+            (message: { message_id: number; is_readen: boolean }) => {
+                if (message.message_id <= messageId) {
+                    return { ...message, is_readen: true };
+                }
+                return message;
+            },
         );
 
-        if (message) {
-            message.is_readen = true;
-            await redis.set(`chat:${chatId}`, JSON.stringify(chat));
-            emitReadEvent(io, message, chatId, messageId);
-        } else {
-            message = await messagesRepository.findOneBy({
-                chat_id: chatId,
-                message_id: messageId,
-            });
+        let hasUpdates = updatedChat.some((msg, index) => msg !== chat[index]);
 
-            if (message) {
-                message.is_readen = true;
-                await messagesRepository.save(message);
-                emitReadEvent(io, message, chatId, messageId);
-            } else {
-                throw new Error(
-                    `Message with ID ${messageId} not found in Redis or Postgres`,
-                );
-            }
+        if (hasUpdates) {
+            await redis.set(`chat:${chatId}`, JSON.stringify(updatedChat));
+            chat = updatedChat;
         }
+
+        const updateResult = await messagesRepository
+            .createQueryBuilder()
+            .update()
+            .set({ is_readen: true })
+            .where('chat_id = :chatId AND message_id <= :messageId', {
+                chatId,
+                messageId,
+            })
+            .execute();
+
+        if (updateResult.affected === 0 && !hasUpdates) {
+            throw new Error(
+                `Messages in chat ${chatId} up to ${messageId} not found`,
+            );
+        }
+
+        emitReadEvent(io, chatId, messageId, recipientAccessToken);
     } catch (err) {
         console.error('Ошибка в socketReadMessage:', err);
         io.emit('error', {
@@ -51,26 +61,27 @@ export const socketReadMessage = async (
 
 const emitReadEvent = async (
     io: Server,
-    message: any,
     chatId: number,
     messageId: number,
+    recipientAccessToken: string,
 ) => {
     try {
-        const user_1 = await profileRepository.findOneBy({
-            user_id: message.sender_id,
-        });
-        const user_2 = await profileRepository.findOneBy({
-            user_id: message.recipient_id,
-        });
+        const response = await axios.get(
+            'http://localhost:8081/api/metadata/get',
+            {
+                headers: {
+                    Authorization: `Bearer ${recipientAccessToken}`,
+                },
+            },
+        );
 
-        if (!user_1 || !user_2) {
-            throw new Error('One or both users not found');
+        const recipientSocketId = response.data.socket_id;
+
+        if (!recipientSocketId) {
+            throw new Error("Recipient's socket id not found");
         }
 
-        const senderSocketId = user_1.socket_id as string;
-        const recipientSocketId = user_2.socket_id as string;
-
-        io.to([senderSocketId, recipientSocketId]).emit('message-is-readen', {
+        io.to(recipientSocketId).emit('message-is-readen', {
             chatId,
             messageId,
         });

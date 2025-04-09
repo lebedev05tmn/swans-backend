@@ -1,19 +1,22 @@
 import { Server } from 'socket.io';
 import { messagesRepository, profileRepository } from '../../shared/config';
 import { redis } from '../../shared/model';
+import axios from 'axios';
+import { decodeUserId } from '../../core-auth/utils/getUserId';
+import { userRepository } from '../../core-user/routes/userRouter';
+import { createQueryBuilder } from 'typeorm';
 
 export const socketSendMessage = async (
     io: Server,
-    recipientUserId: string,
+    fromAccessToken: string,
+    toAccessToken: string,
     messageText: string,
     chatId: number,
     responseTo: number | null,
     images: string[] | null,
-    myUsername: string | undefined,
-    myDatabaseId: string | undefined,
 ) => {
     try {
-        if (!myDatabaseId || !myUsername) {
+        if (!fromAccessToken || !toAccessToken) {
             throw new Error('myDatabaseId or myUsername is undefined');
         }
 
@@ -37,11 +40,14 @@ export const socketSendMessage = async (
             newMessageId++;
         }
 
+        const senderId = decodeUserId(fromAccessToken);
+        const recipientId = decodeUserId(toAccessToken);
+
         const message = {
             message_id: newMessageId,
             chat_id: chatId,
-            sender_id: myDatabaseId,
-            recipient_id: recipientUserId,
+            sender_id: senderId,
+            recipient_id: recipientId,
             message_text: messageText,
             sending_time: new Date(),
             is_readen: false,
@@ -62,21 +68,28 @@ export const socketSendMessage = async (
         messagesArray.push(message);
         await redis.set(keyChat, JSON.stringify(messagesArray));
 
-        const recipient = await profileRepository.findOneBy({
-            user_id: recipientUserId,
+        const recipientUser = await userRepository
+            .createQueryBuilder('user')
+            .select('user.socket_id')
+            .where('user.user_id = :id', { id: recipientId })
+            .getRawOne();
+
+        if (!recipientUser) throw new Error('User not found');
+
+        const recipientSocket = recipientUser.socket_id;
+
+        if (!recipientSocket) {
+            throw new Error(`Recipient with ID ${recipientId} not found`);
+        }
+
+        io.to(recipientSocket).emit('add-message', {
+            sender: senderId,
+            chatId: chatId,
+            messageId: newMessageId,
+            messageText: messageText,
+            responseTo: responseTo,
+            images: images,
         });
-
-        if (!recipient) {
-            throw new Error(`Recipient with ID ${recipientUserId} not found`);
-        }
-
-        if (recipient.socket_id) {
-            io.to(recipient.socket_id).emit('add-message', {
-                sender: myUsername,
-                messageId: newMessageId,
-                messageText: messageText,
-            });
-        }
     } catch (err) {
         console.error('Ошибка в socketSendMessage:', err);
         io.emit('error', {

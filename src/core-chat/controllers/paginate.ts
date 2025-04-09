@@ -7,6 +7,7 @@ export const chatPaginate = async (req: Request, res: Response) => {
     try {
         const chatId = Number(req.params.id);
         const page = Number(req.query.page);
+        const accessToken = req.query.access_token;
 
         const offset = Math.max(0, (page - 1) * limit);
 
@@ -26,6 +27,7 @@ export const chatPaginate = async (req: Request, res: Response) => {
             },
         };
 
+        res.setHeader('Authorization', `Bearer ${accessToken}`);
         res.status(200).json(paginated);
     } catch (err) {
         console.log('Ошибка пагинации:', err);

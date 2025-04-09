@@ -1,9 +1,11 @@
 import { redis } from '../../shared/model';
-import { messagesRepository, profileRepository } from '../../shared/config';
+import { messagesRepository } from '../../shared/config';
 import { Server } from 'socket.io';
+import axios from 'axios';
 
 export const socketEditMessage = async (
     io: Server,
+    recipientAccessToken: string,
     chatId: number,
     messageId: number,
     messageText: string,
@@ -24,7 +26,13 @@ export const socketEditMessage = async (
         if (message) {
             message.message_text = messageText;
             await redis.set(`chat:${chatId}`, JSON.stringify(chat));
-            emitEditEvent(io, message, chatId, messageId, messageText);
+            emitEditEvent(
+                io,
+                recipientAccessToken,
+                chatId,
+                messageId,
+                messageText,
+            );
         } else {
             message = await messagesRepository.findOneBy({
                 chat_id: chatId,
@@ -34,7 +42,13 @@ export const socketEditMessage = async (
             if (message) {
                 message.message_text = messageText;
                 await messagesRepository.save(message);
-                emitEditEvent(io, message, chatId, messageId, messageText);
+                emitEditEvent(
+                    io,
+                    recipientAccessToken,
+                    chatId,
+                    messageId,
+                    messageText,
+                );
             } else {
                 throw new Error(
                     `Message with ID ${messageId} not found in Redis or Postgres`,
@@ -52,27 +66,28 @@ export const socketEditMessage = async (
 
 const emitEditEvent = async (
     io: Server,
-    message: any,
+    recipientAccessToken: string,
     chatId: number,
     messageId: number,
     messageText: string,
 ) => {
     try {
-        const user_1 = await profileRepository.findOneBy({
-            user_id: message.sender_id,
-        });
-        const user_2 = await profileRepository.findOneBy({
-            user_id: message.recipient_id,
-        });
+        const response = await axios.get(
+            'http://localhost:8081/api/metadata/get',
+            {
+                headers: {
+                    Authorization: `Bearer ${recipientAccessToken}`,
+                },
+            },
+        );
 
-        if (!user_1 || !user_2) {
-            throw new Error('One or both users not found');
+        const recipientSocketId = response.data.socket_id;
+
+        if (!recipientSocketId) {
+            throw new Error("Recipient's socket id not found");
         }
 
-        const senderSocketId = user_1.socket_id as string;
-        const recipientSocketId = user_2.socket_id as string;
-
-        io.to([senderSocketId, recipientSocketId]).emit('message-is-edited', {
+        io.to(recipientSocketId).emit('message-is-readen', {
             chatId,
             messageId,
             messageText,

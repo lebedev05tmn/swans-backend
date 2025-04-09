@@ -1,12 +1,14 @@
 import { Server } from 'socket.io';
 import { redis } from '../../shared/model';
-import { messagesRepository, profileRepository } from '../../shared/config';
+import { messagesRepository } from '../../shared/config';
+import axios from 'axios';
 
 export const socketReaction = async (
     io: Server,
     chatId: number,
     messageId: number,
-    userId: string,
+    fromAccessToken: string,
+    toAccessToken: string,
     reaction: string | null,
 ) => {
     try {
@@ -22,12 +24,27 @@ export const socketReaction = async (
                 message.message_id === messageId,
         );
 
+        const userId = await axios
+            .get('http://localhost:8081/api/metadata/get', {
+                headers: {
+                    Authorization: `Bearer ${fromAccessToken}`,
+                },
+            })
+            .then((response) => response.data.user_id);
+
         if (message) {
             if (userId === message.user1_id) message.reaction_sender = reaction;
             else message.reaction_recipient = reaction;
 
             await redis.set(`chat:${chatId}`, JSON.stringify(chat));
-            emitReactionEvent(io, message, chatId, messageId, userId, reaction);
+            emitReactionEvent(
+                io,
+                chatId,
+                messageId,
+                toAccessToken,
+                userId,
+                reaction,
+            );
         } else {
             message = await messagesRepository.findOneBy({
                 chat_id: chatId,
@@ -42,16 +59,14 @@ export const socketReaction = async (
                 await messagesRepository.save(message);
                 emitReactionEvent(
                     io,
-                    message,
                     chatId,
                     messageId,
+                    toAccessToken,
                     userId,
                     reaction,
                 );
             } else {
-                throw new Error(
-                    `Message with ID ${messageId} not found in Redis or Postgres`,
-                );
+                throw new Error(`Message with ID ${messageId} not found`);
             }
         }
     } catch (err) {
@@ -65,28 +80,26 @@ export const socketReaction = async (
 
 const emitReactionEvent = async (
     io: Server,
-    message: any,
     chatId: number,
     messageId: number,
+    toAccessToken: string,
     userId: string,
     reaction: string | null,
 ) => {
     try {
-        const user_1 = await profileRepository.findOneBy({
-            user_id: message.sender_id,
-        });
-        const user_2 = await profileRepository.findOneBy({
-            user_id: message.recipient_id,
-        });
+        const recipientSocketId = await axios
+            .get('http://localhost:8081/api/metadata/get', {
+                headers: {
+                    Authorization: `Bearer ${toAccessToken}`,
+                },
+            })
+            .then((response) => response.data.socket_id);
 
-        if (!user_1 || !user_2) {
-            throw new Error('One or both users not found');
+        if (!recipientSocketId) {
+            throw new Error('User not found');
         }
 
-        const senderSocketId = user_1.socket_id as string;
-        const recipientSocketId = user_2.socket_id as string;
-
-        io.to([senderSocketId, recipientSocketId]).emit('message-is-reacted', {
+        io.to(recipientSocketId).emit('message-is-reacted', {
             chatId,
             messageId,
             userId,

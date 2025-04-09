@@ -1,11 +1,12 @@
 import { redis } from '../../shared/model';
-import { messagesRepository, profileRepository } from '../../shared/config';
+import { messagesRepository } from '../../shared/config';
 import { Server, Socket } from 'socket.io';
+import axios from 'axios';
 
 export const socketDeleteMessage = async (
     io: Server,
     socket: Socket,
-    recipientUserId: string,
+    recipientAccessToken: string,
     chatId: number,
     messageId: number,
 ) => {
@@ -37,24 +38,24 @@ export const socketDeleteMessage = async (
             });
 
             if (deleteResult.affected === 0) {
-                throw new Error(
-                    `Message with ID ${messageId} not found in Redis or Postgres`,
-                );
+                throw new Error(`Message with ID ${messageId} not found`);
             }
         }
 
-        const recipient = await profileRepository.findOneBy({
-            user_id: recipientUserId,
-        });
+        const recipient = await axios.get(
+            'http://localhost:8081/api/metadata/get',
+            {
+                headers: {
+                    Authorization: `Bearer ${recipientAccessToken}`,
+                },
+            },
+        );
 
         if (!recipient) {
-            throw new Error(`Recipient with ID ${recipientUserId} not found`);
+            throw new Error(`Recipient not found`);
         }
 
-        io.to([socket.id, recipient.socket_id as string]).emit(
-            'message-is-deleted',
-            messageId,
-        );
+        io.to(recipient.data.socket_id).emit('message-is-deleted', messageId);
     } catch (err) {
         console.error('Ошибка в socketDeleteMessage:', err);
 
