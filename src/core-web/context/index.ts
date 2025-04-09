@@ -1,5 +1,5 @@
 import express from 'express';
-import config from '../../shared/config/frontend.json';
+import config from '../../../config/frontend.json';
 
 const contextRouter = express.Router();
 
