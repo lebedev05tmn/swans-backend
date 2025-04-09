@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, BaseEntity, OneToMany, Column, OneToOne } from 'typeorm';
+import { Entity, PrimaryColumn, BaseEntity, OneToMany, Column, OneToOne, BeforeUpdate } from 'typeorm';
 
 import { Auth } from '../../../core-auth/models/entities/Auth';
 import { Profile } from '../../../core-profile/entities/Profile';
@@ -47,6 +47,19 @@ export class User extends BaseEntity {
 
     @Column({ nullable: true, type: 'text' })
     socket_id!: string;
+
+    @Column({ nullable: true })
+    dating_last_time!: Date;
+
+    @Column({ nullable: true })
+    timezone!: string;
+
+    @BeforeUpdate()
+    updateLastVisit() {
+        if (this.online === false) {
+            this.last_visit = new Date(Date.now());
+        }
+    }
 
     @OneToMany(() => Auth, (auth) => auth.user, { cascade: true, eager: false })
     resources!: Auth[];
