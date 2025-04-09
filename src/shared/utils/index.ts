@@ -21,7 +21,7 @@ export const enum FileContentTypes {
     PNG = 'image/png',
 }
 
-export const enum AuthTypes {
+export enum AuthServiceName {
     TELEGRAM = 'Telegram',
     APPLE = 'Apple',
     VK = 'Vkontakte',

@@ -12,6 +12,7 @@ import { socketHandler } from './core-chat/config';
 import { chatRouter } from './core-chat/routes/chat-router';
 import { authRouter } from './core-auth/routes/auth-router';
 import basicAuth from 'express-basic-auth';
+import { userRouter } from './core-user/routes/userRouter';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -55,6 +56,7 @@ AppDataSource.initialize().then(() => {
     app.use('/api/media', mediaRouter);
     app.use('/api/chat', chatRouter);
     app.use('/api/auth', authRouter);
+    app.use('/api/metadata', userRouter);
 
     server.listen(port, () => {
         console.log(`App listening on port ${port}`);

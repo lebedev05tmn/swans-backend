@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import jwtConfig from '../../shared/config/JWTConfig';
 import { User } from '../../core-user/models/entities/User';
@@ -20,9 +20,12 @@ async function refreshAccessToken(req: Request, res: Response) {
             });
         }
 
-        let decodedToken: any;
+        let decodedToken: JwtPayload;
         try {
-            decodedToken = jwt.verify(refreshToken, jwtConfig.secret);
+            decodedToken = jwt.verify(
+                refreshToken,
+                jwtConfig.secret,
+            ) as JwtPayload;
         } catch (error) {
             return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
                 message: 'Invalid or expired refresh token!',
