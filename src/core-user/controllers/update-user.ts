@@ -18,11 +18,15 @@ export default async (req: Request<Record<string, string>, Record<string, unknow
         return;
     }
 
+    const body = req.body;
+
     try {
+        if (body.online === false) body.last_visit = new Date();
+
         const update = await userRepository
             .createQueryBuilder()
             .update(User)
-            .set(req.body)
+            .set(body)
             .where({ user_id })
             .returning('*')
             .execute();
