@@ -96,8 +96,9 @@ export const verify_code = async (params: VerifyCodeParams) => {
     const { email, code } = params;
     const session: Record<string, string> = await redisClient.hGetAll(email);
 
-    if (!session || session.state !== 'code') throw new Error("Session doesn't exists or in invalid state!");
-    if (session.code !== code) throw new Error('Wrong code!');
+    if (!session || session.state !== 'code')
+        return { success: false, message: 'Current session does not exist or in invalid state' };
+    if (session.code !== code) return { success: false, message: 'The wrong code!' };
 
     await redisClient.hSet(email, 'state', 'password');
 
@@ -114,17 +115,17 @@ interface CreateUserParams {
 
 export const create_user = async (params: CreateUserParams) => {
     const { email, password } = params;
+    if (!email || !password) return { success: false, message: 'Invalid email or password data' };
     const session: Record<string, string> = await redisClient.hGetAll(email);
-    const password_hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
+    const password_hash = bcrypt.hashSync(password, process.env.BCRYPT_SALT);
+    const email_hash = bcrypt.hashSync(email, process.env.BCRYPT_SALT);
 
-    if (!session || session.state !== 'password') throw new Error("Session doesn't exists or has invalid state!");
-
-    // Алгоритм для создания нового пользователя, повторяем все то, что использовали в authentification
-    // + используем любой способ шифрования для хранения паролей в БД
+    if (session.state !== 'password')
+        return { success: false, message: 'Current session does not exist or in invalid state' };
 
     try {
-        const service_name: string = AuthServiceName.APP;
-        const service_id: string = `${email}:${password_hash}`;
+        const service_name: string = AuthServiceName.EMAIL;
+        const service_id: string = `${email_hash}:${password_hash}`;
         const user_id: string = generateUniqueId(service_id, service_name);
         const access_token: string = generateJWT(user_id);
         const refresh_token: string = generateRefreshToken(user_id);
@@ -153,6 +154,6 @@ export const create_user = async (params: CreateUserParams) => {
             refresh_token: refresh_token,
         };
     } catch (error) {
-        throw new Error(`${error}`);
+        return { success: false, message: error };
     }
 };

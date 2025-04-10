@@ -10,10 +10,11 @@ import { Auth } from '../models/entities/Auth';
 
 export const forget_password = async (req: Request, res: Response) => {
     const { email }: { email: string } = req.body;
+    const email_hash: string = bcrypt.hashSync(email, process.env.BCRYPT_SALT);
 
     const authRepository = AppDataSource.getRepository(Auth);
     const current_auth = await authRepository.findOne({
-        where: { service_user_id: Like(`${email}:%`) },
+        where: { service_user_id: Like(`${email_hash}:%`) },
     });
 
     if (!current_auth) {
@@ -24,10 +25,10 @@ export const forget_password = async (req: Request, res: Response) => {
 
     try {
         const new_password = v4().slice(0, 11);
-        const new_password_hash = bcrypt.hashSync(new_password, bcrypt.genSaltSync());
+        const new_password_hash = bcrypt.hashSync(new_password, process.env.BCRYPT_SALT);
 
         const authRepository = AppDataSource.getRepository(Auth);
-        current_auth.service_user_id = `${email}:${new_password_hash}`;
+        current_auth.service_user_id = `${email_hash}:${new_password_hash}`;
         await authRepository.save(current_auth);
 
         const mailOptions = {

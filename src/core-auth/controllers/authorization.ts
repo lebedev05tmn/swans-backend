@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import bcrypt from 'bcrypt-nodejs';
 
 import generateUniqueId from '../utils/generateUniqueId';
 import { generateJWT, generateRefreshToken } from '../../shared/utils/generateJWT';
@@ -26,7 +27,6 @@ const Authorization = async (req: Request, res: Response) => {
             message: 'Missing service name. Check your request data!',
         });
 
-    let new_service_name: string = service_name ? service_name : 'Unknown';
     const authRepository = AppDataSource.getRepository(Auth);
     const existing_auth = await authRepository.findOne({
         where: {
@@ -39,12 +39,6 @@ const Authorization = async (req: Request, res: Response) => {
         return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
             message: 'User already exist!',
         });
-
-    if (new_service_name === 'Unknown') {
-        return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
-            message: 'Bad Service name!',
-        });
-    }
     try {
         const user_id: string = generateUniqueId(service_id, service_name);
         const access_token: string = generateJWT(user_id);
@@ -57,7 +51,8 @@ const Authorization = async (req: Request, res: Response) => {
         newUser.refresh_token = refresh_token;
 
         const newAuth = new Auth();
-        newAuth.service_user_id = service_id;
+        newAuth.service_user_id = bcrypt.hashSync(service_id, process.env.BCRYPT_SALT);
+        console.log(newAuth.service_user_id);
         newAuth.service_name = service_name;
 
         newUser.resources = [newAuth];

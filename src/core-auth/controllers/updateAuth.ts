@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import bcrypt from 'bcrypt-nodejs';
 
 import { HTTP_STATUSES } from '../../shared/utils/index';
 import { User } from '../../core-user/models/entities/User';
@@ -52,8 +53,8 @@ const updateUserAuth = async (req: Request, res: Response) => {
 
             if (current_user) {
                 const new_auth_data = new Auth();
-                new_auth_data.service_user_id = service_id;
-                new_auth_data.service_name = service_name;
+                new_auth_data.service_user_id = bcrypt.hashSync(service_id, process.env.BCRYPT_SALT);
+                new_auth_data.service_name = bcrypt.hashSync(service_name, process.env.BCRYPT_SALT);
 
                 let is_auth_correct = true;
                 current_user.resources.forEach((auth) => {
