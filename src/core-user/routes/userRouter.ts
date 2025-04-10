@@ -84,6 +84,14 @@ export const userRepository = AppDataSource.getRepository(User);
  *           type: string
  *           nullable: true
  *           description: User's socket ID for real-time communication
+ *         timezone:
+ *           type: string
+ *           nullable: true
+ *         dating_last_time:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           description: Last time the user was active in the dating feature
  *       example:
  *         user_id: "123e4567-e89b-12d3-a456-426614174000"
  *         refresh_token: "some_refresh_token"
@@ -99,6 +107,8 @@ export const userRepository = AppDataSource.getRepository(User);
  *         banned: false
  *         reported: 0
  *         socket_id: "123e4567-e89b-12d3-a456-426614174000"
+ *         timezone: "Europe/Moscow"
+ *         dating_last_time: "2023-01-01T12:00:00Z"
  */
 
 /**
@@ -155,33 +165,14 @@ userRouter.get('/get', getUser);
  *               online:
  *                 type: boolean
  *                 nullable: true
- *               last_visit:
- *                 type: string
- *                 format: date-time
- *                 nullable: true
- *               verify:
- *                 type: boolean
- *                 nullable: true
- *               premium:
- *                 type: boolean
- *                 nullable: true
- *               super_likes:
- *                 type: number
- *                 nullable: true
- *               returns:
- *                 type: number
- *                 nullable: true
  *               background_mode:
  *                 type: boolean
  *                 nullable: true
  *               locale:
  *                 type: string
  *                 nullable: true
- *               banned:
- *                 type: boolean
- *                 nullable: true
- *               reported:
- *                 type: number
+ *               timezone:
+ *                 type: string
  *                 nullable: true
  *               socket_id:
  *                 type: string

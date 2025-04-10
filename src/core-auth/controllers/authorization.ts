@@ -1,10 +1,7 @@
 import { Request, Response } from 'express';
 
 import generateUniqueId from '../utils/generateUniqueId';
-import {
-    generateJWT,
-    generateRefreshToken,
-} from '../../shared/utils/generateJWT';
+import { generateJWT, generateRefreshToken } from '../../shared/utils/generateJWT';
 import { HTTP_STATUSES } from '../../shared/utils/index';
 import { User } from '../../core-user/models/entities/User';
 import { Auth } from '../models/entities/Auth';
@@ -19,12 +16,7 @@ const Authorization = async (req: Request, res: Response) => {
     const request: AuthRequest = req.body;
     let { service_id, service_name } = request;
 
-    if (
-        !service_id ||
-        !service_name ||
-        typeof service_id !== 'string' ||
-        typeof service_name !== 'string'
-    )
+    if (!service_id || !service_name || typeof service_id !== 'string' || typeof service_name !== 'string')
         return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
             message: 'Missing Data or invalid type. Check your request data!',
         });

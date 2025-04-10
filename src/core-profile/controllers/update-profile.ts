@@ -19,11 +19,11 @@ export const updateProfile = async (req: Request, res: Response) => {
             let updatedProfile = update.raw[0];
             const date = new Date(updatedProfile.birth_date);
             updatedProfile.birth_date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            return res.status(200).send(updatedProfile);
+            return res.status(HTTP_STATUSES.OK_200).send(updatedProfile);
         } else {
-            return res.status(404).send('User not found');
+            return res.status(HTTP_STATUSES.NOT_FOUND_404).send('User not found');
         }
     } catch (error) {
-        return res.status(500).send(`Failed to upload profile: ${error}`);
+        return res.status(HTTP_STATUSES.SERVER_ERROR_500).send(`Failed to upload profile: ${error}`);
     }
 };

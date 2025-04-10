@@ -16,13 +16,9 @@ export const getProfileById = async (req: Request, res: Response) => {
         if (profile) {
             return res.json(profile);
         } else {
-            return res
-                .status(HTTP_STATUSES.NOT_FOUND_404)
-                .send('profile not found');
+            return res.status(HTTP_STATUSES.NOT_FOUND_404).send('profile not found');
         }
     } catch (error) {
-        return res
-            .status(HTTP_STATUSES.SERVER_ERROR_500)
-            .send(`Failed to load profile: ${error}`);
+        return res.status(HTTP_STATUSES.SERVER_ERROR_500).send(`Failed to load profile: ${error}`);
     }
 };

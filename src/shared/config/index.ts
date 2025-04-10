@@ -17,7 +17,7 @@ export const getFileContentType = async (objectKey: string) => {
     }
 };
 
-const routes = ['./**/routes/*.ts'];
+const routes = ['./**/routes/*.ts', './**/core-web/**/*.ts'];
 
 export const options = {
     definition: {
@@ -29,10 +29,7 @@ export const options = {
         },
         servers: [
             {
-                url:
-                    process.env.NODE_ENV == 'production'
-                        ? process.env.SERVER_HOST
-                        : process.env.LOCAL_HOST,
+                url: process.env.NODE_ENV == 'production' ? process.env.SERVER_HOST : process.env.LOCAL_HOST,
                 description: 'V1 Local Server',
             },
         ],

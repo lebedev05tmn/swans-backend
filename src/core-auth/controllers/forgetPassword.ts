@@ -23,7 +23,7 @@ export const forget_password = async (req: Request, res: Response) => {
     }
 
     try {
-        const new_password = v4();
+        const new_password = v4().slice(0, 11);
         const new_password_hash = bcrypt.hashSync(new_password, bcrypt.genSaltSync());
 
         const authRepository = AppDataSource.getRepository(Auth);

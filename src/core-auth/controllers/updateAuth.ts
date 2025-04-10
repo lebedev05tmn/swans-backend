@@ -21,7 +21,7 @@ const updateUserAuth = async (req: Request, res: Response) => {
     let decodedToken: JwtPayload;
     try {
         decodedToken = jwt.verify(token, jwtConfig.secret) as JwtPayload;
-    } catch (error) {
+    } catch {
         return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
             message: 'Invalid or expired token!',
         });
@@ -34,12 +34,7 @@ const updateUserAuth = async (req: Request, res: Response) => {
         });
     }
     let { service_user_id: service_id, service_name } = request_data;
-    if (
-        service_id &&
-        service_name &&
-        typeof service_id === 'string' &&
-        typeof service_name === 'string'
-    ) {
+    if (service_id && service_name && typeof service_id === 'string' && typeof service_name === 'string') {
         service_name = service_name ? service_name : 'Unknown';
 
         if (service_name === 'Unknown') {
@@ -76,8 +71,7 @@ const updateUserAuth = async (req: Request, res: Response) => {
                     });
                 } else {
                     return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
-                        message:
-                            'Trying to add same authType for the existing ones!',
+                        message: 'Trying to add same authType for the existing ones!',
                     });
                 }
             } else {
