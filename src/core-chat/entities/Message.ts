@@ -18,17 +18,17 @@ export class Message extends BaseEntity {
     @Column()
     message_text!: string;
 
-    @Column()
+    @Column({ type: 'timestamp without time zone' })
     sending_time!: Date;
 
     @Column()
     is_readen!: boolean;
 
     @Column({ type: 'text', array: true, nullable: true })
-    images!: string[];
+    images!: string[] | null;
 
     @Column({ type: 'integer', nullable: true })
-    response_to!: number | null;
+    response_message_id!: number | null;
 
     @Column({ type: 'text', nullable: true })
     reaction_sender!: string | null;

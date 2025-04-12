@@ -1,21 +1,18 @@
 import { Socket } from 'socket.io';
 import axios from 'axios';
 
-export const socketRegistration = async (
-    socket: Socket,
-    accessToken: string,
-) => {
+export const socketRegistration = async (socket: Socket) => {
     try {
         await axios
             .patch(
-                'http://localhost:8081/api/metadata/update',
+                `${process.env.AXIOS_HOST}/api/metadata/update`,
                 {
                     socket_id: socket.id,
                 },
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${accessToken}`,
+                        Authorization: socket.request.headers.authorization,
                     },
                 },
             )
@@ -28,6 +25,5 @@ export const socketRegistration = async (
             message: 'Ошибка при регистрации сокета',
             details: err instanceof Error ? err.message : 'Неизвестная ошибка',
         });
-        return [accessToken, undefined];
     }
 };

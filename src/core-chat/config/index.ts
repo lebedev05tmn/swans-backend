@@ -1,120 +1,49 @@
 import { Server } from 'socket.io';
-import { socketRegistration } from '../controllers/registration';
-import { socketJoin } from '../controllers/join';
-import { socketSendMessage } from '../controllers/send-message';
-import { socketOffline } from '../controllers/offline';
-import { socketDisconnect } from '../controllers/disconnect';
-import { socketDeleteMessage } from '../controllers/delete-message';
-import { socketReadMessage } from '../controllers/read-message';
-import { socketEditMessage } from '../controllers/edit-message';
-import { socketReaction } from '../controllers/reaction';
-import { socketGetAllChats } from '../controllers/get-all-chats';
+import { socketRegistration } from '../controllers/socket/registration';
+import { socketJoinChat } from '../controllers/socket/join-chat';
+import { socketSendMessage } from '../controllers/socket/send-message';
+import { socketDeleteMessage } from '../controllers/socket/delete-message';
+import { socketReadMessage } from '../controllers/socket/read-message';
+import { socketEditMessage } from '../controllers/socket/edit-message';
+import { socketReaction } from '../controllers/socket/reaction';
+import { socketGetAllChats } from '../controllers/socket/get-all-chats';
 
 export const socketHandler = (io: Server) => {
     io.on('connection', (socket) => {
         socket.on('disconnect', async () => {
-            await socketDisconnect(socket);
+            socket.disconnect();
         });
 
-        socket.on('join', async ({ accessToken_1, accessToken_2 }) => {
-            await socketJoin(socket, accessToken_1, accessToken_2);
+        socket.on('join-chat', async ({ chatId }) => {
+            await socketJoinChat(socket, chatId);
         });
 
-        socket.on('offline', async ({ chatId }) => {
-            await socketOffline(chatId);
+        socket.on('send-message', async ({ messageText, chatId, responseTo, images }) => {
+            await socketSendMessage(io, socket, messageText, chatId, responseTo, images);
         });
 
-        socket.on(
-            'send-message',
-            async ({
-                fromAccessToken,
-                toAccessToken,
-                messageText,
-                chatId,
-                responseTo,
-                images,
-            }) => {
-                await socketSendMessage(
-                    io,
-                    fromAccessToken,
-                    toAccessToken,
-                    messageText,
-                    chatId,
-                    responseTo,
-                    images,
-                );
-            },
-        );
-
-        socket.on(
-            'read-message',
-            async ({ chatId, messageId, recipientAccessToken }) => {
-                await socketReadMessage(
-                    io,
-                    chatId,
-                    messageId,
-                    recipientAccessToken,
-                );
-            },
-        );
-
-        socket.on(
-            'reaction',
-            async ({
-                chatId,
-                messageId,
-                fromAccessToken,
-                toAccessToken,
-                reaction,
-            }) => {
-                await socketReaction(
-                    io,
-                    chatId,
-                    messageId,
-                    fromAccessToken,
-                    toAccessToken,
-                    reaction,
-                );
-            },
-        );
-
-        socket.on(
-            'edit-message',
-            async ({
-                recipientAccessToken,
-                chatId,
-                messageId,
-                messageText,
-            }) => {
-                await socketEditMessage(
-                    io,
-                    recipientAccessToken,
-                    chatId,
-                    messageId,
-                    messageText,
-                );
-            },
-        );
-
-        socket.on(
-            'delete-message',
-            async ({ recipientAccessToken, chatId, messageId }) => {
-                await socketDeleteMessage(
-                    io,
-                    socket,
-                    recipientAccessToken,
-                    chatId,
-                    messageId,
-                );
-            },
-        );
-
-        socket.on('registration', async ({ accessToken }) => {
-            await socketRegistration(socket, accessToken);
+        socket.on('read-message', async ({ chatId, messageId }) => {
+            await socketReadMessage(io, socket, chatId, messageId);
         });
 
-        socket.on('get-chat-metadata', async ({ accessToken }) => {
-            await socketGetAllChats(socket, accessToken);
+        socket.on('reaction', async ({ chatId, messageId, reaction }) => {
+            await socketReaction(io, socket, chatId, messageId, reaction);
+        });
+
+        socket.on('edit-message', async ({ chatId, messageId, messageText }) => {
+            await socketEditMessage(io, socket, chatId, messageId, messageText);
+        });
+
+        socket.on('delete-message', async ({ chatId, messageId }) => {
+            await socketDeleteMessage(io, socket, chatId, messageId);
+        });
+
+        socket.on('registration', async () => {
+            await socketRegistration(socket);
+        });
+
+        socket.on('get-all-chats', async () => {
+            await socketGetAllChats(socket);
         });
     });
 };

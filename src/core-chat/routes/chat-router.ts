@@ -1,6 +1,6 @@
 import express from 'express';
 import { Request, Response } from 'express';
-// import { chatPaginate } from '../controllers/paginate';
+import { chatPaginate } from '../controllers/rest/paginate';
 
 export const chatRouter = express.Router();
 
@@ -101,6 +101,6 @@ export const chatRouter = express.Router();
 //  *                   type: string
 //  */
 
-// chatRouter.get('/paginate/:id', async (req: Request, res: Response) => {
-//     await chatPaginate(req, res);
-// });
+chatRouter.get('/paginate/:id', async (req: Request, res: Response) => {
+    await chatPaginate(req, res);
+});

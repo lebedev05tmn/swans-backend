@@ -1,10 +1,5 @@
-import {
-    MigrationInterface,
-    QueryRunner,
-    Table,
-    TableForeignKey,
-} from 'typeorm';
-import { chatsTableName, messagesTableName } from './shared/utils';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import { messagesTableName } from './shared/utils';
 
 export class CreateMessagesTable1739482958852 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
@@ -53,7 +48,7 @@ export class CreateMessagesTable1739482958852 implements MigrationInterface {
                         isNullable: true,
                     },
                     {
-                        name: 'response_to',
+                        name: 'response_message_id',
                         type: 'int',
                         isNullable: true,
                     },

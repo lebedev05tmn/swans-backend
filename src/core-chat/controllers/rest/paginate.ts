@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
-import { messagesRepository } from '../../shared/config';
+import { messagesRepository } from '../../../shared/config';
+import { decodeUserId } from '../../../core-auth/utils/getUserId';
+import { userRepository } from '../../../core-user/routes/userRouter';
+import { messageWithLocale } from '../../utils';
 
 const limit = 20;
 
@@ -7,7 +10,6 @@ export const chatPaginate = async (req: Request, res: Response) => {
     try {
         const chatId = Number(req.params.id);
         const page = Number(req.query.page);
-        const accessToken = req.query.access_token;
 
         const offset = Math.max(0, (page - 1) * limit);
 
@@ -18,8 +20,20 @@ export const chatPaginate = async (req: Request, res: Response) => {
             take: limit,
         });
 
+        const userId = await decodeUserId(req.headers.authorization);
+
+        const user = await userRepository.findOneByOrFail({
+            user_id: userId,
+        });
+
+        const messagesWithTimeZone = await Promise.all(
+            messages.map(async (msg) => {
+                return messageWithLocale(msg, user.locale, user.timezone);
+            }),
+        );
+
         const paginated = {
-            messages: messages,
+            messages: messagesWithTimeZone,
             meta: {
                 totalItems: total,
                 itemsPerPage: limit,
@@ -27,7 +41,6 @@ export const chatPaginate = async (req: Request, res: Response) => {
             },
         };
 
-        res.setHeader('Authorization', `Bearer ${accessToken}`);
         res.status(200).json(paginated);
     } catch (err) {
         console.log('Ошибка пагинации:', err);
