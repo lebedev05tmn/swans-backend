@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/app.ts",
     "start": "node dist/src/app.js",
-    "build": "node prebuild.cjs && tsc",
+    "build": "node prebuild.cjs && npx tsc",
     "migration": "yarn typeorm migration:run --dataSource=./ormconfig.js",
     "prod": "yarn build && yarn start && yarn typeorm migration:run",
     "lint": "eslint src/",

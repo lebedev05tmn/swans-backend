@@ -54,7 +54,7 @@ const updateUserAuth = async (req: Request, res: Response) => {
             if (current_user) {
                 const new_auth_data = new Auth();
                 new_auth_data.service_user_id = bcrypt.hashSync(service_id, process.env.BCRYPT_SALT);
-                new_auth_data.service_name = bcrypt.hashSync(service_name, process.env.BCRYPT_SALT);
+                new_auth_data.service_name = service_name;
 
                 let is_auth_correct = true;
                 current_user.resources.forEach((auth) => {
