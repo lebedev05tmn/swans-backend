@@ -1,4 +1,5 @@
 import express from 'express';
+import expressBasicAuth from 'express-basic-auth';
 import { mediaRouter } from './core-media/routes/media-router';
 import fileUpload from 'express-fileupload';
 import { profileRouter } from './core-profile/routes/profile-router';
@@ -11,8 +12,8 @@ import { Server } from 'socket.io';
 import { socketHandler } from './core-chat/config';
 import { chatRouter } from './core-chat/routes/chat-router';
 import { authRouter } from './core-auth/routes/auth-router';
-import basicAuth from 'express-basic-auth';
 import { userRouter } from './core-user/routes/userRouter';
+import { contextRouter } from './core-web/context';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -37,10 +38,7 @@ app.use(
 );
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:8081');
-    res.header(
-        'Access-Control-Allow-Methods',
-        'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-    );
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.header('Access-Control-Allow-Credentials', 'true');
 
@@ -51,7 +49,23 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/api', (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        return next();
+    }
+
+    return expressBasicAuth({
+        users: {
+            admin: process.env.SWAGGER_PASSWORD || 'admin',
+        },
+        challenge: true,
+        unauthorizedResponse: 'Access denied!',
+    })(req, res, next);
+});
+
 AppDataSource.initialize().then(() => {
+    app.use('/api/context', contextRouter);
     app.use('/api/profile', profileRouter);
     app.use('/api/media', mediaRouter);
     app.use('/api/chat', chatRouter);
@@ -65,13 +79,4 @@ AppDataSource.initialize().then(() => {
 
 const swaggerDocs = swaggerJsDoc(options);
 
-app.use(
-    '/api/docs',
-    basicAuth({
-        users: { admin: `${process.env.SWAGGER_PASSWORD}` },
-        challenge: true,
-        unauthorizedResponse: 'Access denied!',
-    }),
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerDocs),
-);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));

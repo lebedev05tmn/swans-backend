@@ -56,11 +56,7 @@ export class CreateProfileTable1733426544505 implements MigrationInterface {
                 }),
             );
         } catch (error) {
-            if (
-                (error as { message: string }).message.includes(
-                    'already exists',
-                )
-            ) {
+            if ((error as { message: string }).message.includes('already exists')) {
                 console.error(`The table "${tableName}" already exists`);
             } else {
                 console.error(`Failed to create table "${tableName}"`);
@@ -72,11 +68,7 @@ export class CreateProfileTable1733426544505 implements MigrationInterface {
         try {
             await queryRunner.dropTable(tableName);
         } catch (error) {
-            if (
-                (error as { message: string }).message.includes(
-                    'does not exist',
-                )
-            ) {
+            if ((error as { message: string }).message.includes('does not exist')) {
                 console.error(`The table "${tableName}" does not exist`);
             } else {
                 console.error(`Failed to delete table "${tableName}"`);

@@ -13,10 +13,7 @@ export const uploadMedia = async (req: Request, res: Response) => {
         const webpFileName = `${id}.webp`;
 
         try {
-            const webpBuffer = await sharp(file.tempFilePath)
-                .resize({ height: 600 })
-                .webp({ quality: 80 })
-                .toBuffer();
+            const webpBuffer = await sharp(file.tempFilePath).resize({ height: 600 }).webp({ quality: 80 }).toBuffer();
 
             const command = new PutObjectCommand({
                 Bucket: s3BucketName,

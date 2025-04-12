@@ -11,20 +11,16 @@ export const decodeUserId = (authHeader?: string) => {
 
     const token = authHeader.split(' ')[1];
 
-    const decodedToken: JwtPayload | string = jwt.verify(
-        token,
-        jwtConfig.secret,
-    );
+    const decodedToken: JwtPayload | string = jwt.verify(token, jwtConfig.secret);
 
-    if (typeof decodedToken === 'object' && decodedToken.userId)
-        return decodedToken.userId;
+    if (typeof decodedToken === 'object' && decodedToken.userId) return decodedToken.userId;
 
     throw new Error('Invalid or expired token!', {
         cause: HTTP_STATUSES.BAD_REQUEST_400,
     });
 };
 
-export default (req: Request<any>, res: Response): string | Response => {
+export default (req: Request, res: Response): string | Response => {
     const authHeader = req.headers.authorization;
 
     let user_id;

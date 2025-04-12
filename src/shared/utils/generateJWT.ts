@@ -1,9 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-import jwtConfig, {
-    JWTPayload,
-    RefreshTokenPayload,
-} from '../config/JWTConfig';
+import jwtConfig, { JWTPayload, RefreshTokenPayload } from '../config/JWTConfig';
 
 const generateJWT = (user_id: string): string => {
     const payload: JWTPayload = {
