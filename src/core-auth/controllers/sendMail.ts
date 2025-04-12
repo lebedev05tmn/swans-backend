@@ -25,7 +25,7 @@ const set_hash_map = async (key: string, data: Session) => {
         state: data.state,
         start_time: data.start_time,
     });
-    await redisClient.expire(key, 300);
+    await redisClient.expire(key, 1500); // Установка TTL
 };
 
 // const session_container: Map<string, Session> = new Map();
