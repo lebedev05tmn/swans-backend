@@ -1,25 +1,24 @@
 import { Request, Response } from 'express';
-import { s3BucketName } from '../../shared/utils';
 import { DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
-import { s3client } from '../s3_client';
+import { s3Сlient } from '../s3_client';
 
 export const deleteMedia = async (req: Request, res: Response) => {
     const id = req.params.id;
 
     let command = new HeadObjectCommand({
-        Bucket: s3BucketName,
+        Bucket: process.env.S3_BUCKET_NAME,
         Key: `${id}.webp`,
     });
 
     try {
-        await s3client.send(command);
+        await s3Сlient.send(command);
 
         command = new DeleteObjectCommand({
-            Bucket: s3BucketName,
+            Bucket: process.env.S3_BUCKET_NAME,
             Key: `${id}.webp`,
         });
 
-        await s3client.send(command);
+        await s3Сlient.send(command);
         res.status(200).send('Deleted successfully.');
     } catch {
         res.status(404).send('Not found.');

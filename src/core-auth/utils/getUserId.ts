@@ -34,7 +34,7 @@ export default (req: Request, res: Response): string | Response => {
             });
         } else {
             return res.status(HTTP_STATUSES.NOT_FOUND_404).json({
-                message: 'Not found',
+                message: 'User not Found in Token Payload!',
             });
         }
     }

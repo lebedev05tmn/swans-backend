@@ -17,7 +17,7 @@ export const socketRegistration = async (socket: Socket) => {
                 },
             )
             .then((response) => {
-                socket.emit('registrated', response.data);
+                socket.emit('registrated', { success: true, socket_id: response.data.socket_id });
             });
     } catch (err) {
         console.error('Ошибка в socketRegistration:', err);
