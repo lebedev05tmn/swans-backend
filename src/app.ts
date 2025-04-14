@@ -59,7 +59,7 @@ AppDataSource.initialize().then(
     () => {
         redisClient.connect().then(
             () => {
-                app.use('/api', contextRouter);
+                app.use('/api/context', contextRouter);
                 app.use('/api/profile', profileRouter);
                 app.use('/api/media', mediaRouter);
                 app.use('/api/auth', authRouter);
