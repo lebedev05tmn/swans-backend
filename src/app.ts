@@ -12,6 +12,7 @@ import { options } from './shared/config';
 import { authRouter } from './core-auth/routes/auth-router';
 import { userRouter } from './core-user/routes/userRouter';
 import { contextRouter } from './core-web/context';
+import { User } from './core-user/models/entities/User';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -55,6 +56,42 @@ app.use('/api', (req, res, next) => {
     })(req, res, next);
 });
 
+type Anket = {
+    user: User;
+    score: number;
+};
+
+const memory_usage = (arr: Anket[]): number => {
+    const start_memory = process.memoryUsage().heapUsed;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const temp_array = [...arr];
+    const end_memory = process.memoryUsage().heapUsed;
+    return end_memory - start_memory;
+};
+
+const get_profiles_and_sort = async () => {
+    const start_time = performance.now();
+
+    const all_users: User[] = await AppDataSource.getRepository(User).find();
+
+    const ankets: Anket[] = all_users.map((user) => ({
+        user: user,
+        score: Math.random() * 100,
+    }));
+
+    const sorted_ankets: Anket[] = ankets.sort((a, b) => b.score - a.score);
+
+    const total_time = performance.now() - start_time;
+
+    console.log('Отсортированные анкеты:');
+    console.log(sorted_ankets);
+
+    console.log(`Время выполнения процесса для ${await AppDataSource.getRepository(User).count()} пользователей: `);
+    console.log(`${total_time} мс`);
+
+    console.log(`Использование памяти = ${memory_usage(ankets)} байт`);
+};
+
 AppDataSource.initialize().then(
     () => {
         redisClient.connect().then(
@@ -67,6 +104,8 @@ AppDataSource.initialize().then(
                 app.listen(port, () => {
                     console.log(`App listening on port ${port}`);
                 });
+
+                get_profiles_and_sort();
             },
             (error) => {
                 console.error(error);
