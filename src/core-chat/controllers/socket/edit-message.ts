@@ -1,7 +1,7 @@
 import { messagesRepository } from '../../../shared/config';
 import { Server, Socket } from 'socket.io';
 import { userRepository } from '../../../core-user/routes/userRouter';
-import { validateToken } from '../../utils';
+import { parseAuthToken } from '../../utils';
 
 export const socketEditMessage = async (
     io: Server,
@@ -11,7 +11,7 @@ export const socketEditMessage = async (
     messageText: string,
 ) => {
     try {
-        const [myUserId, chat] = await validateToken(socket, chatId);
+        const [myUserId, chat] = await parseAuthToken(socket, chatId);
 
         const message = await messagesRepository.findOneByOrFail({
             chat_id: chatId,
@@ -23,13 +23,13 @@ export const socketEditMessage = async (
         if (message) {
             message.message_text = messageText;
             await messagesRepository.save(message);
-            emitEditEvent(io, recipientUserId, chatId, messageId, messageText);
+            emitEditEvent(io, socket, recipientUserId, chatId, messageId, messageText);
         } else {
             throw new Error(`Message with ID ${messageId} not found in Redis or Postgres`);
         }
     } catch (err) {
-        console.error('Ошибка в socketEditMessage:', err);
-        io.emit('error', {
+        io.to(socket.id).emit('message-is-edited', {
+            success: false,
             message: 'Ошибка при редактировании сообщения',
             details: err instanceof Error ? err.message : 'Неизвестная ошибка',
         });
@@ -38,6 +38,7 @@ export const socketEditMessage = async (
 
 const emitEditEvent = async (
     io: Server,
+    socket: Socket,
     recipientUserId: string,
     chatId: number,
     messageId: number,
@@ -64,10 +65,12 @@ const emitEditEvent = async (
             message_text: messageText,
         });
     } catch (err) {
-        console.log('Ошибка в emitEditEvent:', err);
-        io.emit('error', {
-            message: 'Ошибка при отправке события редактирования',
-            details: err instanceof Error ? err.message : 'Неизвестная ошибка',
+        io.to(socket.id).emit('error', {
+            event: 'edit-message',
+            error: {
+                message: 'Ошибка при отправке события редактирования',
+                details: err instanceof Error ? err.message : 'Неизвестная ошибка',
+            },
         });
     }
 };

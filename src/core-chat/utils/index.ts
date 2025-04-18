@@ -3,7 +3,6 @@ import { chatsRepository } from '../../shared/config';
 import { Chat } from '../entities/Chat';
 import { decodeUserId } from '../../core-auth/utils/getUserId';
 import { HTTP_STATUSES } from '../../shared/utils';
-import { Message } from '../entities/Message';
 
 export const createChat = async (id_1: string, id_2: string) => {
     try {
@@ -39,7 +38,7 @@ export const createChat = async (id_1: string, id_2: string) => {
     }
 };
 
-export const validateToken = async (socket: Socket, chatId: number) => {
+export const parseAuthToken = async (socket: Socket, chatId: number) => {
     const myUserId = await decodeUserId(socket.request.headers.authorization);
 
     const chat = await chatsRepository.findOneOrFail({
@@ -56,20 +55,17 @@ export const validateToken = async (socket: Socket, chatId: number) => {
     return [myUserId, chat];
 };
 
-export const messageWithLocale = (msg: Message, locale: string, timezone: string) => {
-    return {
-        message_id: msg.message_id,
-        chat_id: msg.chat_id,
-        sender_id: msg.sender_id,
-        recipient_id: msg.recipient_id,
-        message_text: msg.message_text,
-        sending_time: new Date(msg.sending_time).toLocaleString(locale, {
-            timeZone: timezone,
-        }),
-        is_readen: msg.is_readen,
-        images: msg.images,
-        response_message_id: msg.response_message_id,
-        reaction_sender: msg.reaction_sender,
-        reaction_recipient: msg.reaction_recipient,
-    };
+export const setLocalTime = (sending_time: Date, timezone: string) => {
+    const utcDate = new Date(sending_time);
+    const localTimeString = utcDate.toLocaleString('en-CA', {
+        timeZone: timezone,
+        hour12: false,
+    });
+    const utcTimeString = utcDate.toLocaleString('en-CA', {
+        timeZone: 'UTC',
+        hour12: false,
+    });
+    const timezoneOffset = new Date(localTimeString).getTime() - new Date(utcTimeString).getTime();
+    const localDate = new Date(utcDate.getTime() + timezoneOffset);
+    return new Date(localDate.toISOString());
 };

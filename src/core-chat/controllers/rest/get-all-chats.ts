@@ -1,12 +1,12 @@
-import { Socket } from 'socket.io';
+import { Request, Response } from 'express';
 import { decodeUserId } from '../../../core-auth/utils/getUserId';
 import { chatsRepository, messagesRepository, profileRepository } from '../../../shared/config';
 import { userRepository } from '../../../core-user/routes/userRouter';
-import { messageWithLocale } from '../../utils';
+import { setLocalTime } from '../../utils';
 
-export const socketGetAllChats = async (socket: Socket) => {
+export const getAllChats = async (req: Request, res: Response) => {
     try {
-        const myUserId = await decodeUserId(socket.request.headers.authorization);
+        const myUserId = await decodeUserId(req.headers.authorization);
 
         if (!myUserId) {
             throw new Error('Access token is required');
@@ -49,7 +49,7 @@ export const socketGetAllChats = async (socket: Socket) => {
                         user_id: myUserId,
                     });
 
-                    const lastMessageSendingTime = messageWithLocale(lastMessage, user.locale, user.timezone);
+                    lastMessage.sending_time = setLocalTime(lastMessage.sending_time, user.timezone);
 
                     const online = user.online;
                     const verify = user.verify;
@@ -64,7 +64,8 @@ export const socketGetAllChats = async (socket: Socket) => {
                         verify: verify,
                         unread_count: unreadCount || 0,
                         last_message_text: lastMessage?.message_text,
-                        last_message_time: lastMessageSendingTime,
+                        last_message_time: lastMessage.sending_time,
+                        locale: user.locale,
                     };
                 } catch (error) {
                     console.error(`Error processing chat ${currentChat.chat_id}:`, error);
@@ -75,10 +76,9 @@ export const socketGetAllChats = async (socket: Socket) => {
 
         const filteredOutput = output.filter((item) => item !== null);
 
-        socket.emit('all-chats', filteredOutput);
+        res.status(200).json(filteredOutput);
     } catch (error) {
-        console.error('Error in socketGetAllChats:', error);
-        socket.emit('error', {
+        res.status(500).json({
             message: 'Failed to get chats',
             details: error instanceof Error ? error.message : 'Unknown error',
         });

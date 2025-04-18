@@ -1,11 +1,11 @@
 import { messagesRepository } from '../../../shared/config';
 import { Server, Socket } from 'socket.io';
 import { userRepository } from '../../../core-user/routes/userRouter';
-import { validateToken } from '../../utils';
+import { parseAuthToken } from '../../utils';
 
 export const socketDeleteMessage = async (io: Server, socket: Socket, chatId: number, messageId: number) => {
     try {
-        const [myUserId, chat] = await validateToken(socket, chatId);
+        const [myUserId, chat] = await parseAuthToken(socket, chatId);
 
         const deleteResult = await messagesRepository.delete({
             chat_id: chatId,
@@ -32,13 +32,14 @@ export const socketDeleteMessage = async (io: Server, socket: Socket, chatId: nu
             throw new Error(`Recipient not found`);
         }
 
-        io.to(recipientSocketId).emit('message-is-deleted', messageId);
+        io.to(recipientSocketId).emit('message-is-deleted', { chat_id: chatId, message_id: messageId });
     } catch (err) {
-        console.error('Ошибка в socketDeleteMessage:', err);
-
-        socket.emit('error', {
-            message: 'Ошибка при удалении сообщения',
-            details: err instanceof Error ? err.message : 'Неизвестная ошибка',
+        io.to(socket.id).emit('error', {
+            event: 'delete-message',
+            error: {
+                message: 'Ошибка при удалении сообщения',
+                details: err instanceof Error ? err.message : 'Неизвестная ошибка',
+            },
         });
     }
 };

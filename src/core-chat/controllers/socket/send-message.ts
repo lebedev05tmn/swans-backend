@@ -2,18 +2,22 @@ import { Server, Socket } from 'socket.io';
 import { messagesRepository } from '../../../shared/config';
 import { userRepository } from '../../../core-user/routes/userRouter';
 import { Message } from '../../entities/Message';
-import { messageWithLocale, validateToken } from '../../utils';
+import { parseAuthToken } from '../../utils';
 
 export const socketSendMessage = async (
     io: Server,
     socket: Socket,
     messageText: string,
     chatId: number,
-    responseTo: number | null,
+    responseMessageId: number | null,
     images: string[] | null,
 ) => {
     try {
-        const [myUserId, chat] = await validateToken(socket, chatId);
+        if (!messageText) {
+            throw new Error(`Message text is required`);
+        }
+
+        const [myUserId, chat] = await parseAuthToken(socket, chatId);
 
         const lastMessage = await messagesRepository.findOne({
             where: { chat_id: chatId },
@@ -33,7 +37,7 @@ export const socketSendMessage = async (
             sending_time: new Date(),
             is_readen: false,
             images: images ? images : null,
-            response_message_id: responseTo ? responseTo : null,
+            response_message_id: responseMessageId ? responseMessageId : null,
             reaction_sender: null,
             reaction_recipient: null,
         });
@@ -48,18 +52,26 @@ export const socketSendMessage = async (
             throw new Error(`Recipient with ID ${recipientId} not found`);
         }
 
+        message.sending_time = new Date(
+            new Date(message.sending_time).toLocaleString(recipient.locale, {
+                timeZone: recipient.timezone,
+            }),
+        );
+
         const recipientSocket = recipient.socket_id;
 
         if (!recipientSocket) {
             throw new Error(`Recipient with ID ${recipientId} not found`);
         }
 
-        io.to(recipientSocket).emit('new-message', messageWithLocale(message, recipient.locale, recipient.timezone));
+        io.to(recipientSocket).emit('new-message', { message: message });
     } catch (err) {
-        console.error('Ошибка в socketSendMessage:', err);
-        io.emit('error', {
-            message: 'Ошибка при отправке сообщения',
-            details: err instanceof Error ? err.message : 'Неизвестная ошибка',
+        io.to(socket.id).emit('error', {
+            event: 'send-message',
+            error: {
+                message: 'Ошибка при отправке сообщения',
+                details: err instanceof Error ? err.message : 'Неизвестная ошибка',
+            },
         });
     }
 };

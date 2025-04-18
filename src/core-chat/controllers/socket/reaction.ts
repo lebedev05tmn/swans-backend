@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { messagesRepository } from '../../../shared/config';
 import { userRepository } from '../../../core-user/routes/userRouter';
-import { validateToken } from '../../utils';
+import { parseAuthToken } from '../../utils';
 import { Chat } from '../../entities/Chat';
 
 export const socketReaction = async (
@@ -12,7 +12,7 @@ export const socketReaction = async (
     reaction: string | null,
 ) => {
     try {
-        const [myUserId, chat] = await validateToken(socket, chatId);
+        const [myUserId, chat] = await parseAuthToken(socket, chatId);
 
         const message = await messagesRepository.findOneByOrFail({
             chat_id: chat.chat_id,
@@ -24,7 +24,7 @@ export const socketReaction = async (
             else message.reaction_recipient = reaction;
 
             await messagesRepository.save(message);
-            emitReactionEvent(io, chat, messageId, myUserId, reaction);
+            emitReactionEvent(io, socket, chat, messageId, myUserId, reaction);
         } else {
             throw new Error(`Message with ID ${messageId} not found`);
         }
@@ -39,6 +39,7 @@ export const socketReaction = async (
 
 const emitReactionEvent = async (
     io: Server,
+    socket: Socket,
     chat: Chat,
     messageId: number,
     myUserId: string,
@@ -68,10 +69,12 @@ const emitReactionEvent = async (
             reaction: reaction,
         });
     } catch (err) {
-        console.log('Ошибка в emitReactionEvent:', err);
-        io.emit('error', {
-            message: 'Ошибка при отправке события реакции',
-            details: err instanceof Error ? err.message : 'Неизвестная ошибка',
+        io.to(socket.id).emit('error', {
+            event: 'reaction',
+            error: {
+                message: 'Ошибка при отправке события реакции',
+                details: err instanceof Error ? err.message : 'Неизвестная ошибка',
+            },
         });
     }
 };

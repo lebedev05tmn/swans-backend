@@ -6,7 +6,6 @@ import { socketDeleteMessage } from '../controllers/socket/delete-message';
 import { socketReadMessage } from '../controllers/socket/read-message';
 import { socketEditMessage } from '../controllers/socket/edit-message';
 import { socketReaction } from '../controllers/socket/reaction';
-import { socketGetAllChats } from '../controllers/socket/get-all-chats';
 
 export const socketHandler = (io: Server) => {
     io.on('connection', (socket) => {
@@ -18,8 +17,8 @@ export const socketHandler = (io: Server) => {
             await socketJoinChat(socket, chatId);
         });
 
-        socket.on('send-message', async ({ messageText, chatId, responseTo, images }) => {
-            await socketSendMessage(io, socket, messageText, chatId, responseTo, images);
+        socket.on('send-message', async ({ messageText, chatId, responseMessageId, images }) => {
+            await socketSendMessage(io, socket, messageText, chatId, responseMessageId, images);
         });
 
         socket.on('read-message', async ({ chatId, messageId }) => {
@@ -40,10 +39,6 @@ export const socketHandler = (io: Server) => {
 
         socket.on('registration', async () => {
             await socketRegistration(socket);
-        });
-
-        socket.on('get-all-chats', async () => {
-            await socketGetAllChats(socket);
         });
     });
 };

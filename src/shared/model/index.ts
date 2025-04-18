@@ -3,7 +3,6 @@ import { Profile } from '../../core-profile/entities/Profile';
 import 'dotenv/config';
 import { Chat } from '../../core-chat/entities/Chat';
 import { Message } from '../../core-chat/entities/Message';
-import { createClient } from 'redis';
 import { Auth } from '../../core-auth/models/entities/Auth';
 import { User } from '../../core-user/models/entities/User';
 
@@ -18,13 +17,4 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME,
     entities: [Profile, Chat, Message, Auth, User],
     synchronize: true,
-});
-
-export const redis = createClient({
-    socket: {
-        host: process.env.REDIS_HOST,
-        port: Number(process.env.REDIS_PORT),
-    },
-    username: process.env.REDIS_USERNAME,
-    password: process.env.REDIS_PASSWORD,
 });

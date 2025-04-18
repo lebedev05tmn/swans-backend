@@ -2,16 +2,13 @@ import { Request, Response } from 'express';
 import { messagesRepository } from '../../../shared/config';
 import { decodeUserId } from '../../../core-auth/utils/getUserId';
 import { userRepository } from '../../../core-user/routes/userRouter';
-import { messageWithLocale } from '../../utils';
-
-const limit = 20;
+import { setLocalTime } from '../../../core-chat/utils';
 
 export const chatPaginate = async (req: Request, res: Response) => {
     try {
         const chatId = Number(req.params.id);
-        const page = Number(req.query.page);
-
-        const offset = Math.max(0, (page - 1) * limit);
+        const limit = Number(req.query.limit);
+        const offset = Number(req.query.offset);
 
         const [messages, total] = await messagesRepository.findAndCount({
             where: { chat_id: chatId },
@@ -21,29 +18,31 @@ export const chatPaginate = async (req: Request, res: Response) => {
         });
 
         const userId = await decodeUserId(req.headers.authorization);
-
         const user = await userRepository.findOneByOrFail({
             user_id: userId,
         });
 
-        const messagesWithTimeZone = await Promise.all(
-            messages.map(async (msg) => {
-                return messageWithLocale(msg, user.locale, user.timezone);
-            }),
-        );
+        const formattedMessages = messages.map((message) => {
+            message.sending_time = setLocalTime(message.sending_time, user.timezone);
+            return message;
+        });
 
         const paginated = {
-            messages: messagesWithTimeZone,
+            success: true,
+            messages: formattedMessages,
             meta: {
                 totalItems: total,
                 itemsPerPage: limit,
-                currentPage: page,
+                currentOffset: offset,
+                locale: user.locale,
             },
         };
 
         res.status(200).json(paginated);
     } catch (err) {
-        console.log('Ошибка пагинации:', err);
-        res.status(500).send(`Ошибка при пагинации сообщений: ${err}`);
+        res.status(500).json({
+            error: 'Ошибка при пагинации сообщений',
+            details: err instanceof Error ? err.message : String(err),
+        });
     }
 };

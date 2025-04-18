@@ -1,11 +1,12 @@
 import express from 'express';
 import expressBasicAuth from 'express-basic-auth';
-import { mediaRouter } from './core-media/routes/media-router';
 import fileUpload from 'express-fileupload';
-import { profileRouter } from './core-profile/routes/profile-router';
-import { AppDataSource, redis } from './shared/model';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
+import { createClient } from 'redis';
+import { mediaRouter } from './core-media/routes/media-router';
+import { profileRouter } from './core-profile/routes/profile-router';
+import { AppDataSource } from './shared/model';
 import { options } from './shared/config';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -23,11 +24,9 @@ const io = new Server(server);
 
 socketHandler(io);
 
-const redisInit = async () => {
-    redis.on('error', (error) => console.log(`Redis client error: ${error}`));
-    await redis.connect();
-};
-redisInit();
+export const redisClient = createClient({
+    url: `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+});
 
 app.use(express.json());
 app.use(
@@ -64,18 +63,29 @@ app.use('/api', (req, res, next) => {
     })(req, res, next);
 });
 
-AppDataSource.initialize().then(() => {
-    app.use('/api/context', contextRouter);
-    app.use('/api/profile', profileRouter);
-    app.use('/api/media', mediaRouter);
-    app.use('/api/chat', chatRouter);
-    app.use('/api/auth', authRouter);
-    app.use('/api/metadata', userRouter);
-
-    server.listen(port, () => {
-        console.log(`App listening on port ${port}`);
-    });
-});
+AppDataSource.initialize().then(
+    () => {
+        redisClient.connect().then(
+            () => {
+                app.use('/api', contextRouter);
+                app.use('/api/profile', profileRouter);
+                app.use('/api/media', mediaRouter);
+                app.use('/api/auth', authRouter);
+                app.use('/api/metadata', userRouter);
+                app.use('/api/chat', chatRouter);
+                server.listen(port, () => {
+                    console.log(`App listening on port ${port}`);
+                });
+            },
+            (error) => {
+                console.error(error);
+            },
+        );
+    },
+    (error) => {
+        console.error(error);
+    },
+);
 
 const swaggerDocs = swaggerJsDoc(options);
 

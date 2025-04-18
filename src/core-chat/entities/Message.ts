@@ -18,7 +18,7 @@ export class Message extends BaseEntity {
     @Column()
     message_text!: string;
 
-    @Column({ type: 'timestamp without time zone' })
+    @Column({ type: 'timestamp with time zone' })
     sending_time!: Date;
 
     @Column()
