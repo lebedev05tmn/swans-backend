@@ -1,5 +1,6 @@
-import { v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt-nodejs';
+import { Like } from 'typeorm';
+import { Options } from 'nodemailer/lib/mailer';
 
 import { transporter } from '../../shared/config/NodeMailer';
 import { AppDataSource } from '../../shared/model';
@@ -8,16 +9,26 @@ import { User } from '../../core-user/models/entities/User';
 import { generateJWT, generateRefreshToken } from '../../shared/utils/generateJWT';
 import generateUniqueId from '../utils/generateUniqueId';
 import { AuthServiceName } from '../../shared/utils/index';
-import { Like } from 'typeorm';
+import { redisClient } from '../../app';
+import { email_with_code } from '../../shared/config/emailWithCode';
 
-interface Session {
-    email: string;
+type Session = {
     code: string;
     state: string;
-    start_time: Date;
-}
+    start_time: string;
+};
 
-const session_container: Map<string, Session> = new Map();
+const set_hash_map = async (key: string, data: Session) => {
+    console.log('Entering Set Hash Map');
+    await redisClient.hSet(key, {
+        code: data.code,
+        state: data.state,
+        start_time: data.start_time,
+    });
+    await redisClient.expire(key, 1500); // Установка TTL
+};
+
+// const session_container: Map<string, Session> = new Map();
 
 interface SendCodeParams {
     email: string;
@@ -26,198 +37,70 @@ interface SendCodeParams {
 export const send_code = async (params: SendCodeParams) => {
     const { email } = params;
     const code: string = Math.floor(Math.random() * 90000 + 10000).toString();
-    const session_id: string = uuid();
-    const current_date: Date = new Date();
+    const current_date: string = new Date().toISOString();
 
     const authRepository = AppDataSource.getRepository(Auth);
 
     const existnig_auth = await authRepository.findOne({
         where: { service_user_id: Like(`${email}:%`) },
     });
+
     if (existnig_auth)
         return {
             success: false,
             message: 'User with this email alredy exist!',
         };
 
-    for (let [session_id, session] of session_container) {
-        if (session.email === email && (current_date.getTime() - session.start_time.getTime()) / 1000 > 60) {
-            session_container.delete(session_id);
-            break;
-        } else if (session.email === email) {
-            return { success: false };
-        }
+    const session: Record<string, string> = await redisClient.hGetAll(email);
+    if (session.start_time) {
+        if ((Date.parse(current_date) - Date.parse(session.start_time)) / 1000 > 60) {
+            await redisClient.del(email);
+            console.log('Delete current session');
+        } else return { success: false, message: 'The session for this email has been created less than a minute ago' };
     }
 
-    session_container.set(session_id, {
-        email,
+    set_hash_map(email, {
         code,
         state: 'code',
-        start_time: new Date(),
+        start_time: new Date().toISOString(),
     });
-
-    setTimeout(
-        () => {
-            session_container.delete(session_id);
-        },
-        5 * 60 * 1000,
-    );
-    console.log(session_container);
 
     const mailOptions = {
         from: process.env.WORK_EMAIL,
         to: email,
         subject: 'Swans. Подтверждение регистрации',
-        html: `<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Код подтверждения для Swans</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-    }
-    .container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-        text-align: center;
-        padding-bottom: 20px;
-    }
-    .header img {
-        max-width: 100%;
-        height: auto;
-    }
-    .content {
-        text-align: center;
-        padding: 20px 0;
-    }
-    .code {
-        font-size: 24px;
-        font-weight: bold;
-        color: #333333;
-        margin: 20px 0;
-        padding: 10px;
-        background-color: #f9f9f9;
-        border: 1px solid #dddddd;
-        border-radius: 4px;
-        display: inline-block;
-    }
-    .footer {
-        text-align: center;
-        padding-top: 20px;
-        font-size: 12px;
-        color: #777777;
-    }
-    .footer a {
-        color: #007BFF;
-        text-decoration: none;
-    }
-    .footer a:hover {
-        text-decoration: underline;
-    }
-
-    /* Адаптивные стили */
-    @media only screen and (max-width: 600px) {
-        .container {
-            padding: 15px;
-        }
-        .header h1 {
-            font-size: 24px;
-        }
-        .content p {
-            font-size: 16px;
-        }
-        .code {
-            font-size: 20px;
-            padding: 8px;
-        }
-        .footer {
-            font-size: 10px;
-        }
-    }
-
-    @media only screen and (max-width: 400px) {
-        .header h1 {
-            font-size: 20px;
-        }
-        .content p {
-            font-size: 14px;
-        }
-        .code {
-            font-size: 18px;
-            padding: 6px;
-        }
-        .footer {
-            font-size: 9px;
-        }
-    }
-</style>
-</head>
-<body>
-<div class="container">
-    <div class="header">
-        <img src="http://postimg.su/image/oTCRR3qh/SWANS.png" alt="Swans Logo" width="200">
-        <h1>Подтверждение входа</h1>
-    </div>
-    <div class="content">
-        <p>Здравствуйте!</p>
-        <p>Для завершения аутентификации в приложении Swans, пожалуйста, используйте следующий код подтверждения:</p>
-        <div class="code">${code}</div>
-        <p>Если вы не запрашивали этот код, пожалуйста, проигнорируйте это письмо.</p>
-    </div>
-    <div class="footer">
-        <p>С уважением, команда Swans</p>
-        <p><a href="https://dating-swans.ru">Перейти на сайт</a></p>
-        <p>Если у вас возникли вопросы, напишите нам на <a href="mailto:support@dating-swans.ru">support@dating-swans.ru</a></p>
-    </div>
-</div>
-</body>
-</html>`,
+        html: email_with_code(code),
     };
-    transporter.verify((error, success) => {
-        if (error) {
-            console.error('Error verifying transporter:', error);
-        } else {
-            console.log('Transporter is ready to send emails', success);
-        }
-    });
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error('Error sending email:', error);
-            throw new Error('Send mail Error!');
-        } else {
+    const sendEmail = async (mailOptions: Options) => {
+        try {
+            const info = await transporter.sendMail(mailOptions);
             console.log('Email sent:', info.response);
+            return { success: true };
+        } catch (error) {
+            console.error('Error sending email:', error);
+            return { success: false };
         }
-    });
+    };
 
-    return { success: true, session_id: session_id };
+    const result = await sendEmail(mailOptions);
+    return result;
 };
 
 interface VerifyCodeParams {
-    session_id: string;
+    email: string;
     code: string;
 }
 
 export const verify_code = async (params: VerifyCodeParams) => {
-    const { session_id, code } = params;
-    const session = session_container.get(session_id);
+    const { email, code } = params;
+    const session: Record<string, string> = await redisClient.hGetAll(email);
 
-    if (!session || session.state !== 'code') throw new Error("Session doesn't exists or in invalid state!");
-    if (session.code !== code) throw new Error('Wrong code!');
+    if (!session || session.state !== 'code')
+        return { success: false, message: 'Current session does not exist or in invalid state' };
+    if (session.code !== code) return { success: false, message: 'The wrong code!' };
 
-    session.state = 'password';
-    console.log(session_container);
+    await redisClient.hSet(email, 'state', 'password');
 
     return {
         success: true,
@@ -226,24 +109,23 @@ export const verify_code = async (params: VerifyCodeParams) => {
 };
 
 interface CreateUserParams {
-    session_id: string;
+    email: string;
     password: string;
 }
 
 export const create_user = async (params: CreateUserParams) => {
-    const { session_id, password } = params;
-    const session = session_container.get(session_id);
-    const email = session?.email;
-    const password_hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
+    const { email, password } = params;
+    if (!email || !password) return { success: false, message: 'Invalid email or password data' };
+    const session: Record<string, string> = await redisClient.hGetAll(email);
+    const password_hash = bcrypt.hashSync(password, process.env.BCRYPT_SALT);
+    const email_hash = bcrypt.hashSync(email, process.env.BCRYPT_SALT);
 
-    if (!session || session.state !== 'password') throw new Error("Session doesn't exists or has invalid state!");
-
-    // Алгоритм для создания нового пользователя, повторяем все то, что использовали в authentification
-    // + используем любой способ шифрования для хранения паролей в БД
+    if (session.state !== 'password')
+        return { success: false, message: 'Current session does not exist or in invalid state' };
 
     try {
-        const service_name: string = AuthServiceName.APP;
-        const service_id: string = `${email}:${password_hash}`;
+        const service_name: string = AuthServiceName.EMAIL;
+        const service_id: string = `${email_hash}:${password_hash}`;
         const user_id: string = generateUniqueId(service_id, service_name);
         const access_token: string = generateJWT(user_id);
         const refresh_token: string = generateRefreshToken(user_id);
@@ -263,8 +145,8 @@ export const create_user = async (params: CreateUserParams) => {
         // Сохранение пользователя и его авторизацию в БД
         await userRepository.save(newUser);
 
-        session_container.delete(session_id);
-        console.log(session_container);
+        await redisClient.del(email);
+
         // Также в return должен пойти access и refresh токены для последующей работы
         return {
             success: true,
@@ -272,6 +154,6 @@ export const create_user = async (params: CreateUserParams) => {
             refresh_token: refresh_token,
         };
     } catch (error) {
-        throw new Error(`${error}`);
+        return { success: false, message: error };
     }
 };

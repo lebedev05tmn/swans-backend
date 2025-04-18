@@ -25,7 +25,7 @@ export enum AuthServiceName {
     TELEGRAM = 'Telegram',
     APPLE = 'Apple',
     VK = 'Vkontakte',
-    APP = 'App',
+    EMAIL = 'Email',
 }
 
 export const profileTableName = 'profile';
