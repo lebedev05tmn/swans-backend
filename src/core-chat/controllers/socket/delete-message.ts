@@ -34,7 +34,7 @@ export const socketDeleteMessage = async (socket: Socket, chatId: number, messag
 
         socket.to(recipientSocketId).emit('message-is-deleted', { chat_id: chatId, message_id: messageId });
     } catch (err) {
-        socket.to(socket.id).emit('error', {
+        socket.emit('error', {
             event: 'delete-message',
             error: {
                 message: 'Ошибка при удалении сообщения',

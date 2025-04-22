@@ -41,7 +41,7 @@ export const socketEditMessage = async (socket: Socket, chatId: number, messageI
             throw new Error(`Message with ID ${messageId} not found in Redis or Postgres`);
         }
     } catch (err) {
-        socket.to(socket.id).emit('error', {
+        socket.emit('error', {
             event: 'edit-message',
             error: {
                 message: 'Ошибка при редактировании сообщения',

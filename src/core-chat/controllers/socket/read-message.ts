@@ -42,7 +42,7 @@ export const socketReadMessage = async (socket: Socket, chatId: number, messageI
             message_id: messageId,
         });
     } catch (err) {
-        socket.to(socket.id).emit('error', {
+        socket.emit('error', {
             event: 'read-message',
             error: {
                 message: 'Ошибка при отметке сообщения как прочитанного',

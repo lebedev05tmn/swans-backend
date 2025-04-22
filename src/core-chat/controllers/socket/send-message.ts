@@ -65,7 +65,7 @@ export const socketSendMessage = async (
 
         socket.to(recipientSocket).emit('new-message', { message: message });
     } catch (err) {
-        socket.to(socket.id).emit('error', {
+        socket.emit('error', {
             event: 'send-message',
             error: {
                 message: 'Ошибка при отправке сообщения',

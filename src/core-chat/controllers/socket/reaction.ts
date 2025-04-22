@@ -44,7 +44,7 @@ export const socketReaction = async (socket: Socket, chatId: number, messageId: 
             throw new Error(`Message with ID ${messageId} not found`);
         }
     } catch (err) {
-        socket.to(socket.id).emit('error', {
+        socket.emit('error', {
             event: 'reaction',
             error: {
                 message: 'Ошибка при установке реакции на сообщение',
