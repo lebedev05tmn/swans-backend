@@ -1,11 +1,10 @@
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import { messagesRepository } from '../../../shared/config';
 import { userRepository } from '../../../core-user/routes/userRouter';
 import { Message } from '../../entities/Message';
 import { parseAuthToken } from '../../utils';
 
 export const socketSendMessage = async (
-    io: Server,
     socket: Socket,
     messageText: string,
     chatId: number,
@@ -28,6 +27,20 @@ export const socketSendMessage = async (
 
         const recipientId = chat.user1_id === myUserId ? chat.user2_id : chat.user1_id;
 
+        const recipient = await userRepository.findOneByOrFail({
+            user_id: recipientId,
+        });
+
+        if (!recipient) {
+            throw new Error(`Recipient with ID ${recipientId} not found`);
+        }
+
+        const recipientSocket = recipient.socket_id;
+
+        if (!recipientSocket) {
+            throw new Error(`Recipient with ID ${recipientId} not found`);
+        }
+
         const message = Message.create({
             message_id: newMessageId,
             chat_id: chatId,
@@ -44,29 +57,15 @@ export const socketSendMessage = async (
 
         await messagesRepository.save(message);
 
-        const recipient = await userRepository.findOneByOrFail({
-            user_id: recipientId,
-        });
-
-        if (!recipient) {
-            throw new Error(`Recipient with ID ${recipientId} not found`);
-        }
-
         message.sending_time = new Date(
             new Date(message.sending_time).toLocaleString(recipient.locale, {
                 timeZone: recipient.timezone,
             }),
         );
 
-        const recipientSocket = recipient.socket_id;
-
-        if (!recipientSocket) {
-            throw new Error(`Recipient with ID ${recipientId} not found`);
-        }
-
-        io.to(recipientSocket).emit('new-message', { message: message });
+        socket.to(recipientSocket).emit('new-message', { message: message });
     } catch (err) {
-        io.to(socket.id).emit('error', {
+        socket.to(socket.id).emit('error', {
             event: 'send-message',
             error: {
                 message: 'Ошибка при отправке сообщения',

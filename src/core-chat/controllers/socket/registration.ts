@@ -13,9 +13,9 @@ export const socketRegistration = async (socket: Socket) => {
         user.socket_id = socket.id;
         await userRepository.save(user);
 
-        socket.emit('registrated', { socket_id: socket.id });
+        socket.to(socket.id).emit('registrated', { socket_id: socket.id });
     } catch (err) {
-        socket.emit('error', {
+        socket.to(socket.id).emit('error', {
             event: 'registration',
             error: {
                 message: 'Ошибка при регистрации сокета',

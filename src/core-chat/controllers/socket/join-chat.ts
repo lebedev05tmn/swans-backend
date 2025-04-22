@@ -21,7 +21,7 @@ export const socketJoinChat = async (socket: Socket, chatId: number) => {
         const online = user.online;
         const verify = user.verify;
 
-        socket.emit('joined', {
+        socket.to(socket.id).emit('joined', {
             chat_id: chat.chat_id,
             name: userName,
             profile_picture: profilePicture,
@@ -29,7 +29,7 @@ export const socketJoinChat = async (socket: Socket, chatId: number) => {
             verify: verify,
         });
     } catch (err) {
-        socket.emit('error', {
+        socket.to(socket.id).emit('error', {
             event: 'join-chat',
             error: {
                 message: 'Ошибка при подключении к чату',

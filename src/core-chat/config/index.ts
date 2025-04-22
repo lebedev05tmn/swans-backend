@@ -18,23 +18,23 @@ export const socketHandler = (io: Server) => {
         });
 
         socket.on('send-message', async ({ messageText, chatId, responseMessageId, images }) => {
-            await socketSendMessage(io, socket, messageText, chatId, responseMessageId, images);
+            await socketSendMessage(socket, messageText, chatId, responseMessageId, images);
         });
 
         socket.on('read-message', async ({ chatId, messageId }) => {
-            await socketReadMessage(io, socket, chatId, messageId);
+            await socketReadMessage(socket, chatId, messageId);
         });
 
         socket.on('reaction', async ({ chatId, messageId, reaction }) => {
-            await socketReaction(io, socket, chatId, messageId, reaction);
+            await socketReaction(socket, chatId, messageId, reaction);
         });
 
         socket.on('edit-message', async ({ chatId, messageId, messageText }) => {
-            await socketEditMessage(io, socket, chatId, messageId, messageText);
+            await socketEditMessage(socket, chatId, messageId, messageText);
         });
 
         socket.on('delete-message', async ({ chatId, messageId }) => {
-            await socketDeleteMessage(io, socket, chatId, messageId);
+            await socketDeleteMessage(socket, chatId, messageId);
         });
 
         socket.on('registration', async () => {
