@@ -12,6 +12,7 @@ import { options } from './shared/config';
 import { authRouter } from './core-auth/routes/auth-router';
 import { userRouter } from './core-user/routes/userRouter';
 import { contextRouter } from './core-web/context';
+import { startBot } from './core-web/telegram-bot';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -64,6 +65,7 @@ AppDataSource.initialize().then(
                 app.use('/api/media', mediaRouter);
                 app.use('/api/auth', authRouter);
                 app.use('/api/metadata', userRouter);
+                startBot();
                 app.listen(port, () => {
                     console.log(`App listening on port ${port}`);
                 });
