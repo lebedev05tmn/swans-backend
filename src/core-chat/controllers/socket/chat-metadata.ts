@@ -3,7 +3,7 @@ import { profileRepository } from '../../../shared/config';
 import { userRepository } from '../../../core-user/routes/userRouter';
 import { parseAuthToken } from '../../utils';
 
-export const socketJoinChat = async (socket: Socket, chatId: number) => {
+export const socketChatMetadata = async (socket: Socket, chatId: number) => {
     try {
         const [myUserId, chat] = await parseAuthToken(socket, chatId);
 

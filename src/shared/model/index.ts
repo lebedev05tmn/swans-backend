@@ -2,7 +2,6 @@ import { DataSource } from 'typeorm';
 import { Profile } from '../../core-profile/entities/Profile';
 import 'dotenv/config';
 import { Chat } from '../../core-chat/entities/Chat';
-import { Message } from '../../core-chat/entities/Message';
 import { Auth } from '../../core-auth/models/entities/Auth';
 import { User } from '../../core-user/models/entities/User';
 
@@ -15,6 +14,6 @@ export const AppDataSource = new DataSource({
     host: process.env.DB_HOST,
     port: DB_PORT,
     database: process.env.DB_NAME,
-    entities: [Profile, Chat, Message, Auth, User],
+    entities: [Profile, Chat, Auth, User],
     synchronize: true,
 });

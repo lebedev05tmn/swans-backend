@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import { socketRegistration } from '../controllers/socket/registration';
-import { socketJoinChat } from '../controllers/socket/join-chat';
+import { socketChatMetadata } from '../controllers/socket/chat-metadata';
 import { socketSendMessage } from '../controllers/socket/send-message';
 import { socketDeleteMessage } from '../controllers/socket/delete-message';
 import { socketReadMessage } from '../controllers/socket/read-message';
@@ -13,8 +13,8 @@ export const socketHandler = (io: Server) => {
             socket.disconnect();
         });
 
-        socket.on('join-chat', async ({ chatId }) => {
-            await socketJoinChat(socket, chatId);
+        socket.on('chat-metadata', async ({ chatId }) => {
+            await socketChatMetadata(socket, chatId);
         });
 
         socket.on('send-message', async ({ messageText, chatId, responseMessageId, images }) => {

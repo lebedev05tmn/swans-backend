@@ -1,21 +1,19 @@
 import { Socket } from 'socket.io';
-import { messagesRepository } from '../../../shared/config';
 import { userRepository } from '../../../core-user/routes/userRouter';
-import { parseAuthToken } from '../../utils';
+import { IMessage, parseAuthToken } from '../../utils';
+import { chatsRepository } from '../../../shared/config';
 
 export const socketReaction = async (socket: Socket, chatId: number, messageId: number, reaction: string | null) => {
     try {
         const [myUserId, chat] = await parseAuthToken(socket, chatId);
 
-        const message = await messagesRepository.findOneByOrFail({
-            chat_id: chat.chat_id,
-            message_id: messageId,
-        });
+        const messageIndex = chat.messages.findIndex((msg: IMessage) => msg.id === messageId);
 
-        if (message) {
-            if (myUserId === message.sender_id) message.reaction_sender = reaction;
-            else message.reaction_recipient = reaction;
+        if (messageIndex === -1) {
+            throw new Error(`Message with ID ${messageId} not found`);
+        }
 
+        if (chat.messages[messageIndex]) {
             const recipientUserId = chat.user1_id === myUserId ? chat.user2_id : chat.user1_id;
 
             const recipient = await userRepository.findOneByOrFail({
@@ -32,7 +30,11 @@ export const socketReaction = async (socket: Socket, chatId: number, messageId: 
                 throw new Error('User not found');
             }
 
-            await messagesRepository.save(message);
+            if (myUserId === chat.messages[messageIndex].sender_id)
+                chat.messages[messageIndex].reaction_sender = reaction;
+            else chat.messages[messageIndex].reaction_recipient = reaction;
+
+            await chatsRepository.save(chat);
 
             socket.to(recipientSocketId).emit('message-is-reacted', {
                 chat_id: chat.chat_id,

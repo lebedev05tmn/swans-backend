@@ -1,11 +1,9 @@
 import { AppDataSource } from '../model';
 import { Profile } from '../../core-profile/entities/Profile';
 import { Chat } from '../../core-chat/entities/Chat';
-import { Message } from '../../core-chat/entities/Message';
 
 export const profileRepository = AppDataSource.getRepository(Profile);
 export const chatsRepository = AppDataSource.getRepository(Chat);
-export const messagesRepository = AppDataSource.getRepository(Message);
 
 const routes = ['./**/routes/*.ts', './**/core-web/**/*.ts'];
 

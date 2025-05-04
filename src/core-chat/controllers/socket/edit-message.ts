@@ -1,20 +1,21 @@
-import { messagesRepository } from '../../../shared/config';
+import { chatsRepository } from '../../../shared/config';
 import { Socket } from 'socket.io';
 import { userRepository } from '../../../core-user/routes/userRouter';
-import { parseAuthToken } from '../../utils';
+import { IMessage, parseAuthToken } from '../../utils';
 
 export const socketEditMessage = async (socket: Socket, chatId: number, messageId: number, messageText: string) => {
     try {
         const [myUserId, chat] = await parseAuthToken(socket, chatId);
 
-        const message = await messagesRepository.findOneByOrFail({
-            chat_id: chatId,
-            message_id: messageId,
-        });
-
         const recipientUserId = chat.user1_id === myUserId ? chat.user2_id : chat.user1_id;
 
-        if (message) {
+        const messageIndex = chat.messages.findIndex((msg: IMessage) => msg.id === messageId);
+
+        if (messageIndex === -1) {
+            throw new Error(`Message with ID ${messageId} not found`);
+        }
+
+        if (chat.messages[messageIndex]) {
             const recipient = await userRepository.findOneByOrFail({
                 user_id: recipientUserId,
             });
@@ -29,8 +30,8 @@ export const socketEditMessage = async (socket: Socket, chatId: number, messageI
                 throw new Error("Recipient's socket id not found");
             }
 
-            message.message_text = messageText;
-            await messagesRepository.save(message);
+            chat.messages[messageIndex].message_text = messageText;
+            await chatsRepository.save(chat);
 
             socket.to(recipientSocketId).emit('message-is-edited', {
                 chat_id: chatId,

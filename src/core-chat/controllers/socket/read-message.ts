@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
-import { messagesRepository } from '../../../shared/config';
 import { userRepository } from '../../../core-user/routes/userRouter';
-import { parseAuthToken } from '../../utils';
+import { IMessage, parseAuthToken } from '../../utils';
+import { chatsRepository } from '../../../shared/config';
 
 export const socketReadMessage = async (socket: Socket, chatId: number, messageId: number) => {
     try {
@@ -23,19 +23,22 @@ export const socketReadMessage = async (socket: Socket, chatId: number, messageI
             throw new Error("Recipient's socket id not found");
         }
 
-        const updateResult = await messagesRepository
-            .createQueryBuilder()
-            .update()
-            .set({ is_readen: true })
-            .where('chat_id = :chatId AND message_id <= :messageId', {
-                chatId,
-                messageId,
-            })
-            .execute();
+        const messageIndex = chat.messages.findIndex((msg: IMessage) => msg.id === messageId);
 
-        if (updateResult.affected === 0) {
-            throw new Error(`Messages in chat ${chatId} up to ${messageId} not found`);
+        if (messageIndex === -1) {
+            throw new Error(`Message with ID ${messageId} not found`);
         }
+
+        for (let i = messageIndex; i >= 0; i--) {
+            const message = chat.messages[i];
+
+            if (message.sender_id !== recipientUserId) continue;
+            if (message.is_readen) break;
+
+            message.is_readen = true;
+        }
+
+        await chatsRepository.save(chat);
 
         socket.to(recipientSocketId).emit('message-is-readen', {
             chat_id: chat.chat_id,

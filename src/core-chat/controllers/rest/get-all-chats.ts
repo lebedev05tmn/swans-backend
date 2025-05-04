@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { decodeUserId } from '../../../core-auth/utils/getUserId';
-import { chatsRepository, messagesRepository, profileRepository } from '../../../shared/config';
+import { chatsRepository, profileRepository } from '../../../shared/config';
 import { userRepository } from '../../../core-user/routes/userRouter';
 import { setLocalTime } from '../../utils';
 
@@ -24,17 +24,20 @@ export const getAllChats = async (req: Request, res: Response) => {
 
                     const chatId = currentChat.chat_id;
 
-                    const unreadCount = await messagesRepository.count({
-                        where: {
-                            chat_id: chatId,
-                            is_readen: false,
-                        },
+                    const chat = await chatsRepository.findOneByOrFail({
+                        chat_id: chatId,
                     });
+                    const messages = chat.messages;
 
-                    const lastMessage = await messagesRepository.findOneOrFail({
-                        where: { chat_id: chatId },
-                        order: { message_id: 'DESC' },
-                    });
+                    if (!messages || messages.length === 0) throw new Error('Chat is empty');
+
+                    const unreadCount = messages.filter(
+                        (message) => message.recipient_id === myUserId && !message.is_readen,
+                    ).length;
+
+                    const lastMessage = [...messages].sort(
+                        (a, b) => new Date(b.sending_time).getTime() - new Date(a.sending_time).getTime(),
+                    )[0];
 
                     const profile = await profileRepository.findOneByOrFail({
                         user: { user_id: myUserId },

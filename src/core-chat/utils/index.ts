@@ -69,3 +69,16 @@ export const setLocalTime = (sending_time: Date, timezone: string) => {
     const localDate = new Date(utcDate.getTime() + timezoneOffset);
     return new Date(localDate.toISOString());
 };
+
+export interface IMessage {
+    id: number | null;
+    sender_id: string;
+    recipient_id: string;
+    message_text: string;
+    sending_time: Date;
+    is_readen: boolean;
+    images: string[] | null;
+    response_message_id: number | null;
+    reaction_sender: string | null;
+    reaction_recipient: string | null;
+}

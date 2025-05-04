@@ -1,8 +1,7 @@
 import { Socket } from 'socket.io';
-import { messagesRepository } from '../../../shared/config';
+import { chatsRepository } from '../../../shared/config';
 import { userRepository } from '../../../core-user/routes/userRouter';
-import { Message } from '../../entities/Message';
-import { parseAuthToken } from '../../utils';
+import { IMessage, parseAuthToken } from '../../utils';
 
 export const socketSendMessage = async (
     socket: Socket,
@@ -17,13 +16,6 @@ export const socketSendMessage = async (
         }
 
         const [myUserId, chat] = await parseAuthToken(socket, chatId);
-
-        const lastMessage = await messagesRepository.findOne({
-            where: { chat_id: chatId },
-            order: { message_id: 'DESC' },
-        });
-
-        const newMessageId = lastMessage ? lastMessage.message_id + 1 : 1;
 
         const recipientId = chat.user1_id === myUserId ? chat.user2_id : chat.user1_id;
 
@@ -41,9 +33,8 @@ export const socketSendMessage = async (
             throw new Error(`Recipient with ID ${recipientId} not found`);
         }
 
-        const message = Message.create({
-            message_id: newMessageId,
-            chat_id: chatId,
+        const message: IMessage = {
+            id: chat.messages.length === 0 ? 0 : chat.messages.at(-1).id + 1,
             sender_id: myUserId,
             recipient_id: recipientId,
             message_text: messageText,
@@ -53,9 +44,10 @@ export const socketSendMessage = async (
             response_message_id: responseMessageId ? responseMessageId : null,
             reaction_sender: null,
             reaction_recipient: null,
-        });
+        };
 
-        await messagesRepository.save(message);
+        chat.messages.push(message);
+        await chatsRepository.save(chat);
 
         message.sending_time = new Date(
             new Date(message.sending_time).toLocaleString(recipient.locale, {

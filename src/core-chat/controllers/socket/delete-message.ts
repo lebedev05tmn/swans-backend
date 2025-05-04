@@ -1,7 +1,7 @@
-import { messagesRepository } from '../../../shared/config';
+import { chatsRepository } from '../../../shared/config';
 import { Socket } from 'socket.io';
 import { userRepository } from '../../../core-user/routes/userRouter';
-import { parseAuthToken } from '../../utils';
+import { IMessage, parseAuthToken } from '../../utils';
 
 export const socketDeleteMessage = async (socket: Socket, chatId: number, messageId: number) => {
     try {
@@ -20,17 +20,17 @@ export const socketDeleteMessage = async (socket: Socket, chatId: number, messag
         const recipientSocketId = recipient.socket_id;
 
         if (!recipientSocketId) {
-            throw new Error(`Recipient not found`);
+            throw new Error(`Recipient hasn't socket id`);
         }
 
-        const deleteResult = await messagesRepository.delete({
-            chat_id: chatId,
-            message_id: messageId,
-        });
+        const messageIndex = chat.messages.findIndex((msg: IMessage) => msg.id === messageId);
 
-        if (deleteResult.affected === 0) {
+        if (messageIndex === -1) {
             throw new Error(`Message with ID ${messageId} not found`);
         }
+
+        chat.messages.splice(messageIndex, 1);
+        await chatsRepository.save(chat);
 
         socket.to(recipientSocketId).emit('message-is-deleted', { chat_id: chatId, message_id: messageId });
     } catch (err) {
