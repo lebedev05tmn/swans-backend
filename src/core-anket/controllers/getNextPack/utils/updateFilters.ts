@@ -1,7 +1,7 @@
 import { filters } from 'src/core-anket/utils/interfaces';
 import { User } from '../../../../core-user/models/entities/User';
 import { AppDataSource } from '../../../../shared/model';
-import { calculate_distance, calculate_score } from '../../startDating/utils/calculate';
+import { calculate_distance, calculate_score } from '../../../utils/calculate';
 import { filter_user } from '../../startDating/utils/filter';
 import { dating_sessions } from '../../startDating/utils/sortAnkets';
 

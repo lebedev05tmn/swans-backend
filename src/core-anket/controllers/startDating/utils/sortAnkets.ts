@@ -1,7 +1,7 @@
 import { AppDataSource } from '../../../../shared/model';
 import { filters } from '../../../utils/interfaces';
 import { User } from '../../../../core-user/models/entities/User';
-import { calculate_distance, calculate_score } from './calculate';
+import { calculate_distance, calculate_score } from '../../../utils/calculate';
 import { filter_user } from './filter';
 
 export const dating_sessions: Map<string, string[]> = new Map();

@@ -1,4 +1,4 @@
-import { User } from '../../../../core-user/models/entities/User';
+import { User } from '../../core-user/models/entities/User';
 
 export const calculate_distance = (
     coord1: { x: number; y: number } | null,
