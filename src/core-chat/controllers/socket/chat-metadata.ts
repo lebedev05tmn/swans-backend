@@ -21,7 +21,7 @@ export const socketChatMetadata = async (socket: Socket, chatId: number) => {
         const online = user.online;
         const verify = user.verify;
 
-        socket.emit('joined', {
+        socket.emit('emit-chat-metadata', {
             chat_id: chat.chat_id,
             name: userName,
             profile_picture: profilePicture,
@@ -30,7 +30,7 @@ export const socketChatMetadata = async (socket: Socket, chatId: number) => {
         });
     } catch (err) {
         socket.emit('error', {
-            event: 'join-chat',
+            event: 'chat-metadata',
             error: {
                 message: 'Ошибка при подключении к чату',
                 details: err instanceof Error ? err.message : 'Неизвестная ошибка',
