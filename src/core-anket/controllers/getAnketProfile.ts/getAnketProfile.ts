@@ -6,7 +6,7 @@ import { HTTP_STATUSES } from 'src/shared/utils';
 import { make_response } from './utils/makeResponse';
 import { In } from 'typeorm';
 
-export const get_anket_profile = async (req: Request, res: Response) => {
+export const get_ankets_profile = async (req: Request, res: Response) => {
     const res_or_user_id = getUserId(req, res);
     if (res_or_user_id instanceof Object) return res_or_user_id;
 
@@ -15,6 +15,11 @@ export const get_anket_profile = async (req: Request, res: Response) => {
         relations: ['profile'],
     });
     const search_users_ids: string[] = req.body.search_users_ids;
+    if (!search_users_ids) {
+        return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
+            message: `Check your request`,
+        });
+    }
     const search_users = await AppDataSource.getRepository(User).find({
         where: {
             user_id: In(search_users_ids),
