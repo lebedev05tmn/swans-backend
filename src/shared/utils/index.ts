@@ -59,7 +59,7 @@ export const emitChatMetadata = async (userId: string, chatId: number) => {
     const recipient = await userRepository.findOneByOrFail({ user_id: recipientUserId });
     const recipientSocketId = recipient.socket_id;
 
-    io.to(recipientSocketId).emit('emit-chat-metadata', {
+    io.to(recipientSocketId).emit('chat-metadata', {
         chat_id: chatId,
         name: userName,
         profile_picture: profilePicture,

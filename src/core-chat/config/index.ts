@@ -13,7 +13,7 @@ export const socketHandler = (io: Server) => {
             socket.disconnect();
         });
 
-        socket.on('chat-metadata', async ({ chatId }) => {
+        socket.on('join-chat', async ({ chatId }) => {
             await socketChatMetadata(socket, chatId);
         });
 
