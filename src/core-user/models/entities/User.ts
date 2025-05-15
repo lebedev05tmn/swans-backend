@@ -28,7 +28,7 @@ export class User extends BaseEntity {
     premium!: boolean;
 
     @Column({ nullable: true })
-    super_likes!: number;
+    likes_list!: { user_id: string; is_super_like: boolean }[];
 
     @Column({ nullable: true })
     returns!: number;

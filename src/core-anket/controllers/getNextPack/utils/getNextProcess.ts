@@ -1,3 +1,4 @@
+import { pack_size } from '../../../../shared/utils';
 import { User } from '../../../../core-user/models/entities/User';
 import { dating_sessions } from '../../startDating/utils/sortAnkets';
 
@@ -6,7 +7,6 @@ export const get_next_pack_process = (current_user: User) => {
         return { success: false, message: `Session doesn't exists` };
     }
 
-    const pack_size = 30;
     const ankets = dating_sessions.get(current_user.user_id);
     if (!ankets) {
         dating_sessions.delete(current_user.user_id);

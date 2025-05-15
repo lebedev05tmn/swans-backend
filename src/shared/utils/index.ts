@@ -30,3 +30,5 @@ export enum AuthServiceName {
 
 export const profileTableName = 'profile';
 export const metadataTableName = 'metadata';
+
+export const pack_size = 30;

@@ -44,7 +44,10 @@ export const create_dating_session = async (current_user: User, filters?: filter
     }
 
     ankets.sort((a, b) => b.score - a.score); // сортировка методом sort
-    const sorted_user_ids: string[] = ankets.map((anket) => anket.user_id);
+    let sorted_user_ids: string[] = ankets.map((anket) => anket.user_id);
+    sorted_user_ids = sorted_user_ids.filter(
+        (user_id) => !current_user.likes_list.find((liked) => liked.user_id === user_id),
+    ); // сортировка для фильтрации анкет, которые находятся в likes_list
     dating_sessions.set(current_user.user_id, sorted_user_ids);
 
     current_user.dating_last_time = new Date();
