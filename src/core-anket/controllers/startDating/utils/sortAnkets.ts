@@ -6,8 +6,10 @@ import { filter_user } from './filter';
 
 export const dating_sessions: Map<string, string[]> = new Map();
 
-// eslint-disable-next-line prettier/prettier
-export const create_dating_session = async (current_user: User, filters?: filters): Promise<{ success: boolean; message: string; }> => {
+export const create_dating_session = async (
+    current_user: User,
+    filters?: filters,
+): Promise<{ success: boolean; message: string }> => {
     if (dating_sessions.has(current_user.user_id)) {
         if (current_user.dating_last_time) {
             const current_date = new Date();
