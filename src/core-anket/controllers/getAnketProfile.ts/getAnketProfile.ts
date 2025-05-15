@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import getUserId from '../../../core-auth/utils/getUserId';
 import { AppDataSource } from '../../../shared/model';
-import { User } from 'src/core-user/models/entities/User';
-import { HTTP_STATUSES } from 'src/shared/utils';
+import { User } from '../../../core-user/models/entities/User';
+import { HTTP_STATUSES } from '../../../shared/utils';
 import { make_response } from './utils/makeResponse';
 import { In } from 'typeorm';
 

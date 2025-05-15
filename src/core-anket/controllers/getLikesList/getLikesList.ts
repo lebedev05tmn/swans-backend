@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-import getUserId from 'src/core-auth/utils/getUserId';
-import { User } from 'src/core-user/models/entities/User';
-import { AppDataSource } from 'src/shared/model';
-import { HTTP_STATUSES } from 'src/shared/utils';
+import getUserId from '../../../core-auth/utils/getUserId';
+import { User } from '../../../core-user/models/entities/User';
+import { AppDataSource } from '../../../shared/model';
+import { HTTP_STATUSES } from '../../../shared/utils';
 
 export const get_likes_list = async (req: Request, res: Response) => {
     const current_user_id = getUserId(req, res);

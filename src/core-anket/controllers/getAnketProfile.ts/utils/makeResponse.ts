@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { User } from '../../../../core-user/models/entities/User';
-import { calculate_distance, get_full_age } from 'src/core-anket/utils/calculate';
+import { calculate_distance, get_full_age } from '../../../../core-anket/utils/calculate';
 import { HTTP_STATUSES } from '../../../../shared/utils';
 
 export const make_response = (current_user: User, search_users: User[], res: Response) => {
