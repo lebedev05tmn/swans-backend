@@ -1,8 +1,9 @@
 import { pack_size } from '../../../../shared/utils';
 import { User } from '../../../../core-user/models/entities/User';
 import { dating_sessions } from '../../startDating/utils/sortAnkets';
+import { serialize_pack } from './serializePack';
 
-export const get_next_pack_process = (current_user: User) => {
+export const get_next_pack_process = async (current_user: User) => {
     if (!dating_sessions.has(current_user.user_id)) {
         return { success: false, message: `Session doesn't exists` };
     }
@@ -22,5 +23,5 @@ export const get_next_pack_process = (current_user: User) => {
     const pack = ankets.slice(0, pack_size);
     const new_ankets = ankets.slice(pack_size - 1);
     dating_sessions.set(current_user.user_id, new_ankets);
-    return { success: true, message: `Successfully get new pack`, pack: pack };
+    return { success: true, message: `Successfully get new pack`, pack: await serialize_pack(pack, current_user) };
 };

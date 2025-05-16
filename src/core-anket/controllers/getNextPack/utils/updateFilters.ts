@@ -1,9 +1,10 @@
-import { filters } from 'src/core-anket/utils/interfaces';
+import { filters } from '../../../../core-anket/utils/interfaces';
 import { User } from '../../../../core-user/models/entities/User';
 import { AppDataSource } from '../../../../shared/model';
 import { calculate_distance, calculate_score } from '../../../utils/calculate';
 import { filter_user } from '../../startDating/utils/filter';
 import { dating_sessions } from '../../startDating/utils/sortAnkets';
+import { premium_filter_check } from '../../../../core-anket/utils/premiumFilterCheck';
 
 export const update_filters = async (current_user: User, filters: filters) => {
     if (!dating_sessions.has(current_user.user_id)) {
@@ -21,6 +22,8 @@ export const update_filters = async (current_user: User, filters: filters) => {
             relations: ['profile'],
         });
         if (!user) continue;
+        if (!premium_filter_check(current_user, filters))
+            return { success: false, message: `Premium functions only avaliable to premium user` };
         if (!filter_user(current_user, user, filters)) continue;
         const distance = calculate_distance(current_user.geolocation, user.geolocation);
         const score = calculate_score(current_user, user, distance);

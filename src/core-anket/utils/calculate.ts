@@ -70,3 +70,17 @@ export const calculate_score = (current_user: User, user: User, distance: number
     }
     return score + counter;
 };
+
+export const calculate_similarity = (current_user: User, search_user: User) => {
+    const first_categories = current_user.profile.categories;
+    const second_categories = search_user.profile.categories;
+
+    const min_size = Math.min(first_categories.length, second_categories.length);
+    const similarity_counter = first_categories.filter((category) => second_categories.includes(category)).length;
+
+    let result = Math.floor(similarity_counter / min_size) + 5;
+    if (result < 10) result = result + 15;
+    else if (result > 100) result = 100;
+
+    return result;
+};
