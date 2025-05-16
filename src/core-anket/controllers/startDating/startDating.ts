@@ -5,6 +5,7 @@ import { datingParams } from '../../utils/interfaces';
 import { create_dating_session } from './utils/sortAnkets';
 
 export const start_dating = async (params: datingParams) => {
+    console.time('start_dating');
     if (!params.token) {
         return { status: false, message: 'Missed token!' };
     }
@@ -23,5 +24,6 @@ export const start_dating = async (params: datingParams) => {
     }
 
     const result = await create_dating_session(current_user, params.filters);
+    console.timeEnd('start_dating');
     return result;
 };
