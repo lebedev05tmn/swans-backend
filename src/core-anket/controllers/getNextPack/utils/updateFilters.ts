@@ -1,38 +1,25 @@
 import { filters } from '../../../../core-anket/utils/interfaces';
 import { User } from '../../../../core-user/models/entities/User';
-import { AppDataSource } from '../../../../shared/model';
-import { calculate_distance, calculate_score } from '../../../utils/calculate';
-import { filter_user } from '../../startDating/utils/filter';
 import { dating_sessions } from '../../startDating/utils/sortAnkets';
-import { premium_filter_check } from '../../../../core-anket/utils/premiumFilterCheck';
+import { update_session } from './updateSession';
+import { get_204 } from '../../startDating/utils/get204';
 
 export const update_filters = async (current_user: User, filters: filters) => {
     if (!dating_sessions.has(current_user.user_id)) {
         return { success: false, message: `Session doesn't exists` };
     }
     const ankets = dating_sessions.get(current_user.user_id);
-    if (!ankets) {
-        return { success: false, message: `Zero Ankets` };
+    if (!ankets?.length) {
+        update_session(current_user, filters);
+        if (!dating_sessions.get(current_user.user_id)?.length) {
+            dating_sessions.delete(current_user.user_id);
+            return { success: false, message: `Zero ankets` };
+        }
     }
 
-    const new_ankets: { user_id: string; score: number }[] = [];
-    for (const anket_user_id of ankets) {
-        const user = await AppDataSource.getRepository(User).findOne({
-            where: { user_id: anket_user_id },
-            relations: ['profile'],
-        });
-        if (!user) continue;
-        if (!premium_filter_check(current_user, filters))
-            return { success: false, message: `Premium functions only avaliable to premium user` };
-        if (!filter_user(current_user, user, filters)) continue;
-        const distance = calculate_distance(current_user.geolocation, user.geolocation);
-        const score = calculate_score(current_user, user, distance);
+    const new_ankets = await get_204(current_user, filters);
+    if (!new_ankets?.length) return { success: false, message: `Zero ankets!` };
 
-        new_ankets.push({ user_id: user.user_id, score: score });
-    }
-    if (!new_ankets) {
-        return { success: false, message: `Zero Ankets After Sorting` };
-    }
     new_ankets.sort((a, b) => b.score - a.score); // сортировка методом sort
     const sorted_user_ids: string[] = new_ankets.map((anket) => anket.user_id);
     dating_sessions.set(current_user.user_id, sorted_user_ids);

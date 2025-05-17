@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 
 import server from '../../shared/utils/server';
-import { like_user } from '../controllers/likeUser/likeUser';
+import { evaluate_user } from '../controllers/evaluateUser/evaluateUser';
 import { get_likes_list } from '../controllers/getLikesList/getLikesList';
 
 export const anketRouter = express.Router();
@@ -68,6 +68,6 @@ anketRouter.get('/get_likes_list', async (req: Request, res: Response) => {
     get_likes_list(req, res);
 });
 
-anketRouter.post('/like_user', async (req: Request, res: Response) => {
-    like_user(req, res);
+anketRouter.post('/evaluate_user', async (req: Request, res: Response) => {
+    evaluate_user(req, res);
 });

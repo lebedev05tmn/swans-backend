@@ -14,20 +14,19 @@ export const get_next_pack = async (params: datingParams) => {
     if (!user_id) {
         return { status: false, message: 'Invalid or expired token!' };
     }
+    try {
+        const current_user = await AppDataSource.getRepository(User).findOneOrFail({
+            where: { user_id: user_id },
+        });
 
-    const current_user = await AppDataSource.getRepository(User).findOne({
-        where: { user_id: user_id },
-        // relations: ['profile'],
-    });
-    if (!current_user) {
-        return { status: false, message: `User with ${user_id} doesn't exists!` };
+        if (params.filters) {
+            const filter_result = await update_filters(current_user, params.filters);
+            if (!filter_result?.success) return filter_result;
+        }
+
+        const result = get_next_pack_process(current_user);
+        return result;
+    } catch (error) {
+        return { success: false, message: String(error), pack: undefined };
     }
-
-    if (params.filters) {
-        const filter_result = await update_filters(current_user, params.filters);
-        if (!filter_result?.success) return filter_result;
-    }
-
-    const result = get_next_pack_process(current_user);
-    return result;
 };
