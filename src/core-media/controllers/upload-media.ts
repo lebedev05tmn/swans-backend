@@ -12,9 +12,12 @@ export const uploadMedia = async (req: Request, res: Response) => {
     if (req.files) {
         const file = req.files.file as UploadedFile;
         const id = uuid();
-        const webpFileName = `${id}.webp`;
+        const userId = await decodeUserId(req.headers.authorization);
+        let webpFileName: string;
 
-        const userId = decodeUserId(req.headers.authorization);
+        if (req.query.chat_id) webpFileName = `message/${req.query.chat_id}/${id}.webp`;
+        else webpFileName = `profile/${userId}/${id}.webp`;
+
         const profile = await profileRepository.findOneByOrFail({ user: { user_id: userId } });
 
         const currentProfilePicture = profile.images[0];

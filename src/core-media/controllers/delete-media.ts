@@ -8,13 +8,17 @@ import { emitChatMetadata } from '../../shared/utils';
 export const deleteMedia = async (req: Request, res: Response) => {
     const id = req.params.id;
     const userId = decodeUserId(req.headers.authorization);
+    let fileName: string;
+
+    if (req.query.chat_id) fileName = `message/${req.query.chat_id}/${id}.webp`;
+    else fileName = `profile/${userId}/${id}.webp`;
 
     const profile = await profileRepository.findOneByOrFail({ user: { user_id: userId } });
     const currentProfilePicture = profile.images[0];
 
     let command = new HeadObjectCommand({
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: `${id}.webp`,
+        Key: fileName,
     });
 
     try {
@@ -22,7 +26,7 @@ export const deleteMedia = async (req: Request, res: Response) => {
 
         command = new DeleteObjectCommand({
             Bucket: process.env.S3_BUCKET_NAME,
-            Key: `${id}.webp`,
+            Key: fileName,
         });
 
         await s3Сlient.send(command);
