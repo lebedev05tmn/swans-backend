@@ -5,12 +5,18 @@ import { bucketName } from '../../shared/config';
 import sharp from 'sharp';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { s3client } from '../s3_client';
+import { decodeUserId } from '../../core-auth/utils/getUserId';
 
 export const uploadMedia = async (req: Request, res: Response) => {
     if (req.files) {
         const file = req.files.file as UploadedFile;
         const id = uuid();
-        const webpFileName = `${id}.webp`;
+        const userId = await decodeUserId(req.headers.authorization);
+
+        let webpFileName: string;
+
+        if (req.query.chat_id) webpFileName = `message/${req.query.chat_id}/${id}.webp`;
+        else webpFileName = `profile/${userId}/${id}.webp`;
 
         try {
             const webpBuffer = await sharp(file.tempFilePath).resize({ height: 600 }).webp({ quality: 80 }).toBuffer();

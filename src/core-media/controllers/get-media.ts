@@ -2,10 +2,16 @@ import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { bucketName } from '../../shared/config';
 import { Request, Response } from 'express';
 import { s3client } from '../s3_client';
+import { decodeUserId } from '../../core-auth/utils/getUserId';
 
 export const getMedia = async (req: Request, res: Response) => {
     if (req.params.id !== null && req.params.id !== undefined) {
-        const fileName = `${req.params.id}.webp`;
+        const id = req.params.id;
+        const userId = await decodeUserId(req.headers.authorization);
+        let fileName: string;
+
+        if (req.query.chat_id) fileName = `message/${req.query.chat_id}/${id}.webp`;
+        else fileName = `profile/${userId}/${id}.webp`;
 
         try {
             const command = new GetObjectCommand({
