@@ -15,6 +15,7 @@ import { chatRouter } from './core-chat/routes/chat-router';
 import { authRouter } from './core-auth/routes/auth-router';
 import { userRouter } from './core-user/routes/userRouter';
 import { contextRouter } from './core-web/context';
+import { startBot } from './core-web/telegram-bot';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -67,13 +68,14 @@ AppDataSource.initialize().then(
     () => {
         redisClient.connect().then(
             () => {
-                app.use('/api', contextRouter);
+                app.use('/api/context', contextRouter);
                 app.use('/api/profile', profileRouter);
                 app.use('/api/media', mediaRouter);
                 app.use('/api/auth', authRouter);
                 app.use('/api/metadata', userRouter);
                 app.use('/api/chat', chatRouter);
                 server.listen(port, () => {
+                    startBot();
                     console.log(`App listening on port ${port}`);
                 });
             },
