@@ -41,7 +41,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api', (req, res, next) => {
+app.use('/', (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
         return next();
@@ -60,11 +60,11 @@ AppDataSource.initialize().then(
     () => {
         redisClient.connect().then(
             () => {
-                app.use('/api/context', contextRouter);
-                app.use('/api/profile', profileRouter);
-                app.use('/api/media', mediaRouter);
-                app.use('/api/auth', authRouter);
-                app.use('/api/metadata', userRouter);
+                app.use('/context', contextRouter);
+                app.use('/profile', profileRouter);
+                app.use('/media', mediaRouter);
+                app.use('/auth', authRouter);
+                app.use('/metadata', userRouter);
                 startBot();
                 app.listen(port, () => {
                     console.log(`App listening on port ${port}`);
@@ -82,4 +82,4 @@ AppDataSource.initialize().then(
 
 const swaggerDocs = swaggerJsDoc(options);
 
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
