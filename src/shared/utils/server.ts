@@ -1,7 +1,7 @@
 import { JSONRPCServer } from 'json-rpc-2.0';
 import { send_code, verify_code, create_user } from '../../core-auth/controllers/sendMail';
-import { start_dating } from '../../core-anket/controllers/startDating/startDating';
-import { get_next_pack } from '../../core-anket/controllers/getNextPack/getNextPack';
+import { start_dating } from '../../core-dating/controllers/startDating/startDating';
+import { get_next_pack } from '../../core-dating/controllers/getNextPack/getNextPack';
 
 const server = new JSONRPCServer();
 

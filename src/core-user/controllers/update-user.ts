@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { User } from '../models/entities/User';
 import getUserId from '../../core-auth/utils/getUserId';
-import { HTTP_STATUSES } from '../../shared/utils';
+import { emitChatMetadata, HTTP_STATUSES } from '../../shared/utils';
 import { userRepository } from '../routes/userRouter';
+import { chatsRepository } from '../../shared/config';
 
 export default async (req: Request<Record<string, string>, Record<string, unknown>, Partial<User>>, res: Response) => {
     const user_id = getUserId(req, res);
@@ -19,6 +20,16 @@ export default async (req: Request<Record<string, string>, Record<string, unknow
     }
 
     const body = req.body;
+
+    const chats = await chatsRepository
+        .createQueryBuilder('chat')
+        .select(['chat.chat_id'])
+        .where('chat.user1_id = :userId OR chat.user2_id = :userId', { userId: user_id })
+        .getMany();
+
+    if (chats.length > 0) {
+        await Promise.all(chats.map((chat) => emitChatMetadata(user_id, chat.chat_id)));
+    }
 
     try {
         if (body.online === false) body.last_visit = new Date();

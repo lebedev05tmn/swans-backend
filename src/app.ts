@@ -4,18 +4,27 @@ import fileUpload from 'express-fileupload';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import { createClient } from 'redis';
-
 import { mediaRouter } from './core-media/routes/media-router';
 import { profileRouter } from './core-profile/routes/profile-router';
 import { AppDataSource } from './shared/model';
 import { options } from './shared/config';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { socketHandler } from './core-chat/config';
+import { chatRouter } from './core-chat/routes/chat-router';
 import { authRouter } from './core-auth/routes/auth-router';
 import { userRouter } from './core-user/routes/userRouter';
 import { contextRouter } from './core-web/context';
-import { anketRouter } from './core-anket/routes/anket-router';
+import { datingRouter } from './core-dating/routes/dating-router';
+import { startBot } from './core-web/telegram-bot';
 
 export const app = express();
 const port = process.env.PORT || 8080;
+
+const server = createServer(app);
+export const io = new Server(server);
+
+socketHandler(io);
 
 export const redisClient = createClient({
     url: `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
@@ -65,8 +74,10 @@ AppDataSource.initialize().then(
                 app.use('/api/media', mediaRouter);
                 app.use('/api/auth', authRouter);
                 app.use('/api/metadata', userRouter);
-                app.use('/api/dating', anketRouter);
-                app.listen(port, () => {
+                app.use('/api/chat', chatRouter);
+                app.use('/api/dating', datingRouter);
+                server.listen(port, () => {
+                    startBot();
                     console.log(`App listening on port ${port}`);
                 });
             },
