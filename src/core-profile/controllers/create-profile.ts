@@ -32,7 +32,7 @@ export const createProfile = async (req: Request, res: Response) => {
 
         const requiredParams = [newUser.user_name, newUser.birth_date, newUser.sex, newUser.images, newUser.city];
 
-        const correct = requiredParams.reduce((acc, param) => acc && !param, true);
+        const correct = requiredParams.reduce((acc, param) => acc && param, true);
 
         if (!correct) return res.status(400).send('Invalid input data');
 

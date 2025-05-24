@@ -5,7 +5,7 @@ export const calculate_distance = (
     coord2: { x: number; y: number } | null,
 ): number => {
     if (!coord1 || !coord2) {
-        throw new Error('Coordinates must contains values!');
+        return Infinity;
     }
 
     const R = 6371e3;
