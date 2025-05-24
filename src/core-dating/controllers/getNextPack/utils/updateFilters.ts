@@ -1,4 +1,4 @@
-import { filters } from '../../../../core-anket/utils/interfaces';
+import { filters } from '../../../utils/interfaces';
 import { User } from '../../../../core-user/models/entities/User';
 import { dating_sessions } from '../../startDating/utils/sortAnkets';
 import { update_session } from './updateSession';

@@ -4,23 +4,23 @@ import server from '../../shared/utils/server';
 import { evaluate_user } from '../controllers/evaluateUser/evaluateUser';
 import { get_likes_list } from '../controllers/getLikesList/getLikesList';
 
-export const anketRouter = express.Router();
+export const datingRouter = express.Router();
 
 /**
  * @openapi
  * tags:
- *   - name: Anket
+ *   - name: Dating
  *     description: Работа с анкетами
  */
 
 /**
  * @openapi
- * /api/anket/get_likes_list:
+ * /api/dating/get_likes_list:
  *   get:
  *     summary: Получение списка лайкнувших
  *     security:
  *       - bearerAuth: []
- *     tags: [Anket]
+ *     tags: [Dating]
  *     description: Поиск пользователя по базе данных и добавление в массив его авторизаций новой записи
  *     responses:
  *       200:
@@ -56,18 +56,18 @@ export const anketRouter = express.Router();
  *                   type: string
  *                   desctiption: Подробное описание ошибки на сервере
  */
-anketRouter.get('/get_likes_list', async (req: Request, res: Response) => {
+datingRouter.get('/get_likes_list', async (req: Request, res: Response) => {
     get_likes_list(req, res);
 });
 
 /**
  * @openapi
- * /api/anket/evaluate_user:
+ * /api/dating/evaluate_user:
  *   post:
  *     summary: Лайк или дизлайк пользователя
  *     security:
  *       - bearerAuth: []
- *     tags: [Anket]
+ *     tags: [Dating]
  *     description: Добавление просмотренной анкеты или добавление данной анкеты в список лайкнувших
  *     requestBody:
  *       required: true
@@ -140,16 +140,16 @@ anketRouter.get('/get_likes_list', async (req: Request, res: Response) => {
  *                   description: Подробное описание ошибки на сервере
  *                   example: "Database connection failed"
  */
-anketRouter.post('/evaluate_user', async (req: Request, res: Response) => {
+datingRouter.post('/evaluate_user', async (req: Request, res: Response) => {
     evaluate_user(req, res);
 });
 
 /**
  * @openapi
- * /api/dating:
+ * /api/dating/anket:
  *   post:
  *     summary: Обработка подбора анкет с использованием JSON-RPC
- *     tags: [Anket]
+ *     tags: [Dating]
  *     description: |
  *       Этот эндпоинт обрабатывает подбор анкет с использованием JSON-RPC.
  *       Поддерживает два метода: `start_dating` и `get_next_pack`.
@@ -323,7 +323,7 @@ anketRouter.post('/evaluate_user', async (req: Request, res: Response) => {
  *           type: string
  *           example: "1"
  */
-anketRouter.post('/dating', async (req: Request, res: Response) => {
+datingRouter.post('/anket', async (req: Request, res: Response) => {
     const jsonRPCRequest = req.body;
     const response = await server.receive(jsonRPCRequest);
     if (response) {

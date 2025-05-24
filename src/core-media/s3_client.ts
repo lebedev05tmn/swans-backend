@@ -1,7 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import 'dotenv/config';
 
-export const s3client = new S3Client({
+export const s3Сlient = new S3Client({
     region: process.env.S3_REGION,
     endpoint: process.env.S3_ENDPOINT,
     forcePathStyle: true,

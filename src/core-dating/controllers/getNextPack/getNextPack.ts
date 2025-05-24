@@ -1,5 +1,5 @@
 import { AppDataSource } from '../../../shared/model';
-import { datingParams } from '../../../core-anket/utils/interfaces';
+import { datingParams } from '../../utils/interfaces';
 import { get_user_id } from '../startDating/utils/getUserId';
 import { User } from '../../../core-user/models/entities/User';
 import { get_next_pack_process } from './utils/getNextProcess';
