@@ -14,12 +14,12 @@ export const uploadMedia = async (req: Request, res: Response) => {
         const id = uuid();
         const webpFileName = `${id}.webp`;
 
-        const userId = decodeUserId(req.headers.authorization);
-        const profile = await profileRepository.findOneByOrFail({ user: { user_id: userId } });
-
-        const currentProfilePicture = profile.images[0];
-
         try {
+            const userId = decodeUserId(req.headers.authorization);
+            let profile = await profileRepository.findOneByOrFail({ user: { user_id: userId } });
+
+            const currentProfilePicture = profile.images[0];
+
             const webpBuffer = await sharp(file.tempFilePath).resize({ height: 600 }).webp({ quality: 80 }).toBuffer();
 
             const command = new PutObjectCommand({
@@ -29,7 +29,7 @@ export const uploadMedia = async (req: Request, res: Response) => {
             });
             await s3Сlient.send(command);
 
-            const profile = await profileRepository.findOneByOrFail({ user: { user_id: userId } });
+            profile = await profileRepository.findOneByOrFail({ user: { user_id: userId } });
 
             const newProfilePicture = profile.images[0];
 

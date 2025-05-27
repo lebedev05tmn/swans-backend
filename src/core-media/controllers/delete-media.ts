@@ -7,17 +7,18 @@ import { emitChatMetadata } from '../../shared/utils';
 
 export const deleteMedia = async (req: Request, res: Response) => {
     const id = req.params.id;
-    const userId = decodeUserId(req.headers.authorization);
-
-    const profile = await profileRepository.findOneByOrFail({ user: { user_id: userId } });
-    const currentProfilePicture = profile.images[0];
-
-    let command = new HeadObjectCommand({
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: `${id}.webp`,
-    });
 
     try {
+        const userId = decodeUserId(req.headers.authorization);
+
+        let profile = await profileRepository.findOneByOrFail({ user: { user_id: userId } });
+        const currentProfilePicture = profile.images[0];
+
+        let command = new HeadObjectCommand({
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: `${id}.webp`,
+        });
+
         await s3Сlient.send(command);
 
         command = new DeleteObjectCommand({
@@ -27,7 +28,7 @@ export const deleteMedia = async (req: Request, res: Response) => {
 
         await s3Сlient.send(command);
 
-        const profile = await profileRepository.findOneByOrFail({ user: { user_id: userId } });
+        profile = await profileRepository.findOneByOrFail({ user: { user_id: userId } });
 
         const newProfilePicture = profile.images[0];
 
