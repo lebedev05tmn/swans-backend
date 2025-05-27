@@ -18,8 +18,6 @@ export const mediaRouter = express.Router();
  * /api/media/get/{id}:
  *   get:
  *     summary: Получить медиафайл по id
- *     security:
- *       - bearerAuth: []
  *     tags: [Media]
  *     parameters:
  *       - in: path
@@ -50,6 +48,8 @@ mediaRouter.get('/get/:id', async (req: Request, res: Response) => {
  * /api/media/create:
  *   post:
  *     summary: Загрузка изображения в хранилище
+ *     security:
+ *       - bearerAuth: []
  *     tags:
  *       - Media
  *     requestBody:
@@ -82,6 +82,8 @@ mediaRouter.post('/create', async (req: Request, res: Response) => {
  * /api/media/delete/{id}:
  *   delete:
  *     summary: Удалить медиафайл по id
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Media]
  *     parameters:
  *       - in: path
