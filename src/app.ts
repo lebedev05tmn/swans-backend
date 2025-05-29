@@ -74,8 +74,8 @@ AppDataSource.initialize().then(
                 app.use('/api/auth', authRouter);
                 app.use('/api/metadata', userRouter);
                 app.use('/api/chat', chatRouter);
+                startBot();
                 server.listen(port, () => {
-                    startBot();
                     console.log(`App listening on port ${port}`);
                 });
             },
