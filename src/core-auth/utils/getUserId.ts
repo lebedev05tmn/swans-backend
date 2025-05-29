@@ -3,26 +3,41 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import jwtConfig from '../../shared/config/JWTConfig';
 import { HTTP_STATUSES } from '../../shared/utils';
 
-export default (req: Request, res: Response): string | Response => {
-    const authHeader = req.headers.authorization;
-
+export const decodeUserId = (authHeader?: string) => {
     if (!authHeader || !authHeader.startsWith('Bearer '))
-        return res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({
-            message: 'Missing or invalid Authorization header!',
+        throw new Error('Missing or invalid Authorization header!', {
+            cause: HTTP_STATUSES.UNAUTHORIZED_401,
         });
 
     const token = authHeader.split(' ')[1];
 
-    let decodedToken: JwtPayload;
-    try {
-        decodedToken = jwt.verify(token, jwtConfig.secret) as JwtPayload;
-    } catch {
-        return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
-            message: 'Invalid or expired token!',
-        });
-    }
+    const decodedToken: JwtPayload | string = jwt.verify(token, jwtConfig.secret);
 
-    const user_id = decodedToken.userId;
+    if (typeof decodedToken === 'object' && decodedToken.userId) return decodedToken.userId;
+
+    throw new Error('Invalid or expired token!', {
+        cause: HTTP_STATUSES.BAD_REQUEST_400,
+    });
+};
+
+export default (req: Request, res: Response): string | Response => {
+    const authHeader = req.headers.authorization;
+
+    let user_id;
+
+    try {
+        user_id = decodeUserId(authHeader);
+    } catch (error) {
+        if (error instanceof Error && error.message && error.cause) {
+            return res.status(error.cause as number).json({
+                message: error.message,
+            });
+        } else {
+            return res.status(HTTP_STATUSES.NOT_FOUND_404).json({
+                message: 'User not Found in Token Payload!',
+            });
+        }
+    }
 
     if (!user_id) {
         return res.status(HTTP_STATUSES.NOT_FOUND_404).json({
