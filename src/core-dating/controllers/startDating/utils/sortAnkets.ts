@@ -23,6 +23,7 @@ export const create_dating_session = async (
     }
 
     try {
+        console.log('entry try catch create dating session block');
         const ankets = await get_204(current_user, filters);
         if (!ankets?.length) return { success: false, message: `Zero ankets!` };
 

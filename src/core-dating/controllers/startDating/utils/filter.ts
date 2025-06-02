@@ -3,6 +3,7 @@ import { User } from '../../../../core-user/models/entities/User';
 import { calculate_distance, get_full_age } from '../../../utils/calculate';
 
 export const filter_user = (current_user: User, user: User, filters: filters): boolean => {
+    console.log('entry filter block');
     if (user.user_id === current_user.user_id) return false;
 
     if (filters?.sex && filters.sex != user.profile.sex) return false;

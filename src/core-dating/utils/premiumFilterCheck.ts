@@ -5,4 +5,6 @@ export const premium_filter_check = (current_user: User, filter: filters) => {
     if (current_user.premium) return true;
 
     if (filter.premium || filter.verificated || filter.categories) return false;
+
+    return true;
 };

@@ -18,16 +18,17 @@ export const calculate_distance = (
         Math.sin(delta_f / 2) * Math.sin(delta_f / 2) +
         Math.cos(f1) * Math.cos(f2) * Math.sin(delta_lambda / 2) * Math.sin(delta_lambda / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
+    console.log(R * c);
     return R * c;
 };
 
 export const get_full_age = (birth: Date): number => {
+    const birth_date = new Date(birth);
     const current_date: Date = new Date();
-    let age = current_date.getFullYear() - birth.getFullYear();
+    let age = current_date.getFullYear() - birth_date.getFullYear();
 
-    const month_diff = current_date.getMonth() - birth.getMonth();
-    if (month_diff < 0 || (month_diff === 0 && current_date.getDate() < birth.getDate())) {
+    const month_diff = current_date.getMonth() - birth_date.getMonth();
+    if (month_diff < 0 || (month_diff === 0 && current_date.getDate() < birth_date.getDate())) {
         age--;
     }
 

@@ -2,7 +2,7 @@ import { AppDataSource } from '../../../shared/model';
 import { get_user_id } from './utils/getUserId';
 import { User } from '../../../core-user/models/entities/User';
 import { datingParams } from '../../utils/interfaces';
-import { create_dating_session } from './utils/sortAnkets';
+import { create_dating_session, dating_sessions } from './utils/sortAnkets';
 
 export const start_dating = async (params: datingParams) => {
     console.time('start_dating');
@@ -25,5 +25,7 @@ export const start_dating = async (params: datingParams) => {
 
     const result = await create_dating_session(current_user, params.filters);
     console.timeEnd('start_dating');
+
+    console.log(dating_sessions);
     return result;
 };

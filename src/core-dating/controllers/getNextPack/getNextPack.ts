@@ -17,6 +17,7 @@ export const get_next_pack = async (params: datingParams) => {
     try {
         const current_user = await AppDataSource.getRepository(User).findOneOrFail({
             where: { user_id: user_id },
+            relations: ['profile'],
         });
 
         if (params.filters) {

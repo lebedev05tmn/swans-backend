@@ -21,7 +21,7 @@ export const get_next_pack_process = async (current_user: User) => {
     if (ankets && ankets.length <= pack_size) {
         const pack = ankets;
         dating_sessions.delete(current_user.user_id);
-        return { success: true, message: `Last ankets`, pack: pack };
+        return { success: true, message: `Last ankets`, pack: await serialize_pack(pack, current_user) };
     }
 
     if (ankets && ankets.length >= pack_size) {

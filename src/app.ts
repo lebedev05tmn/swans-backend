@@ -16,7 +16,7 @@ import { authRouter } from './core-auth/routes/auth-router';
 import { userRouter } from './core-user/routes/userRouter';
 import { contextRouter } from './core-web/context';
 import { datingRouter } from './core-dating/routes/dating-router';
-import { startBot } from './core-web/telegram-bot';
+//import { startBot } from './core-web/telegram-bot';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -77,7 +77,7 @@ AppDataSource.initialize().then(
                 app.use('/api/chat', chatRouter);
                 app.use('/api/dating', datingRouter);
                 server.listen(port, () => {
-                    startBot();
+                    //startBot();
                     console.log(`App listening on port ${port}`);
                 });
             },
