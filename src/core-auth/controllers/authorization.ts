@@ -9,20 +9,15 @@ import { Auth } from '../models/entities/Auth';
 import { AppDataSource } from '../../shared/model';
 import { AuthServiceName } from '../../shared/utils/index';
 
-type AuthRequest = Record<string, string> & {
-    service_name: AuthServiceName;
-};
-
 const Authorization = async (req: Request, res: Response) => {
-    const request: AuthRequest = req.body;
-    let { service_id, service_name } = request;
+    const { service_id, service_name } = req.query;
 
     if (!service_id || !service_name || typeof service_id !== 'string' || typeof service_name !== 'string')
         return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
             message: 'Missing Data or invalid type. Check your request data!',
         });
 
-    if (!Object.values(AuthServiceName).includes(service_name))
+    if (!Object.values(AuthServiceName).includes(service_name as AuthServiceName))
         return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
             message: 'Missing service name. Check your request data!',
         });

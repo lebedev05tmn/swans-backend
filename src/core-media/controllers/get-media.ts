@@ -1,7 +1,6 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { bucketName } from '../../shared/config';
 import { Request, Response } from 'express';
-import { s3client } from '../s3_client';
+import { s3Сlient } from '../s3_client';
 import { decodeUserId } from '../../core-auth/utils/getUserId';
 
 export const getMedia = async (req: Request, res: Response) => {
@@ -15,11 +14,11 @@ export const getMedia = async (req: Request, res: Response) => {
 
         try {
             const command = new GetObjectCommand({
-                Bucket: bucketName,
+                Bucket: process.env.S3_BUCKET_NAME,
                 Key: fileName,
             });
 
-            const image = await s3client.send(command);
+            const image = await s3Сlient.send(command);
 
             if (image.Body) {
                 const buffer = Buffer.from(await image.Body.transformToByteArray());

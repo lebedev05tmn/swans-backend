@@ -123,6 +123,18 @@ export const create_user = async (params: CreateUserParams) => {
     if (session.state !== 'password')
         return { success: false, message: 'Current session does not exist or in invalid state' };
 
+    const authRepository = AppDataSource.getRepository(Auth);
+
+    const existnig_auth = await authRepository.findOne({
+        where: { service_user_id: Like(`${email}:%`) },
+    });
+
+    if (existnig_auth)
+        return {
+            success: false,
+            message: 'User with this email alredy exist!',
+        };
+
     try {
         const service_name: string = AuthServiceName.EMAIL;
         const service_id: string = `${email_hash}:${password_hash}`;
