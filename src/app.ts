@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 
 app.use('/api', (req, res, next) => {
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    if (req.path.startsWith('/api/media/get') || (authHeader && authHeader.startsWith('Bearer '))) {
         return next();
     }
 

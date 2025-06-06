@@ -18,8 +18,6 @@ export const mediaRouter = express.Router();
  * /api/media/get/{id}:
  *   get:
  *     summary: Получить медиафайл по id
- *     security:
- *       - bearerAuth: []
  *     tags: [Media]
  *     parameters:
  *       - in: path
