@@ -62,4 +62,7 @@ export class User extends BaseEntity {
         eager: false,
     })
     profile!: Profile;
+
+    @Column({ type: 'jsonb', nullable: true, default: () => `'[]'` })
+    expo_push_tokens!: string[] | null;
 }

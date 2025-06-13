@@ -16,6 +16,7 @@ import { authRouter } from './core-auth/routes/auth-router';
 import { userRouter } from './core-user/routes/userRouter';
 import { contextRouter } from './core-web/context';
 import { startBot } from './core-web/telegram-bot';
+import { notificationsRouter } from './core-notifications/routes/notifications-router';
 
 export const app = express();
 const port = process.env.PORT || 8080;
@@ -74,6 +75,7 @@ AppDataSource.initialize().then(
                 app.use('/api/auth', authRouter);
                 app.use('/api/metadata', userRouter);
                 app.use('/api/chat', chatRouter);
+                app.use('/api/notifications', notificationsRouter);
                 startBot();
                 server.listen(port, () => {
                     console.log(`App listening on port ${port}`);

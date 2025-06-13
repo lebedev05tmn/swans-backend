@@ -1,7 +1,8 @@
 import { Socket } from 'socket.io';
 import { userRepository } from '../../../core-user/routes/userRouter';
 import { IMessage, parseAuthToken } from '../../utils';
-import { chatsRepository } from '../../../shared/config';
+import { chatsRepository, profileRepository } from '../../../shared/config';
+import { sendOnlineNotification } from '../../../core-notifications/online';
 
 export const socketReaction = async (socket: Socket, chatId: number, messageId: number, reaction: string | null) => {
     try {
@@ -42,6 +43,20 @@ export const socketReaction = async (socket: Socket, chatId: number, messageId: 
                 user_id: myUserId,
                 reaction: reaction,
             });
+
+            if (recipient.online) {
+                const profile = await profileRepository.findOneByOrFail({
+                    user: { user_id: myUserId },
+                });
+
+                const data = {
+                    profile: profile,
+                    message_id: messageId,
+                    reaction: reaction,
+                };
+
+                sendOnlineNotification('reaction', recipientSocketId, data);
+            }
         } else {
             throw new Error(`Message with ID ${messageId} not found`);
         }

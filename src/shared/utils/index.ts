@@ -33,7 +33,7 @@ export enum AuthServiceName {
 }
 
 export const profileTableName = 'profile';
-export const chatsTableName = 'chats';
+export const chatsTableName = 'chat';
 export const messagesTableName = 'messages';
 export const socketsTableName = 'sockets';
 

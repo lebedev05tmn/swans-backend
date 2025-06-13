@@ -1,7 +1,8 @@
 import { Socket } from 'socket.io';
-import { chatsRepository } from '../../../shared/config';
+import { chatsRepository, profileRepository } from '../../../shared/config';
 import { userRepository } from '../../../core-user/routes/userRouter';
 import { IMessage, parseAuthToken } from '../../utils';
+import { sendOnlineNotification } from '../../../core-notifications/online';
 
 export const socketSendMessage = async (
     socket: Socket,
@@ -48,6 +49,19 @@ export const socketSendMessage = async (
 
         chat.messages.push(message);
         await chatsRepository.save(chat);
+
+        if (recipient.online) {
+            const profile = await profileRepository.findOneByOrFail({
+                user: { user_id: myUserId },
+            });
+
+            const data = {
+                profile: profile,
+                text: messageText,
+            };
+
+            sendOnlineNotification('new-message', recipientSocket, data);
+        }
 
         message.sending_time = new Date(
             new Date(message.sending_time).toLocaleString(recipient.locale, {
