@@ -95,26 +95,26 @@ authRouter.get('/get/user_auth_data', async (req: Request, res: Response) => {
 /**
  * @openapi
  * /api/auth/create_user:
- *   post:
+ *   get:
  *     summary: Авторизация пользователя
  *     security:
  *       - basicAuth: []
  *     tags: [Auth]
  *     description: Создание пользователя в БД, а также создание записи конкретной авторизации пользователя
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               service_id:
- *                 type: string
- *                 description: Сторонний идентификатор от сервиса авторизации
- *               service_name:
- *                 type: string
- *                 description: Название стороннего ресурса
- *                 example: Telegram
+ *     parameters:
+ *       - in: query
+ *         name: service_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Сторонний идентификатор от сервиса авторизации
+ *       - in: query
+ *         name: service_name
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Telegram
+ *         description: Название стороннего ресурса
  *     responses:
  *       200:
  *         description: Пользователь и его авторизация успешно созданы и добавлены в БД
@@ -157,7 +157,7 @@ authRouter.get('/get/user_auth_data', async (req: Request, res: Response) => {
  *                   type: string
  *                   description: Подробное описание ошибки на сервере
  */
-authRouter.post('/create_user', async (req: Request, res: Response) => {
+authRouter.get('/create_user', async (req: Request, res: Response) => {
     first_auth.Authorization(req, res);
 });
 
