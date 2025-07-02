@@ -26,20 +26,22 @@ export const mediaRouter = express.Router();
  *           type: string
  *         required: true
  *         description: id медиафайла
+ *       - in: query
+ *         name: chat_id
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Идентификатор чата (необязательный)
  *     responses:
  *       200:
  *         description: Изображение успешно получено
  *         content:
- *           image/png:
+ *           image/webp:
  *             schema:
  *               type: string
  *               format: binary
- *           image/jpeg:
- *             schema:
- *               type: string
- *               format: binary
- *       400:
- *         description: Неверный запрос
+ *       404:
+ *         description: Изображение с таким id не найдено
  *       500:
  *         description: Ошибка на стороне сервера
  */
@@ -52,8 +54,17 @@ mediaRouter.get('/get/:id', async (req: Request, res: Response) => {
  * /api/media/create:
  *   post:
  *     summary: Загрузка изображения в хранилище
+ *     security:
+ *       - bearerAuth: []
  *     tags:
  *       - Media
+ *     parameters:
+ *       - in: query
+ *         name: chat_id
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Идентификатор чата (необязательный)
  *     requestBody:
  *       required: true
  *       content:
@@ -66,7 +77,7 @@ mediaRouter.get('/get/:id', async (req: Request, res: Response) => {
  *                 format: binary
  *                 description: Изображение для загрузки
  *     responses:
- *       200:
+ *       201:
  *         description: Изображение успешно загружено
  *         content:
  *           text/html:
@@ -84,6 +95,8 @@ mediaRouter.post('/create', async (req: Request, res: Response) => {
  * /api/media/delete/{id}:
  *   delete:
  *     summary: Удалить медиафайл по id
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Media]
  *     parameters:
  *       - in: path
@@ -92,8 +105,14 @@ mediaRouter.post('/create', async (req: Request, res: Response) => {
  *           type: string
  *         required: true
  *         description: id медиафайла
+ *       - in: query
+ *         name: chat_id
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Идентификатор чата (необязательный)
  *     responses:
- *       204:
+ *       200:
  *         description: Файл удален успешно
  *       404:
  *         description: Файл не найден

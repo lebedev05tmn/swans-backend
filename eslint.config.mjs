@@ -1,24 +1,39 @@
-import globals from 'globals';
-import pluginJs from '@eslint/js';
-import tseslint from '@typescript-eslint/eslint-plugin';
+import tsEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import prettierConfig from 'eslint-config-prettier';
+import prettierPlugin from 'eslint-plugin-prettier';
+import globals from 'globals';
 
 export default [
     {
-        files: ['**/*.{js,mjs,cjs,ts}'],
+        files: ['**/*.ts'],
         languageOptions: {
-            globals: { ...globals.browser, ...globals.node },
+            globals: {
+                ...globals.node,
+            },
             parser: tsParser,
+            parserOptions: {
+                ecmaVersion: 2020,
+                sourceType: 'module',
+                project: './tsconfig.json',
+            },
         },
         plugins: {
-            prettier: await import('eslint-plugin-prettier'),
+            '@typescript-eslint': tsEslint,
+            prettier: prettierPlugin,
         },
         rules: {
-            ...pluginJs.configs.recommended.rules,
-            ...tseslint.configs.recommended.rules,
-            'prettier/prettier': ['warn'],
+            ...tsEslint.configs.recommended.rules,
+            ...prettierConfig.rules,
+            'prettier/prettier': ['error', { endOfLine: 'auto' }],
+            '@typescript-eslint/explicit-function-return-type': 'off',
+            '@typescript-eslint/explicit-module-boundary-types': 'off',
+            '@typescript-eslint/no-explicit-any': 'error',
+            '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+            'no-console': 0,
         },
     },
-    prettierConfig,
+    {
+        ignores: ['node_modules', 'dist', '*.d.ts'],
+    },
 ];

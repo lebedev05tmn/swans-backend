@@ -1,42 +1,34 @@
-import { bucketName, getFileContentType } from '../../shared/config';
-import { minioClient } from '../minio-client';
-import { getKey } from '../utils';
-import { HTTP_STATUSES } from '../../shared/utils';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { Request, Response } from 'express';
+import { s3Сlient } from '../s3_client';
+import { decodeUserId } from '../../core-auth/utils/getUserId';
 
 export const getMedia = async (req: Request, res: Response) => {
     if (req.params.id !== null && req.params.id !== undefined) {
-        let objectKey = await getKey(req.params.id);
+        const id = req.params.id;
+        const userId = await decodeUserId(req.headers.authorization);
+        let fileName: string;
 
-        let contentType = await getFileContentType(objectKey as string);
+        if (req.query.chat_id) fileName = `message/${req.query.chat_id}/${id}.webp`;
+        else fileName = `profile/${userId}/${id}.webp`;
 
         try {
-            let objStream;
-            if (typeof objectKey === 'string') {
-                objStream = await minioClient.getObject(bucketName, objectKey);
+            const command = new GetObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: fileName,
+            });
+
+            const image = await s3Сlient.send(command);
+
+            if (image.Body) {
+                const buffer = Buffer.from(await image.Body.transformToByteArray());
+                res.setHeader('Content-Type', 'image/webp');
+                res.status(200).end(buffer);
             }
-
-            let data: Buffer = Buffer.alloc(0);
-
-            if (objStream) {
-                objStream.on('data', (chunk: Buffer) => {
-                    data = Buffer.concat([data, chunk]);
-                });
-
-                objStream.on('end', () => {
-                    res.writeHead(HTTP_STATUSES.OK_200, {
-                        'Content-Type': contentType,
-                    });
-                    return res.end(data);
-                });
-            }
-        } catch (err) {
-            console.error('MinIO Error:', err);
-            return res
-                .status(500)
-                .send('Error occurred while retrieving the file.');
+        } catch {
+            return res.status(404).send(`Not found.`);
         }
     } else {
-        return res.status(HTTP_STATUSES.BAD_REQUEST_400).send('Request error.');
+        return res.status(500).send('Server error.');
     }
 };

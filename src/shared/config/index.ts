@@ -1,23 +1,11 @@
-import path from 'path';
 import { AppDataSource } from '../model';
 import { Profile } from '../../core-profile/entities/Profile';
-import { FileContentTypes, FileExtensions } from '../utils';
+import { Chat } from '../../core-chat/entities/Chat';
 
-export const bucketName = 'swans-pics';
 export const profileRepository = AppDataSource.getRepository(Profile);
+export const chatsRepository = AppDataSource.getRepository(Chat);
 
-export const getFileContentType = async (objectKey: string) => {
-    switch (path.extname(<string>objectKey)) {
-        case FileExtensions.JPG:
-            return FileContentTypes.JPEG;
-        case FileExtensions.JPEG:
-            return FileContentTypes.JPEG;
-        case FileExtensions.PNG:
-            return FileContentTypes.PNG;
-    }
-};
-
-const routes = ['./**/routes/*.ts'];
+const routes = ['./**/routes/*.ts', './**/core-web/**/*.ts'];
 
 export const options = {
     definition: {
@@ -29,7 +17,7 @@ export const options = {
         },
         servers: [
             {
-                url: `http://localhost:8080`,
+                url: process.env.NODE_ENV == 'production' ? process.env.SERVER_HOST : process.env.LOCAL_HOST,
                 description: 'V1 Local Server',
             },
         ],
@@ -40,8 +28,17 @@ export const options = {
                     scheme: 'bearer',
                     bearerFormat: 'JWT',
                 },
+                basicAuth: {
+                    type: 'http',
+                    scheme: 'basic',
+                },
             },
         },
+        security: [
+            {
+                basicAuth: [],
+            },
+        ],
     },
     apis: routes,
 };

@@ -1,0 +1,71 @@
+{
+    "profile": [
+        {
+            "id": "name",
+            "title": "Привет, давай знакомиться",
+            "description": "Будь собой при выборе имени, привлекает больше внимания.",
+            "input": "name",
+            "nextButton": true,
+            "validationRules": [
+                "require",
+                "onlyLetters",
+                "minLength",
+                "maxLength"
+            ]
+        },
+        {
+            "id": "city",
+            "title": "Где живем, там и ищем",
+            "description": "Выбери свой город, чтобы найти ближайщих соулмейтов",
+            "input": "city",
+            "nextButton": true,
+            "validationRules": [
+                "require",
+                "onlyLetters",
+                "minLength",
+                "maxLength"
+            ]
+        },
+        {
+            "id": "birth_date",
+            "title": "Выбери дату рождения",
+            "description": "Используй настояющую, ее потом поменять нельзя",
+            "input": "birth_date",
+            "nextButton": true,
+            "validationRules": [
+                "require",
+                "minAge",
+                "maxAge"
+            ]
+        },
+        {
+            "id": "description",
+            "title": "Стань солцем среди планет",
+            "description": "Сделай свой \"слоган\", который выделит тебя среди всех",
+            "input": "description",
+            "nextButton": true,
+            "validationRules": [
+                "require", 
+                "maxDescriptionLength"
+            ],
+            "skipButton": true
+        },
+        {
+            "id": "sex",
+            "title": "Последний этап регистрации",
+            "description": "Выберите пол",
+            "input": "sex",
+            "nextButton": false
+        },
+        {
+            "id": "images",
+            "title": "Загрузите фото",
+            "input": "images",
+            "nextButton": true,
+            "textAlign":  "center",
+            "validationRules": [
+                "imageRequire"
+            ]
+        }
+    ]
+}

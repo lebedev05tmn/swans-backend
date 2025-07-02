@@ -1,26 +1,31 @@
 import { Request, Response } from 'express';
-import { minioClient } from '../minio-client';
-import { bucketName } from '../../shared/config';
-import { HTTP_STATUSES } from '../../shared/utils';
+import { DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import { s3Сlient } from '../s3_client';
+import { decodeUserId } from '../../core-auth/utils/getUserId';
 
-export const deleteMedia = (req: Request, res: Response) => {
+export const deleteMedia = async (req: Request, res: Response) => {
     const id = req.params.id;
-    let deleted = false;
+    const userId = decodeUserId(req.headers.authorization);
 
-    const stream = minioClient
-        .listObjectsV2(bucketName)
-        .map((object) => object.name);
-    stream.on('data', async (obj) => {
-        if (obj.includes(`${id}.`)) {
-            deleted = true;
-            await minioClient.removeObject(bucketName, obj).then(() => {
-                return res
-                    .status(HTTP_STATUSES.NO_CONTENT_204)
-                    .send('Image deleted successfully');
-            });
-        }
+    if (!userId) throw new Error();
+
+    let command = new HeadObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `${id}.webp`,
     });
-    stream.on('end', () => {
-        if (!deleted) return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-    });
+
+    try {
+        await s3Сlient.send(command);
+
+        command = new DeleteObjectCommand({
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: `${id}.webp`,
+        });
+
+        await s3Сlient.send(command);
+
+        res.status(200).send('Deleted successfully.');
+    } catch {
+        res.status(404).send('Not found.');
+    }
 };

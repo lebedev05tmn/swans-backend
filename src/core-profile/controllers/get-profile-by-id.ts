@@ -1,29 +1,24 @@
 import { Request, Response } from 'express';
 import { HTTP_STATUSES } from '../../shared/utils';
 import { profileRepository } from '../../shared/config';
-import { convertSex, ProfileType } from '../utils';
+import getUserId from '../../core-auth/utils/getUserId';
 
 export const getProfileById = async (req: Request, res: Response) => {
+    const user_id = getUserId(req, res);
+
+    if (typeof user_id !== 'string') return;
+
     try {
-        if (req.params.id === null || req.params.id === undefined) {
-            return res
-                .status(HTTP_STATUSES.BAD_REQUEST_400)
-                .send('Incorrect ID');
-        }
-
-        let user = (await profileRepository.findOneBy({
-            user_id: Number(req.params.id),
-        })) as any;
-
-        if (user) {
-            user.sex = await convertSex(user.sex);
-            return res.json(user);
+        const profile = await profileRepository.findOne({
+            where: { user: { user_id: user_id } },
+            relations: ['user'],
+        });
+        if (profile) {
+            return res.json(profile);
         } else {
-            return res
-                .status(HTTP_STATUSES.NOT_FOUND_404)
-                .send('User not found');
+            return res.status(HTTP_STATUSES.NOT_FOUND_404).send('profile not found');
         }
     } catch (error) {
-        return res.status(500).send(`Failed to load user: ${error}`);
+        return res.status(HTTP_STATUSES.SERVER_ERROR_500).send(`Failed to load profile: ${error}`);
     }
 };
