@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:14
+    container_name: swans-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: swans
+      POSTGRES_DB: swans
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: swans-redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: .
+    container_name: swans-backend
+    env_file: ./.env
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  pgdata:
