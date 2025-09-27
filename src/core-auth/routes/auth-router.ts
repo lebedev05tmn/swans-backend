@@ -4,7 +4,7 @@ import first_auth from '../controllers/authorization';
 import get_access_token from '../controllers/getAccessToken/getAccessToken';
 import update_user_auth from '../controllers/updateAuth';
 import refreshAccessToken from '../controllers/refreshAccessToken';
-import server from '../utils/server';
+import server from '../../shared/utils/server';
 import { forget_password } from '../controllers/forgetPassword';
 import getUserAuthData from '../controllers/getUserAuthData';
 

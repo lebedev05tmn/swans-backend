@@ -26,6 +26,12 @@ export const mediaRouter = express.Router();
  *           type: string
  *         required: true
  *         description: id медиафайла
+ *       - in: query
+ *         name: chat_id
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Идентификатор чата (необязательный)
  *     responses:
  *       200:
  *         description: Изображение успешно получено
@@ -48,8 +54,17 @@ mediaRouter.get('/get/:id', async (req: Request, res: Response) => {
  * /api/media/create:
  *   post:
  *     summary: Загрузка изображения в хранилище
+ *     security:
+ *       - bearerAuth: []
  *     tags:
  *       - Media
+ *     parameters:
+ *       - in: query
+ *         name: chat_id
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Идентификатор чата (необязательный)
  *     requestBody:
  *       required: true
  *       content:
@@ -80,6 +95,8 @@ mediaRouter.post('/create', async (req: Request, res: Response) => {
  * /api/media/delete/{id}:
  *   delete:
  *     summary: Удалить медиафайл по id
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Media]
  *     parameters:
  *       - in: path
@@ -88,6 +105,12 @@ mediaRouter.post('/create', async (req: Request, res: Response) => {
  *           type: string
  *         required: true
  *         description: id медиафайла
+ *       - in: query
+ *         name: chat_id
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Идентификатор чата (необязательный)
  *     responses:
  *       200:
  *         description: Файл удален успешно
